@@ -26,12 +26,10 @@ Created a workflow that:
 The workflow automatically uses the built-in `GITHUB_TOKEN` to create releases and upload files. You do not need to manually create this token; GitHub provides it to the action session automatically.
 
 ## How to Release
-1.  Ensure your code is pushed to `main`.
+1.  Ensure your code is pushed to `master`.
 2.  Create a tag: `git tag v1.0.1`
 3.  Push the tag: `git push origin v1.0.1`
 4.  The workflow will handle the rest!
 
 ## Verification
-- Workflow file created at `.github/workflows/android.yml`.
-- Permissions updated to allow writing contents (necessary for releases).
-- Configured to use JDK 17 as required by your project.
+- Workflow file updated to trigger on the `master` branch.

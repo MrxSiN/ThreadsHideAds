@@ -1,7 +1,5 @@
 # Hook notes
 
-## Stale NexAlloy fingerprint
-
 ```kotlin
 returnType = "void"
 strings("SponsoredContentController.processValidatedContent")

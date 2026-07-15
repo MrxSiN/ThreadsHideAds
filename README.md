@@ -2,11 +2,11 @@
 
 A stripped-down LSPosed module containing only the Threads sponsored-feed hook.
 It does not include the YouTube, Reddit, Instagram, Photos, Strava, AllTrails,
-Photomath, settings UI, or any other NexAlloy functionality.
+Photomath, settings UI, or any other functionality.
 
 ## What changed
 
-The old NexAlloy implementation searched for a **void** method containing the
+The original implementation searched for a **void** method containing the
 string `SponsoredContentController.processValidatedContent` and replaced it
 with a no-op.
 
@@ -85,6 +85,6 @@ Threads build.
 
 ## Attribution
 
-Derived from the GPL-3.0 NexAlloy Threads ad-removal concept and updated using
+Derived from the GPL-3.0 Threads ad-removal concept and updated using
 the current method signature used by maintained ReVanced-family Threads
 patches. Dex discovery is performed with DexKit (LGPL-3.0-or-later).

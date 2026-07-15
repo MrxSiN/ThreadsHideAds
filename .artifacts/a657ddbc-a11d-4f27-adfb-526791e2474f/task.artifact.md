@@ -1,8 +1,0 @@
-- [x] Update `app/build.gradle.kts` with new namespace and applicationId
-- [x] Update `app/src/main/assets/xposed_init`
-- [x] Move `MainHook.java` to new package directory
-    - [x] Create directory `app/src/main/java/my/github/MrxSiN/threadshideads/`
-    - [x] Write `MainHook.java` with new package declaration
-    - [x] Delete `app/src/main/java/io/github/nexalloy/threadshideads/MainHook.java`
-- [x] Verify build
-- [x] Final cleanup of empty directories

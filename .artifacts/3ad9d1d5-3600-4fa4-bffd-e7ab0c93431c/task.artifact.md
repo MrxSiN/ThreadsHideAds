@@ -1,0 +1,2 @@
+- [x] Create GitHub Actions workflow file `.github/workflows/android.yml`
+- [x] Create walkthrough documentation

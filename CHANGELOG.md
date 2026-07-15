@@ -2,6 +2,7 @@
 
 ## 1.1.0
 
+- Add App Icon
 - Improved Ad Detection
 - Added feed-level ad filtering to remove sponsored items before they are displayed. 
 - Added detection for sponsored, promoted, direct-ad, AdChoices, and paid-partnership markers. 

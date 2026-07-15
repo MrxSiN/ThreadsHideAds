@@ -1,3 +1,4 @@
+.artifacts
 .gradle/
 .idea/
 local.properties

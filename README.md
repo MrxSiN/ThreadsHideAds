@@ -1,90 +1,158 @@
-# Threads Hide Ads (LSPosed)
+<div align="center">
 
-A stripped-down LSPosed module containing only the Threads sponsored-feed hook.
-It does not include the YouTube, Reddit, Instagram, Photos, Strava, AllTrails,
-Photomath, settings UI, or any other functionality.
+# 🧵 Threads Hide Ads
 
-## What changed
+### A focused LSPosed module for removing sponsored feed items from Threads
 
-The original implementation searched for a **void** method containing the
-string `SponsoredContentController.processValidatedContent` and replaced it
-with a no-op.
+[![Android](https://img.shields.io/badge/Android-LSPosed-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://github.com/LSPosed/LSPosed)
+[![Target](https://img.shields.io/badge/Target-Threads-000000?style=for-the-badge&logo=threads&logoColor=white)](https://www.threads.net/)
+[![DexKit](https://img.shields.io/badge/Powered%20by-DexKit-6A5ACD?style=for-the-badge)](https://github.com/LuckyPray/DexKit)
+[![JDK](https://img.shields.io/badge/JDK-17%2B-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)](https://openjdk.org/)
 
-Newer Threads builds use a private Boolean method shaped as:
+</div>
 
-```text
-SponsoredContentController.insertItem(Object, Object): boolean
-```
+## ✨ Features
 
-This module replaces that method with a constant `false` return value. It also
-contains:
+- Removes sponsored feed insertions from Threads.
+- Uses DexKit to locate obfuscated methods across app updates.
+- Includes a conservative fallback for renamed methods.
+- Retains compatibility logic for older Threads versions.
+- Writes useful match, ambiguity, and failure information to the LSPosed log.
+- Limits its scope to the official Threads Android package.
 
-1. A conservative name-change fallback that requires a unique private
-   `boolean (Object, Object)` method in `SponsoredContentController`.
-2. The old void/string hook as a compatibility fallback for older Threads
-   versions.
-3. LSPosed logging for exact matches, ambiguous matches, and failures.
+## 🎯 Scope
 
-## Scope
-
-Only:
+The module hooks only:
 
 ```text
 com.instagram.barcelona
 ```
 
-## Build
+Do not enable additional applications in the module scope.
 
-Requirements:
+## 🔍 How it works
 
-- Android Studio with JDK 17 or newer; or Gradle 9.4.1
-- Android SDK Platform 36
+The original implementation searched for a `void` method containing the string:
 
-From the project directory:
+```text
+SponsoredContentController.processValidatedContent
+```
+
+That method was replaced with a no-op.
+
+Newer Threads builds use a private Boolean method shaped like:
+
+```text
+SponsoredContentController.insertItem(Object, Object): boolean
+```
+
+This module replaces the method with a constant `false` return value, preventing
+the sponsored item from being inserted into the feed.
+
+For compatibility, the module attempts the following strategies in order:
+
+1. Match the newer `insertItem(Object, Object): boolean` method.
+2. Use a conservative fallback requiring one unique private
+   `boolean (Object, Object)` method in `SponsoredContentController`.
+3. Fall back to the older void/string-based hook for legacy Threads builds.
+
+## ✅ Requirements
+
+### Runtime
+
+- A rooted Android device.
+- A working LSPosed installation.
+- The official Threads application (`com.instagram.barcelona`).
+- The **Threads Hide Ads** APK installed and enabled in LSPosed.
+
+### Build environment
+
+- Android Studio with JDK 17 or newer, **or** a standalone JDK 17+ setup.
+- Gradle 9.4.1 when building without an existing wrapper.
+- Android SDK Platform 36.
+- Git or a downloaded copy of the project source.
+
+## 🛠️ Build
+
+From the project directory, build the release APK with a local Gradle
+installation:
 
 ```bash
 gradle :app:assembleRelease
 ```
 
-The APK will be created under:
+The generated APK will be located under:
 
 ```text
 app/build/outputs/apk/release/
 ```
 
+### Create and use the Gradle wrapper
+
 A helper script is included to create a standard Gradle wrapper when a local
-Gradle installation is available:
+Gradle installation is available.
+
+#### Linux / macOS
 
 ```bash
 ./scripts/create-wrapper.sh
 ./gradlew :app:assembleRelease
 ```
 
-On Windows PowerShell:
+#### Windows PowerShell
 
 ```powershell
 .\scripts\create-wrapper.ps1
 .\gradlew.bat :app:assembleRelease
 ```
 
-## Install
+## 📦 Installation
 
-1. Build and install the APK.
-2. Enable **Threads Hide Ads** in LSPosed.
-3. Select only **Threads** in the module scope.
-4. Force-stop Threads, then reopen it. A reboot is advisable if the hook does
-   not load after force-stopping.
-5. Check the LSPosed log for entries beginning with `ThreadsHideAds:`.
+1. Build and install the release APK.
+2. Open the LSPosed manager.
+3. Enable **Threads Hide Ads**.
+4. Select **Threads** as the module's only scope.
+5. Force-stop Threads and reopen it.
+6. Reboot the device if the hook does not load after force-stopping.
+7. Review LSPosed logs for entries beginning with:
 
-## Validation status
+```text
+ThreadsHideAds:
+```
 
-The source structure and hook logic were statically checked. It was not built
-against an Android SDK or tested on a rooted device in the creation environment.
-Runtime compatibility therefore still needs confirmation on your installed
-Threads build.
+## 🧪 Validation status
 
-## Attribution
+The source structure and hook logic have been statically checked. The module was
+not built against an Android SDK or tested on a rooted device in the creation
+environment.
 
-Derived from the GPL-3.0 Threads ad-removal concept and updated using
-the current method signature used by maintained ReVanced-family Threads
-patches. Dex discovery is performed with DexKit (LGPL-3.0-or-later).
+Runtime compatibility must therefore be confirmed against the installed Threads
+version. Threads updates may change or remove the targeted implementation.
+
+## 🩺 Troubleshooting
+
+| Problem | Suggested action |
+| --- | --- |
+| Sponsored posts still appear | Confirm that only Threads is selected in the LSPosed scope, then force-stop and reopen Threads. |
+| No module log entries | Verify that the module is enabled, reboot the device, and inspect the LSPosed framework status. |
+| Ambiguous method warning | The installed Threads build may contain multiple possible targets. Avoid forcing a broad hook and report the relevant log output. |
+| Hook failure after an update | Threads may have changed its internal classes or method signature. Capture the `ThreadsHideAds:` log entries for analysis. |
+
+## 🙏 Credits
+
+This project depends on and benefits from the following open-source work:
+
+| Project | Contribution |
+| --- | --- |
+| [DexKit](https://github.com/LuckyPray/DexKit) by LuckyPray | High-performance runtime DEX parsing and discovery of obfuscated classes and methods. Licensed under Apache-2.0. |
+| [LSPosed](https://github.com/LSPosed/LSPosed) | Provides the Android runtime hooking framework used to load and execute this module. Licensed under GPL-3.0. |
+| ReVanced-family Threads patches | Provided the maintained method-signature reference used to update the sponsored-content hook. |
+
+The module is derived from the GPL-3.0 Threads ad-removal concept and has been
+updated for the newer sponsored-content insertion method.
+
+## ⚠️ Disclaimer
+
+This project is not affiliated with, endorsed by, or sponsored by Meta or
+Threads. It is provided for educational and personal use. App updates may break
+the hook without notice.

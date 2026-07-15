@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🧵 Threads Hide Ads
+# <img src="https://upload.wikimedia.org/wikipedia/commons/d/db/Threads_%28app%29.png" width="36" height="36"> Threads Hide Ads
 
 ### A focused LSPosed module for removing sponsored feed items from Threads
 

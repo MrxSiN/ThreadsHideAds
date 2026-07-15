@@ -2,6 +2,8 @@ plugins {
     id("com.android.application")
 }
 
+val appVersion = "1.0.0"
+
 android {
     namespace = "my.github.MrxSiN.threadshideads"
     compileSdk = 36
@@ -11,18 +13,13 @@ android {
         minSdk = 23
         targetSdk = 36
         versionCode = 1
-        versionName = "1.0.0"
+        versionName = appVersion
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
         }
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
     }
 
     packaging {
@@ -33,6 +30,14 @@ android {
                 "META-INF/LICENSE*",
                 "META-INF/NOTICE*"
             )
+        }
+    }
+}
+
+androidComponents {
+    onVariants { variant ->
+        variant.outputs.forEach { output ->
+            output.outputFileName.set("ThreadsHideAds-v$appVersion.apk")
         }
     }
 }

@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.1.2 — 2026-08-01
+
+- Replaced the placeholder launcher artwork with a custom Threads-style ad-blocking shield icon.
+- Added legacy, round, adaptive, Play Store, and Android 13 monochrome launcher assets.
+- Moved DexKit and model-hook initialization from `handleLoadPackage()` to an `Application.attach()` guard so discovery runs with Threads’ final application context and class loader.
+- Fixed startup sessions where a transient class-loader or DexKit failure could leave the module inactive until Threads was closed and reopened.
+- Added bounded initialization retries after 250 ms, 1 second, and 3 seconds.
+- Changed DexKit native-library loading to be lazy and retryable instead of running from a static initializer.
+- Added a base-APK bridge fallback when DexKit cannot open the final application class loader.
+- Kept the rendered-label fallback active while model-hook discovery is pending or retrying.
+- Updated the Gradle wrapper to 9.6.1 and refreshed release documentation.
+
 ## 1.1.1 — 2026-07-16
 
 - Added a primary DexKit search for the confirmed `Integer, Integer, List` feed-boundary shape using the `Sponsored` marker; broad discovery now runs only when this unique target is unavailable.
@@ -21,27 +33,24 @@
 
 ## 1.1.0 — 2026-07-15
 
-- Add App Icon
-- Improved Ad Detection
-- Added feed-level ad filtering to remove sponsored items before they are displayed. 
-- Added detection for sponsored, promoted, direct-ad, AdChoices, and paid-partnership markers. 
-- Added a UI fallback that hides posts containing rendered sponsored labels. 
-- Added support for several localized sponsored-label variants. 
-- Added automatic restoration for recycled feed views to prevent normal posts from remaining hidden. 
-- Improved DexKit scanning by searching dex files available through the Threads class loader. 
-- Expanded detection beyond boolean methods to include feed lists, parsers, mappers, and model objects. 
-- Improved compatibility with obfuscated and frequently changing Threads builds. 
-- Added more detailed LSPosed logging for method discovery, hook installation, and removed ads. 
-- Fixed ads still appearing when Threads injected them directly into feed lists. 
-- Fixed split-APK and secondary-dex code being missed during method discovery. 
-- Fixed potentially incorrect hooks caused by forcing every ad-related boolean method to return false. 
-- Fixed the fallback scan being skipped after finding unrelated string matches. 
+- Added the initial app icon.
+- Added feed-level ad filtering to remove sponsored items before they are displayed.
+- Added detection for sponsored, promoted, direct-ad, AdChoices, and paid-partnership markers.
+- Added a UI fallback that hides posts containing rendered sponsored labels.
+- Added support for several localized sponsored-label variants.
+- Added automatic restoration for recycled feed views to prevent normal posts from remaining hidden.
+- Improved DexKit scanning by searching dex files available through the Threads class loader.
+- Expanded detection beyond boolean methods to include feed lists, parsers, mappers, and model objects.
+- Improved compatibility with obfuscated and frequently changing Threads builds.
+- Added more detailed LSPosed logging for method discovery, hook installation, and removed ads.
+- Fixed ads still appearing when Threads injected them directly into feed lists.
+- Fixed split-APK and secondary-dex code being missed during method discovery.
+- Fixed potentially incorrect hooks caused by forcing every ad-related boolean method to return false.
+- Fixed the fallback scan being skipped after finding unrelated string matches.
 - Fixed recycled feed cards occasionally hiding legitimate posts.
 
 ## 1.0.0 — 2026-07-14
 
-- LSPosed scope to `com.instagram.barcelona`.
-- Updated the sponsored-content hook from legacy void/no-op behavior to the
-  current Boolean `insertItem(Object, Object)` behavior returning `false`.
-- Added a unique-match shape fallback, legacy compatibility fallback, and
-  diagnostic LSPosed logging.
+- Scoped the LSPosed module to `com.instagram.barcelona`.
+- Updated the sponsored-content hook from legacy void/no-op behavior to the current Boolean `insertItem(Object, Object)` behavior returning `false`.
+- Added a unique-match shape fallback, legacy compatibility fallback, and diagnostic LSPosed logging.

@@ -1,5 +1,8 @@
 package my.github.MrxSiN.threadshideads;
 
+import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -37,6 +40,7 @@ import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XposedBridge;
+import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 /**
@@ -48,8 +52,12 @@ public final class MainHook implements IXposedHookLoadPackage {
     private static final String TAG = "ThreadsHideAds";
     private static final String THREADS_PACKAGE = "com.instagram.barcelona";
 
+    private static final AtomicBoolean ATTACH_HOOK_INSTALLED = new AtomicBoolean(false);
+    private static final AtomicBoolean INITIALIZING = new AtomicBoolean(false);
     private static final AtomicBoolean INITIALIZED = new AtomicBoolean(false);
+    private static final AtomicBoolean DEXKIT_LIBRARY_LOADED = new AtomicBoolean(false);
     private static final AtomicBoolean UI_FALLBACK_INSTALLED = new AtomicBoolean(false);
+    private static final AtomicInteger INITIALIZATION_ATTEMPTS = new AtomicInteger();
 
     private static final AtomicInteger MODEL_REMOVAL_TOTAL = new AtomicInteger();
     private static final AtomicInteger MODEL_REMOVAL_EVENTS = new AtomicInteger();
@@ -61,6 +69,11 @@ public final class MainHook implements IXposedHookLoadPackage {
     private static final int MAX_NESTED_SANITIZE_DEPTH = 4;
     private static final int MAX_NESTED_SANITIZE_BUDGET = 192;
     private static final int MAX_UI_SCAN_VIEWS = 320;
+    private static final long[] INITIALIZATION_RETRY_DELAYS_MS = {
+            250L,
+            1000L,
+            3000L
+    };
 
     /*
      * Candidate descriptors are intentionally not logged one-by-one. Threads
@@ -172,54 +185,211 @@ public final class MainHook implements IXposedHookLoadPackage {
     private static final Map<Class<?>, Boolean> LIST_CONTAINER_CLASS_CACHE =
             new ConcurrentHashMap<>();
 
-    static {
-        System.loadLibrary("dexkit");
-    }
-
     @Override
-    public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) {
+    public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam lpparam) {
         if (!THREADS_PACKAGE.equals(lpparam.packageName)) {
             return;
         }
 
         /*
-         * Limit expensive scanning to the main Threads process.
-         * Static fields are process-local.
+         * Threads also starts secondary processes. Keep the expensive model
+         * resolver in the main application process only.
          */
         if (lpparam.processName != null
                 && !THREADS_PACKAGE.equals(lpparam.processName)) {
             return;
         }
 
-        if (!INITIALIZED.compareAndSet(false, true)) {
+        /*
+         * This framework-level fallback is safe to install immediately and
+         * remains available even if model discovery needs a later retry.
+         */
+        installRenderedLabelFallback();
+
+        if (!ATTACH_HOOK_INSTALLED.compareAndSet(false, true)) {
             return;
         }
 
-        log("Initializing in process " + lpparam.processName);
+        log("Loading in process " + lpparam.processName);
 
-        installRenderedLabelFallback();
+        try {
+            XposedHelpers.findAndHookMethod(
+                    "android.app.Application",
+                    lpparam.classLoader,
+                    "attach",
+                    Context.class,
+                    new XC_MethodHook() {
+                        @Override
+                        protected void afterHookedMethod(MethodHookParam param) {
+                            Context context = null;
+                            if (param.args != null
+                                    && param.args.length > 0
+                                    && param.args[0] instanceof Context) {
+                                context = (Context) param.args[0];
+                            }
+
+                            ClassLoader appClassLoader =
+                                    resolveAppClassLoader(context, lpparam.classLoader);
+
+                            log("Application.attach observed; starting hook resolution");
+                            requestInitialization(
+                                    context,
+                                    appClassLoader,
+                                    0,
+                                    "Application.attach"
+                            );
+                        }
+                    }
+            );
+
+            log("Application attach guard installed");
+        } catch (Throwable throwable) {
+            log("Unable to install Application.attach guard; "
+                    + "trying load-package fallback: " + throwable);
+            requestInitialization(
+                    null,
+                    lpparam.classLoader,
+                    0,
+                    "load-package fallback"
+            );
+        }
+    }
+
+    private static ClassLoader resolveAppClassLoader(
+            Context context,
+            ClassLoader fallback
+    ) {
+        if (context != null) {
+            try {
+                ClassLoader classLoader = context.getClassLoader();
+                if (classLoader != null) {
+                    return classLoader;
+                }
+            } catch (Throwable ignored) {
+                // Fall through to the load-package class loader.
+            }
+        }
+        return fallback;
+    }
+
+    private static void requestInitialization(
+            final Context context,
+            final ClassLoader classLoader,
+            final int retryIndex,
+            final String trigger
+    ) {
+        if (INITIALIZED.get()) {
+            return;
+        }
+
+        if (classLoader == null) {
+            log("Initialization skipped because the app class loader is null");
+            scheduleInitializationRetry(
+                    context,
+                    classLoader,
+                    retryIndex,
+                    "missing class loader"
+            );
+            return;
+        }
+
+        if (!INITIALIZING.compareAndSet(false, true)) {
+            return;
+        }
+
+        boolean success = false;
+        int attempt = INITIALIZATION_ATTEMPTS.incrementAndGet();
+        try {
+            log("Initialization attempt " + attempt + " via " + trigger);
+            success = initializeModelHooks(context, classLoader);
+            if (success) {
+                INITIALIZED.set(true);
+                log("Hook initialization complete; installedHooks="
+                        + HOOKED_METHODS.size());
+            } else {
+                log("Initialization attempt installed no model hooks");
+            }
+        } catch (Throwable throwable) {
+            log("Hook initialization attempt failed: " + throwable);
+            XposedBridge.log(throwable);
+        } finally {
+            INITIALIZING.set(false);
+        }
+
+        if (!success && !INITIALIZED.get()) {
+            scheduleInitializationRetry(
+                    context,
+                    classLoader,
+                    retryIndex,
+                    "previous attempt unsuccessful"
+            );
+        }
+    }
+
+    private static void scheduleInitializationRetry(
+            final Context context,
+            final ClassLoader previousClassLoader,
+            final int retryIndex,
+            final String reason
+    ) {
+        if (INITIALIZED.get()
+                || retryIndex >= INITIALIZATION_RETRY_DELAYS_MS.length) {
+            if (!INITIALIZED.get()) {
+                log("Initialization retries exhausted; rendered-label fallback remains active");
+            }
+            return;
+        }
+
+        final long delayMs = INITIALIZATION_RETRY_DELAYS_MS[retryIndex];
+        try {
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    ClassLoader retryClassLoader = resolveAppClassLoader(
+                            context,
+                            previousClassLoader
+                    );
+                    requestInitialization(
+                            context,
+                            retryClassLoader,
+                            retryIndex + 1,
+                            "delayed retry " + (retryIndex + 1)
+                    );
+                }
+            }, delayMs);
+            log("Scheduled initialization retry " + (retryIndex + 1)
+                    + " in " + delayMs + " ms; reason=" + reason);
+        } catch (Throwable throwable) {
+            log("Unable to schedule initialization retry: " + throwable);
+        }
+    }
+
+    private static boolean initializeModelHooks(
+            Context context,
+            ClassLoader classLoader
+    ) throws Throwable {
+        ensureDexKitLibraryLoaded();
 
         /*
-         * Use the active class loader instead of only appInfo.sourceDir.
-         * This includes dex paths visible to the application's loader.
+         * Application.attach supplies the final app loader, including dex
+         * paths that may not be ready during handleLoadPackage.
          */
-        try (DexKitBridge bridge =
-                     DexKitBridge.create(lpparam.classLoader, true)) {
-
+        try (DexKitBridge bridge = createDexKitBridge(context, classLoader)) {
             log("DexKit parsed dex count: " + bridge.getDexNum());
 
             int listHooks = installPrimaryFeedBoundaryHooks(
                     bridge,
-                    lpparam.classLoader
+                    classLoader
             );
+            int booleanHooks = 0;
 
             if (listHooks > 0) {
                 log("Primary feed boundary installed; broad discovery skipped");
-            } else {
+            } else if (HOOKED_METHODS.isEmpty()) {
                 Map<Method, Set<String>> candidates =
-                        discoverCandidates(bridge, lpparam.classLoader);
+                        discoverCandidates(bridge, classLoader);
 
-                int booleanHooks = 0;
                 int skipped = 0;
 
                 for (Map.Entry<Method, Set<String>> entry : candidates.entrySet()) {
@@ -247,11 +417,58 @@ public final class MainHook implements IXposedHookLoadPackage {
                         + ", listHooks=" + listHooks
                         + ", booleanHooks=" + booleanHooks
                         + ", skipped=" + skipped);
+            } else {
+                log("Model hooks already present; duplicate discovery skipped");
+            }
+        }
+
+        return !HOOKED_METHODS.isEmpty();
+    }
+
+    private static DexKitBridge createDexKitBridge(
+            Context context,
+            ClassLoader classLoader
+    ) throws Throwable {
+        try {
+            return DexKitBridge.create(classLoader, true);
+        } catch (Throwable classLoaderFailure) {
+            String sourceDir = null;
+            if (context != null) {
+                try {
+                    if (context.getApplicationInfo() != null) {
+                        sourceDir = context.getApplicationInfo().sourceDir;
+                    }
+                } catch (Throwable ignored) {
+                    // The class-loader failure remains the primary error.
+                }
             }
 
-        } catch (Throwable throwable) {
-            XposedBridge.log(TAG + ": Critical initialization failure");
-            XposedBridge.log(throwable);
+            if (sourceDir == null || sourceDir.trim().isEmpty()) {
+                throw classLoaderFailure;
+            }
+
+            log("Class-loader DexKit open failed; retrying base APK path");
+            try {
+                return DexKitBridge.create(sourceDir);
+            } catch (Throwable sourcePathFailure) {
+                sourcePathFailure.addSuppressed(classLoaderFailure);
+                throw sourcePathFailure;
+            }
+        }
+    }
+
+    private static void ensureDexKitLibraryLoaded() {
+        if (DEXKIT_LIBRARY_LOADED.get()) {
+            return;
+        }
+
+        synchronized (MainHook.class) {
+            if (DEXKIT_LIBRARY_LOADED.get()) {
+                return;
+            }
+            System.loadLibrary("dexkit");
+            DEXKIT_LIBRARY_LOADED.set(true);
+            log("DexKit native library loaded");
         }
     }
 

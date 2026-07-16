@@ -1,5 +1,32 @@
 # Hook notes
 
+## v1.1.2 release scope
+
+Version 1.1.2 packages the attach-gated startup path, bounded initialization retries, lazy DexKit loading, and base-APK bridge fallback introduced after v1.1.1. The feed-boundary and recycled-view filtering changes remain those stabilized in v1.1.1.
+
+## Startup reliability
+
+The previous build started DexKit directly inside `handleLoadPackage()` and set its global initialized flag before discovery began. If Threads' final class loader was not ready, the native library was temporarily unavailable, or DexKit bridge creation failed, that process was still marked initialized and could not try again. Closing and reopening Threads created a new process, which explains why the next launch often worked.
+
+The revised entry path mirrors the reliable lifecycle used by TwitterHideAds:
+
+1. install the framework-level rendered-label fallback immediately;
+2. hook `android.app.Application.attach(Context)`;
+3. resolve model hooks only after the real Threads context and app class loader are available;
+4. mark initialization complete only when at least one model hook is installed; and
+5. retry unsuccessful attempts after 250 ms, 1 second, and 3 seconds.
+
+DexKit native loading is now lazy rather than performed in a static class initializer. The resolver first opens all dex paths exposed by the final app class loader and falls back to the base APK path if loader-based bridge creation throws.
+
+Expected successful startup sequence:
+
+```text
+ThreadsHideAds: Application attach guard installed
+ThreadsHideAds: Application.attach observed; starting hook resolution
+ThreadsHideAds: Initialization attempt 1 via Application.attach
+ThreadsHideAds: Hook initialization complete; installedHooks=...
+```
+
 ## Current observed feed boundary
 
 The supplied runtime log shows the active feed sanitizer repeatedly removing one sponsored item from:

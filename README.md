@@ -1,6 +1,6 @@
 <div align="center">
 
-# <img src="https://upload.wikimedia.org/wikipedia/commons/d/db/Threads_%28app%29.png" width="36" height="36"> Threads Hide Ads
+# <img src="branding/threads-hide-ads-icon.png" width="36" height="36"> Threads Hide Ads
 
 ### A focused LSPosed module for removing sponsored feed items from Threads
 
@@ -11,10 +11,14 @@
 
 </div>
 
+<p align="center"><img src="branding/threads-hide-ads-icon.png" width="160" alt="Threads Hide Ads app icon"></p>
+
 ## ✨ Features
 
 - Removes sponsored feed insertions from Threads.
+- Waits for `Application.attach()` so Threads’ final app class loader is ready before model discovery.
 - Uses DexKit to locate obfuscated methods across app updates.
+- Retries transient initialization failures without requiring the user to reopen Threads.
 - Includes a conservative fallback for renamed methods.
 - Retains compatibility logic for older Threads versions.
 - Writes useful match, ambiguity, and failure information to the LSPosed log.
@@ -34,12 +38,15 @@ Do not enable additional applications in the module scope.
 
 The current module uses several independent layers because Threads frequently changes obfuscated class and method names:
 
-1. DexKit first searches for the confirmed feed-boundary shape using the `Sponsored` marker and `(Integer/int, Integer/int, List) -> non-void` signature.
-2. When exactly one primary boundary is found, it is installed and the expensive broad discovery pass is skipped. Broad marker discovery remains as an app-update fallback.
-3. Feed lists are sanitized in place when mutable; replacements are used only where the caller, result, field, map entry, list slot, or array slot can actually be updated.
-4. Mutable arguments are sanitized again after execution to catch late insertion, without falsely reporting immutable lists as changed.
-5. Collection fields inside returned feed-wrapper objects are sanitized with bounded recursion.
-6. A UI fallback collapses a feed card when a localized sponsored label is rendered, after revalidating the marker at callback execution time.
+1. The LSPosed entry point installs a lightweight `Application.attach()` guard instead of running DexKit immediately from `handleLoadPackage()`.
+2. After Threads supplies its real application context and final class loader, DexKit searches for the confirmed feed-boundary shape using the `Sponsored` marker and `(Integer/int, Integer/int, List) -> non-void` signature.
+3. A class-loader scan is preferred; the base APK path is used as a fallback when the loader cannot be opened by DexKit.
+4. When exactly one primary boundary is found, it is installed and the expensive broad discovery pass is skipped. Broad marker discovery remains as an app-update fallback.
+5. Failed or zero-hook initialization attempts are retried after 250 ms, 1 second, and 3 seconds. The initialized state is committed only after at least one model hook is actually installed.
+6. Feed lists are sanitized in place when mutable; replacements are used only where the caller, result, field, map entry, list slot, or array slot can actually be updated.
+7. Mutable arguments are sanitized again after execution to catch late insertion, without falsely reporting immutable lists as changed.
+8. Collection fields inside returned feed-wrapper objects are sanitized with bounded recursion.
+9. A UI fallback collapses a feed card when a localized sponsored label is rendered, after revalidating the marker at callback execution time.
 
 The runtime log used for this revision identifies the active boundary as:
 
@@ -61,7 +68,7 @@ The UI fallback tracks the exact label view that hid each card. This prevents ca
 ### Build environment
 
 - Android Studio with JDK 17 or newer, **or** a standalone JDK 17+ setup.
-- Gradle 9.4.1 when building without an existing wrapper.
+- Gradle 9.6.1 when building without an existing wrapper.
 - Android SDK Platform 36.
 - Git or a downloaded copy of the project source.
 
@@ -105,9 +112,8 @@ Gradle installation is available.
 2. Open the LSPosed manager.
 3. Enable **Threads Hide Ads**.
 4. Select **Threads** as the module's only scope.
-5. Force-stop Threads and reopen it.
-6. Reboot the device if the hook does not load after force-stopping.
-7. Review LSPosed logs for entries beginning with:
+5. Force-stop Threads once after installing or updating the module, then reopen it.
+6. Review LSPosed logs for entries beginning with:
 
 ```text
 ThreadsHideAds:
@@ -115,16 +121,17 @@ ThreadsHideAds:
 
 ## 🧪 Validation status
 
-The release version is `1.1.1` (`versionCode 2`). Static project checks pass, the Java hook compiles against Android, DexKit, and Xposed API stubs, and the behavioral harness passes mutable removal, immutable replacement, nested collection replacement, and accurate post-call reporting. On-device testing confirmed that the intermittent sponsored-post leakage was resolved.
+The release version is `1.1.2` (`versionCode 3`). Static project checks cover the attach-gated initialization path, retry support, feed sanitization, release signing configuration, APK verification, artifact upload, and GitHub Release publishing. Cold-start behavior should still be confirmed on the target device before the release tag is pushed.
 
-The included GitHub Actions workflow builds the project with JDK 17 and produces a signed release APK for `v*` tags when the repository signing secrets are configured.
+The included GitHub Actions workflow builds a release APK on every push, pull request, and manual run. Repository pushes and tag builds are signed and uploaded as workflow artifacts when the four signing secrets are configured. Pull-request builds remain unsigned for security. A `v*` tag also creates or updates the GitHub Release and attaches the signed APK.
 
 ## 🩺 Troubleshooting
 
 | Problem | Suggested action |
 | --- | --- |
-| Sponsored posts still appear | Confirm that only Threads is selected in the LSPosed scope, then force-stop and reopen Threads. |
-| No module log entries | Verify that the module is enabled, reboot the device, and inspect the LSPosed framework status. |
+| Sponsored posts still appear | Confirm that only Threads is selected in the LSPosed scope and inspect whether the log reports `Hook initialization complete`. |
+| Initialization attempt failed | Keep Threads open for several seconds while the automatic retries run, then export the `ThreadsHideAds:` log if all retries are exhausted. |
+| No module log entries | Verify that the module is enabled, force-stop Threads once, and inspect the LSPosed framework status. |
 | Ambiguous method warning | The installed Threads build may contain multiple possible targets. Avoid forcing a broad hook and report the relevant log output. |
 | Hook failure after an update | Threads may have changed its internal classes or method signature. Capture the `ThreadsHideAds:` log entries for analysis. |
 

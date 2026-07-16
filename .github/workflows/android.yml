@@ -6,8 +6,6 @@ on:
     tags: [ "v*" ]
   pull_request:
     branches: [ "master" ]
-  release:
-    types: [published]
 
 jobs:
   build:
@@ -29,14 +27,15 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build with Gradle
+        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
         run: ./gradlew assemble
 
       - name: Build Release APK
-        if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'release'
+        if: startsWith(github.ref, 'refs/tags/v')
         run: ./gradlew assembleRelease
 
       - name: Sign Release APK
-        if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'release'
+        if: startsWith(github.ref, 'refs/tags/v')
         uses: r0adkll/sign-android-release@v1
         id: sign_app
         with:
@@ -49,10 +48,9 @@ jobs:
           BUILD_TOOLS_VERSION: "35.0.0"
 
       - name: Upload APK to Release
-        if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'release'
+        if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
           files: ${{ steps.sign_app.outputs.signedReleaseFile }}
           tag_name: ${{ github.ref_name }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          token: ${{ github.token }}

@@ -32,29 +32,22 @@ Do not enable additional applications in the module scope.
 
 ## 🔍 How it works
 
-The original implementation searched for a `void` method containing the string:
+The current module uses several independent layers because Threads frequently changes obfuscated class and method names:
+
+1. DexKit first searches for the confirmed feed-boundary shape using the `Sponsored` marker and `(Integer/int, Integer/int, List) -> non-void` signature.
+2. When exactly one primary boundary is found, it is installed and the expensive broad discovery pass is skipped. Broad marker discovery remains as an app-update fallback.
+3. Feed lists are sanitized in place when mutable; replacements are used only where the caller, result, field, map entry, list slot, or array slot can actually be updated.
+4. Mutable arguments are sanitized again after execution to catch late insertion, without falsely reporting immutable lists as changed.
+5. Collection fields inside returned feed-wrapper objects are sanitized with bounded recursion.
+6. A UI fallback collapses a feed card when a localized sponsored label is rendered, after revalidating the marker at callback execution time.
+
+The runtime log used for this revision identifies the active boundary as:
 
 ```text
-SponsoredContentController.processValidatedContent
+X.02AX.Dqi(Integer, Integer, List) -> X.00l1
 ```
 
-That method was replaced with a no-op.
-
-Newer Threads builds use a private Boolean method shaped like:
-
-```text
-SponsoredContentController.insertItem(Object, Object): boolean
-```
-
-This module replaces the method with a constant `false` return value, preventing
-the sponsored item from being inserted into the feed.
-
-For compatibility, the module attempts the following strategies in order:
-
-1. Match the newer `insertItem(Object, Object): boolean` method.
-2. Use a conservative fallback requiring one unique private
-   `boolean (Object, Object)` method in `SponsoredContentController`.
-3. Fall back to the older void/string-based hook for legacy Threads builds.
+The UI fallback tracks the exact label view that hid each card. This prevents caption, author, timestamp, or engagement updates from accidentally restoring a sponsored card. A card is restored only when that original label view is rebound for a recycled organic item.
 
 ## ✅ Requirements
 
@@ -122,12 +115,9 @@ ThreadsHideAds:
 
 ## 🧪 Validation status
 
-The source structure and hook logic have been statically checked. The module was
-not built against an Android SDK or tested on a rooted device in the creation
-environment.
+The release version is `1.1.1` (`versionCode 2`). Static project checks pass, the Java hook compiles against Android, DexKit, and Xposed API stubs, and the behavioral harness passes mutable removal, immutable replacement, nested collection replacement, and accurate post-call reporting. On-device testing confirmed that the intermittent sponsored-post leakage was resolved.
 
-Runtime compatibility must therefore be confirmed against the installed Threads
-version. Threads updates may change or remove the targeted implementation.
+The included GitHub Actions workflow builds the project with JDK 17 and produces a signed release APK for `v*` tags when the repository signing secrets are configured.
 
 ## 🩺 Troubleshooting
 

@@ -4,27 +4,27 @@ plugins {
 
 val appVersion = "1.1.2"
 
-val keystorePath = System.getenv("ANDROID_KEYSTORE_PATH")
-val keystoreAlias = System.getenv("ANDROID_KEYSTORE_ALIAS")
-val keystorePassword = System.getenv("ANDROID_KEYSTORE_PASSWORD")
-val keyPassword = System.getenv("ANDROID_KEY_PASSWORD")
+val envKeystorePath = System.getenv("ANDROID_KEYSTORE_PATH")
+val envKeystoreAlias = System.getenv("ANDROID_KEYSTORE_ALIAS")
+val envKeystorePassword = System.getenv("ANDROID_KEYSTORE_PASSWORD")
+val envKeyPassword = System.getenv("ANDROID_KEY_PASSWORD")
 
 android {
     namespace = "my.github.MrxSiN.threadshideads"
     compileSdk = 36
 
     val releaseSigningConfig = if (
-        !keystorePath.isNullOrBlank() &&
-        !keystoreAlias.isNullOrBlank() &&
-        !keystorePassword.isNullOrBlank() &&
-        !keyPassword.isNullOrBlank() &&
-        file(keystorePath).isFile
+        !envKeystorePath.isNullOrBlank() &&
+        !envKeystoreAlias.isNullOrBlank() &&
+        !envKeystorePassword.isNullOrBlank() &&
+        !envKeyPassword.isNullOrBlank() &&
+        file(envKeystorePath).isFile
     ) {
         signingConfigs.create("release") {
-            storeFile = file(requireNotNull(keystorePath))
-            storePassword = requireNotNull(keystorePassword)
-            keyAlias = requireNotNull(keystoreAlias)
-            this.keyPassword = requireNotNull(keyPassword)
+            storeFile = file(envKeystorePath)
+            storePassword = envKeystorePassword
+            keyAlias = envKeystoreAlias
+            keyPassword = envKeyPassword
         }
     } else {
         null

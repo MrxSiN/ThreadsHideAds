@@ -24,6 +24,22 @@ public final class ListSanitizer {
             Class<?> declaredType,
             boolean allowReplacement
     ) {
+        return sanitize(value, declaredType, allowReplacement, false);
+    }
+
+    /**
+     * @param allowEmptying whether the list may end up empty. A top-level feed
+     *                      list may: removing its only entry means the page
+     *                      carried nothing but an advertisement. An inner list
+     *                      owned by a feed item may not, because the app reads
+     *                      its first element unconditionally.
+     */
+    public SanitizedList sanitize(
+            Object value,
+            Class<?> declaredType,
+            boolean allowReplacement,
+            boolean allowEmptying
+    ) {
         if (!(value instanceof List<?>)) {
             return SanitizedList.unchanged(value);
         }
@@ -51,13 +67,13 @@ public final class ListSanitizer {
         }
 
         /*
-         * Never empty a list that had entries. A feed item owns inner lists
-         * whose first element the app reads unconditionally, and clearing one
-         * of those crashes Threads with NoSuchElementException. When every
-         * entry looks like an advertisement, the owning item is the thing that
-         * should be dropped, at the boundary above this one.
+         * An inner list owned by a feed item is never emptied: the app reads
+         * its first element unconditionally, and clearing one of those crashes
+         * Threads with NoSuchElementException. A top-level feed list is
+         * different, because Threads delivers items in batches of one, so
+         * refusing to empty it would let every advertisement through.
          */
-        if (filtered.isEmpty()) {
+        if (filtered.isEmpty() && !allowEmptying) {
             my.github.MrxSiN.threadshideads.core.Diagnostics
                     .traceEmptyingBlocked(source);
             return SanitizedList.unchanged(value);

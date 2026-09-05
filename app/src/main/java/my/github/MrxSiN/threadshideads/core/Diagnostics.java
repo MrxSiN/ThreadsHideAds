@@ -25,7 +25,7 @@ public final class Diagnostics {
      * Enabled while a build is being investigated against a new Threads
      * version. Leave disabled for release builds.
      */
-    public static final boolean ENABLED = true;
+    public static final boolean ENABLED = false;
 
     private static final int MAX_EVENTS_PER_SITE = 8;
     private static final int MAX_ITEMS_PER_LIST = 12;
@@ -70,6 +70,363 @@ public final class Diagnostics {
         }
 
         ModuleLog.log("match " + type.getName() + " via " + reason);
+    }
+
+    /**
+     * Reports a Pando tree list seen by the response hooks, so a build that
+     * removes nothing can be told apart from one whose hooks never fire.
+     */
+    public static void traceTreeList(String site, int size, Object first) {
+        if (!ENABLED || !shouldTrace("treelist " + site)) {
+            return;
+        }
+
+        ModuleLog.log("pando list " + site + " size=" + size
+                + " of " + (first == null ? "null" : first.getClass().getName()));
+    }
+
+    /**
+     * Reports how a model is built: its supertypes, its declared fields, and
+     * which of those fields hold a Pando tree. Names and types only.
+     */
+    public static void traceClassShape(Object item) {
+        traceClassShape(item, 0);
+    }
+
+    private static void traceClassShape(Object item, int depth) {
+        Class<?> type = item.getClass();
+
+        if (!ENABLED || !shouldTrace("shape-of " + type.getName())) {
+            return;
+        }
+
+        StringBuilder message = new StringBuilder("class ")
+                .append(type.getName())
+                .append(" extends");
+
+        Class<?> cursor = type.getSuperclass();
+
+        while (cursor != null && cursor != Object.class) {
+            message.append(' ').append(cursor.getName());
+            cursor = cursor.getSuperclass();
+        }
+
+        message.append(" fields=");
+
+        int described = 0;
+
+        /*
+         * Only fields that actually hold something are reported: a feed item
+         * declares dozens of optional unit types and all but a few are null.
+         */
+        for (Field field : declaredFields(type)) {
+            if (Modifier.isStatic(field.getModifiers()) || described >= 40) {
+                continue;
+            }
+
+            Object child = readField(field, item);
+
+            if (child == null) {
+                continue;
+            }
+
+            described++;
+
+            message.append(field.getName())
+                    .append(':')
+                    .append(field.getType().getSimpleName())
+                    .append('=')
+                    .append(describeChild(child))
+                    .append(' ');
+        }
+
+        if (described == 0) {
+            message.append('-');
+        }
+
+        ModuleLog.log(message.toString());
+
+        if (depth > 0) {
+            return;
+        }
+
+        /*
+         * A feed item carries its payload one level down, and that payload is
+         * where the unit type lives.
+         */
+        for (Field field : declaredFields(type)) {
+            if (Modifier.isStatic(field.getModifiers())) {
+                continue;
+            }
+
+            Object child = readField(field, item);
+
+            if (child != null
+                    && !(child instanceof Enum<?>)
+                    && !(child instanceof CharSequence)
+                    && !(child instanceof Number)
+                    && !(child instanceof Boolean)
+                    && isAppModel(child.getClass())) {
+                traceClassShape(child, depth + 1);
+            }
+        }
+    }
+
+    /**
+     * An enum is reported by its constant name and by its text, because an
+     * obfuscated constant name says nothing while its server value names the
+     * unit type.
+     */
+    private static String describeChild(Object child) {
+        if (!(child instanceof Enum<?>)) {
+            return child.getClass().getSimpleName();
+        }
+
+        traceEnumConstants(child.getClass());
+
+        String text;
+
+        try {
+            text = String.valueOf(child);
+        } catch (Throwable ignored) {
+            text = "?";
+        }
+
+        if (text != null && text.length() > 40) {
+            text = text.substring(0, 40);
+        }
+
+        return child.getClass().getSimpleName()
+                + "." + ((Enum<?>) child).name() + "(" + text + ")";
+    }
+
+    /**
+     * Lists an enum's constants once. Unit-type enums keep readable constant
+     * names on this build, so the constant that marks an advertisement can be
+     * read straight from the log.
+     */
+    public static void traceEnumConstants(Class<?> type) {
+        if (!ENABLED || !shouldTrace("enum " + type.getName())) {
+            return;
+        }
+
+        Object[] constants;
+
+        try {
+            constants = type.getEnumConstants();
+        } catch (Throwable ignored) {
+            return;
+        }
+
+        if (constants == null) {
+            return;
+        }
+
+        TreeSet<String> described = new TreeSet<>();
+
+        for (Object constant : constants) {
+            described.add(((Enum<?>) constant).name()
+                    + "(" + String.valueOf(constant) + ")");
+        }
+
+        ModuleLog.log("enum " + type.getName() + " = "
+                + join(described, 120));
+    }
+
+    private static Field[] declaredFields(Class<?> type) {
+        try {
+            return type.getDeclaredFields();
+        } catch (Throwable ignored) {
+            return new Field[0];
+        }
+    }
+
+    private static Object readField(Field field, Object item) {
+        try {
+            field.setAccessible(true);
+            return field.get(item);
+        } catch (Throwable ignored) {
+            return null;
+        }
+    }
+
+    /**
+     * Reports the first row of a response page: its length, whether the word
+     * sponsor appears anywhere in it, and its top-level key names.
+     */
+    public static void tracePageRow(String site, Object row) {
+        if (!ENABLED || row == null || !shouldTrace("page " + site)) {
+            return;
+        }
+
+        /*
+         * Read the tree only once the rate limit has allowed this line, because
+         * serializing it is the expensive part.
+         */
+        String json = my.github.MrxSiN.threadshideads.detect.PandoTrees
+                .readJson(row);
+
+        if (json == null) {
+            ModuleLog.log("page row " + site + " exposes no JSON");
+            return;
+        }
+
+        ModuleLog.log("page row " + site + " [" + json.length()
+                + " chars] sponsorWord="
+                + json.toLowerCase(Locale.ROOT).contains("sponsor")
+                + " topKeys=" + join(topLevelKeys(json), 60));
+    }
+
+    /**
+     * Reports the shape of a tree the response hooks inspected: whether its
+     * JSON could be read at all, how long it is, and which top-level keys it
+     * carries. Key names only; no values are logged.
+     */
+    public static void traceTreeShape(Class<?> type, String json) {
+        if (!ENABLED || !shouldTrace("shape " + type.getSimpleName())) {
+            return;
+        }
+
+        if (json == null) {
+            ModuleLog.log("tree " + type.getName() + " exposes no JSON");
+            return;
+        }
+
+        ModuleLog.log("tree " + type.getName() + " [" + json.length()
+                + " chars] sponsorWord="
+                + json.toLowerCase(Locale.ROOT).contains("sponsor")
+                + " topKeys=" + join(topLevelKeys(json), 40));
+    }
+
+    /**
+     * Key names declared directly on the JSON object, found by tracking brace
+     * and bracket depth so nested objects are not reported.
+     */
+    private static TreeSet<String> topLevelKeys(String json) {
+        TreeSet<String> keys = new TreeSet<>();
+
+        int depth = 0;
+        boolean inString = false;
+        boolean escaped = false;
+        StringBuilder current = new StringBuilder();
+
+        for (int i = 0; i < json.length(); i++) {
+            char character = json.charAt(i);
+
+            if (inString) {
+                if (escaped) {
+                    escaped = false;
+                } else if (character == '\\') {
+                    escaped = true;
+                } else if (character == '"') {
+                    inString = false;
+
+                    if (depth == 1 && isKeyPosition(json, i)) {
+                        keys.add(current.toString());
+                    }
+                } else if (depth == 1) {
+                    current.append(character);
+                }
+
+                continue;
+            }
+
+            if (character == '"') {
+                inString = true;
+                current.setLength(0);
+            } else if (character == '{' || character == '[') {
+                depth++;
+            } else if (character == '}' || character == ']') {
+                depth--;
+            }
+        }
+
+        return keys;
+    }
+
+    /**
+     * A string is a key when the next non-space character after it is a colon.
+     */
+    private static boolean isKeyPosition(String json, int closingQuote) {
+        for (int i = closingQuote + 1; i < json.length(); i++) {
+            char character = json.charAt(i);
+
+            if (character == ' ') {
+                continue;
+            }
+
+            return character == ':';
+        }
+
+        return false;
+    }
+
+    /**
+     * Reports which candidate sponsored keys a tree's JSON carries when the
+     * vocabulary did not classify it, which is how a renamed marker is found.
+     */
+    public static void traceTreeKeys(Class<?> type, String json) {
+        if (!ENABLED || json == null
+                || !shouldTrace("keys " + type.getSimpleName())) {
+            return;
+        }
+
+        TreeSet<String> keys = new TreeSet<>();
+
+        for (String key : CANDIDATE_KEYS) {
+            if (json.contains("\"" + key + "\"")) {
+                keys.add(key
+                        + (json.contains("\"" + key + "\":true") ? "=true" : ""));
+            }
+        }
+
+        if (keys.isEmpty()) {
+            return;
+        }
+
+        ModuleLog.log("unmatched tree " + type.getName()
+                + " [" + json.length() + " chars] carries " + join(keys, 20));
+    }
+
+    /**
+     * Lists what a class declares, so a hook layer that installed nothing can
+     * be diagnosed from the log rather than from a decompiler.
+     */
+    public static void traceDeclaredMethods(
+            Class<?> type,
+            java.lang.reflect.Method[] methods
+    ) {
+        if (!ENABLED || !shouldTrace("declared " + type.getName())) {
+            return;
+        }
+
+        TreeSet<String> described = new TreeSet<>();
+
+        for (java.lang.reflect.Method method : methods) {
+            int modifiers = method.getModifiers();
+
+            described.add(method.getName()
+                    + (Modifier.isNative(modifiers) ? "/native" : "")
+                    + (Modifier.isAbstract(modifiers) ? "/abstract" : "")
+                    + " -> " + method.getReturnType().getSimpleName());
+        }
+
+        ModuleLog.log("declared on " + type.getName() + ": "
+                + join(described, MAX_REPORTED_TYPES));
+    }
+
+    /**
+     * Records a Pando tree that carried a sponsored marker but was too large to
+     * be a single feed item, so it was left for the boundary layer instead of
+     * being dropped whole.
+     */
+    public static void traceOversizedTree(Class<?> type, int jsonLength) {
+        if (!ENABLED || !shouldTrace("oversized " + type.getSimpleName())) {
+            return;
+        }
+
+        ModuleLog.log("skipped sponsored tree " + type.getName()
+                + " of " + jsonLength + " JSON chars; it owns more than one item");
     }
 
     /**
@@ -147,6 +504,8 @@ public final class Diagnostics {
         if (!ENABLED || item == null) {
             return;
         }
+
+        traceClassShape(item);
 
         TreeSet<String> types = new TreeSet<>();
         TreeSet<String> markers = new TreeSet<>();

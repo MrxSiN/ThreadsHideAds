@@ -109,7 +109,9 @@ public final class ModelHookInstaller {
             if (success) {
                 INITIALIZED.set(true);
                 ModuleLog.log("Hook initialization complete; installedHooks="
-                        + FeedModelHooks.installedHookCount());
+                        + FeedModelHooks.installedHookCount()
+                        + ", pandoHooks="
+                        + PandoResponseHooks.installedHookCount());
             } else {
                 ModuleLog.log("Initialization attempt installed no model hooks");
             }
@@ -138,8 +140,9 @@ public final class ModelHookInstaller {
     ) {
         if (INITIALIZED.get() || retryIndex >= RETRY_DELAYS_MS.length) {
             if (!INITIALIZED.get()) {
-                ModuleLog.log(
-                        "Initialization retries exhausted; rendered-label fallback remains active");
+                ModuleLog.log("Initialization retries exhausted; pandoHooks="
+                        + PandoResponseHooks.installedHookCount()
+                        + " and the rendered-label fallback remain active");
             }
             return;
         }
@@ -170,6 +173,14 @@ public final class ModelHookInstaller {
             Context context,
             ClassLoader classLoader
     ) throws Throwable {
+        /*
+         * The Pando accessors are named by the native binding rather than by
+         * the obfuscator, so this layer needs neither DexKit nor its native
+         * library, and it covers the response before it reaches any feed
+         * class. Install it first so a DexKit failure cannot take it down.
+         */
+        PandoResponseHooks.install(classLoader);
+
         ensureNativeLibraryLoaded();
 
         AdDetector detector = new ReflectiveAdDetector();
@@ -203,7 +214,8 @@ public final class ModelHookInstaller {
             }
         }
 
-        return FeedModelHooks.hasInstalledHooks();
+        return FeedModelHooks.hasInstalledHooks()
+                || PandoResponseHooks.hasInstalledHooks();
     }
 
     /**

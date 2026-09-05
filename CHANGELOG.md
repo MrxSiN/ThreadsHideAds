@@ -2,6 +2,26 @@
 
 ## Unreleased
 
+## 1.2.0 — 2026-09-06
+
+- Advertisements are now identified by their feed unit type. Threads tags every
+  feed item with a unit-type enum whose constants keep readable names, and its
+  advertisement values (`AD`, `AD4AD`, `INTENT_AWARE_AD_PIVOT`,
+  `STAND_ALONE_MULTI_AD_PIVOT`, and the `ADS_FEEDBACK_INTERFACE` variants) are
+  matched whole. Recommendation units such as the `NETEGO` and `SUGGESTED`
+  families are deliberately left alone.
+- Fixed every removal being blocked on Threads 445. Feed items reach the cache
+  one at a time, so filtering a batch left it empty, and the rule that a
+  non-empty list is never emptied then discarded the result. Feed boundaries
+  may now empty a batch, while nested inner lists still may not, which is what
+  that rule was written to protect.
+- Added a Pando response layer that hooks the list accessors on
+  `com.facebook.pando.TreeJNI` by shape. Their names come from the native
+  binding rather than the obfuscator, so this layer needs neither DexKit nor
+  its native library and survives the renaming that breaks boundary discovery.
+- Pando tree JSON is now read with whichever flag pair yields the most content,
+  chosen once per model class, instead of always using the default pair that
+  answers `{}` for generated model classes.
 - Fixed the primary feed boundary being rejected on current Threads builds. The
   boundary is an interface method, and Threads 445 exposes it through one
   interface plus two concrete implementations. Requiring exactly one structural

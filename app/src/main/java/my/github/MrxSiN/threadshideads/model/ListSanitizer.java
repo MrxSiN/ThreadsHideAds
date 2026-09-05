@@ -50,6 +50,19 @@ public final class ListSanitizer {
             return SanitizedList.unchanged(value);
         }
 
+        /*
+         * Never empty a list that had entries. A feed item owns inner lists
+         * whose first element the app reads unconditionally, and clearing one
+         * of those crashes Threads with NoSuchElementException. When every
+         * entry looks like an advertisement, the owning item is the thing that
+         * should be dropped, at the boundary above this one.
+         */
+        if (filtered.isEmpty()) {
+            my.github.MrxSiN.threadshideads.core.Diagnostics
+                    .traceEmptyingBlocked(source);
+            return SanitizedList.unchanged(value);
+        }
+
         int removedInPlace = removeIndexesInPlace(source, adIndexes);
         if (removedInPlace > 0) {
             return new SanitizedList(value, removedInPlace, true);

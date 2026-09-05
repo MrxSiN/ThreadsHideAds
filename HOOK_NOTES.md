@@ -1,5 +1,12 @@
 # Hook notes
 
+## v1.2.0 release scope
+
+Version 1.2.0 adds unit-type detection, the `allowEmptying` rule for top-level
+feed batches, and the Pando response layer. The findings behind those changes
+are recorded at the end of this file, under "What actually identifies an
+advertisement".
+
 ## v1.1.2 release scope
 
 Version 1.1.2 packages the attach-gated startup path, bounded initialization retries, lazy DexKit loading, and base-APK bridge fallback introduced after v1.1.1. The feed-boundary and recycled-view filtering changes remain those stabilized in v1.1.1.

@@ -1,35 +1,36 @@
-# Threads Hide Ads v1.1.2
+# Threads Hide Ads v1.2.0
 
-## Maintenance and startup-reliability release
+## Feed-filtering release
 
-This release keeps the v1.1.1 ad-filtering behavior while improving hook initialization, release automation, and application branding.
+This release makes model-level filtering work again on current Threads builds, where the feed is Jetpack Compose and every feed model is a Pando tree.
 
 ### Fixed
 
-- Fixed occasional cold starts where model hooks were not installed until Threads was closed and reopened.
-- Prevented a transient DexKit, native-library, or class-loader failure from permanently marking the process as initialized.
-- Fixed GitHub Actions conditions that could skip release building, signing, verification, or APK upload outside tag runs.
+- Fixed advertisements reaching the timeline on Threads 445. Feed items are handed to the cache one at a time, so filtering a batch left it empty, and the rule that a non-empty list is never emptied then discarded the result.
+- Fixed detection finding nothing inside Pando models. Their JSON view answers `{}` for the generated model classes, so no sponsored marker was ever visible through it.
+- Fixed the primary feed boundary being rejected when Threads exposes it through one interface and two implementations.
+- Fixed advertisements surviving a cold launch, where the card is still unattached and unmeasured when its label is bound.
 
 ### Improved
 
-- Defers model discovery until `Application.attach()` provides the final Threads application context and class loader.
-- Automatically retries unsuccessful or zero-hook initialization after 250 ms, 1 second, and 3 seconds.
-- Loads the DexKit native library lazily so temporary startup failures remain recoverable.
-- Falls back to opening the base APK when DexKit cannot open the application class loader.
-- Keeps the rendered-label fallback active while model-hook initialization is pending or retrying.
-- Adds a production launcher icon based on the Threads visual identity with an ad-blocking shield overlay.
-- Includes legacy, round, adaptive, Play Store, and Android 13 monochrome icon variants.
-- Builds, signs, verifies, and uploads the release APK on branch pushes and manual workflow runs.
-- Uploads every successful APK as a workflow artifact; `v*` tags additionally attach it to the matching GitHub Release.
-- Updates the Gradle wrapper to 9.6.1.
+- Identifies an advertisement by its feed unit type, matched whole: `AD`, `AD4AD`, `INTENT_AWARE_AD_PIVOT`, `STAND_ALONE_MULTI_AD_PIVOT`, and the `ADS_FEEDBACK_INTERFACE` variants. Recommendation units such as the `NETEGO` and `SUGGESTED` families are left alone.
+- Allows a top-level feed batch to be emptied, because an emptied batch means it held nothing but an advertisement. Nested inner lists still may not be emptied, which is what that rule was written to protect.
+- Adds a Pando response layer that hooks the list accessors on `com.facebook.pando.TreeJNI` by shape. Those names come from the native binding rather than the obfuscator, so the layer needs neither DexKit nor its native library and stays installed when either fails.
+- Reads Pando tree JSON with whichever flag pair yields the most content, chosen once per model class.
+- Adds the short `Ad` badge and further localized variants to the rendered-label vocabulary, still matched whole-label only.
+- Splits the entry point into `core`, `detect`, `model`, `discovery`, `hook`, and `ui` packages, each with one responsibility.
+
+### Verified
+
+Measured on a Pixel 8 Pro against Threads 445.0.0.46.83: nine advertisements removed at the cache boundary over one launch and fourteen scroll passes, no `Ad` badge or `Sponsored` label present in any `uiautomator` dump, no crash-buffer entries, and the feed rendering normally.
 
 ### Version metadata
 
-- Version name: `1.1.2`
-- Android version code: `3`
-- Recommended Git tag: `v1.1.2`
-- APK filename: `ThreadsHideAds-v1.1.2.apk`
+- Version name: `1.2.0`
+- Android version code: `4`
+- Recommended Git tag: `v1.2.0`
+- APK filename: `ThreadsHideAds-v1.2.0.apk`
 
 ### Updating
 
-Install the v1.1.2 APK over v1.1.1, keep Threads as the module’s only LSPosed scope, then force-stop and reopen Threads once. Confirm the LSPosed log reports `Application.attach observed` followed by `Hook initialization complete`.
+Install the v1.2.0 APK over v1.1.2, keep Threads as the module’s only LSPosed scope, then force-stop and reopen Threads once. Confirm the LSPosed log reports `Application.attach observed` followed by `Hook initialization complete`.

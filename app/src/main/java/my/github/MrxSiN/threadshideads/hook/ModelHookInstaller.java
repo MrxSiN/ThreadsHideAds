@@ -188,9 +188,11 @@ public final class ModelHookInstaller {
             FeedBoundaryFinder finder =
                     new FeedBoundaryFinder(bridge, classLoader);
 
-            if (installPrimaryBoundary(finder, hooks)) {
-                ModuleLog.log(
-                        "Primary feed boundary installed; broad discovery skipped");
+            int primaryHooks = installPrimaryBoundaries(finder, hooks);
+
+            if (primaryHooks > 0) {
+                ModuleLog.log("Primary feed boundaries installed: " + primaryHooks
+                        + "; broad discovery skipped");
             } else if (!FeedModelHooks.hasInstalledHooks()) {
                 installDiscoveredCandidates(finder, hooks);
             } else {
@@ -201,27 +203,25 @@ public final class ModelHookInstaller {
         return FeedModelHooks.hasInstalledHooks();
     }
 
-    private static boolean installPrimaryBoundary(
+    private static int installPrimaryBoundaries(
             FeedBoundaryFinder finder,
             FeedModelHooks hooks
     ) {
-        Method method = finder.findPrimaryFeedBoundary();
+        int installed = 0;
 
-        if (method == null) {
-            return false;
-        }
-
-        try {
-            if (hooks.hookListBoundary(method)) {
-                ModuleLog.log("Installed confirmed feed boundary: " + method);
-                return true;
+        for (Method method : finder.findPrimaryFeedBoundaries()) {
+            try {
+                if (hooks.hookListBoundary(method)) {
+                    ModuleLog.log("Installed confirmed feed boundary: " + method);
+                    installed++;
+                }
+            } catch (Throwable throwable) {
+                ModuleLog.log("Unable to install confirmed feed boundary "
+                        + method + ": " + throwable);
             }
-        } catch (Throwable throwable) {
-            ModuleLog.log("Unable to install confirmed feed boundary "
-                    + method + ": " + throwable);
         }
 
-        return false;
+        return installed;
     }
 
     private static void installDiscoveredCandidates(

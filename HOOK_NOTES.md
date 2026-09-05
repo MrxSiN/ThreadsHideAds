@@ -65,3 +65,45 @@ The saved state now retains the exact label view that caused the collapse. Only 
 - Methods associated with messaging, notifications, media playback, bug reports, uploads, and quick promotions are excluded from list-boundary hooks.
 - Ordinary captions that merely contain “sponsored” are not classified as ads.
 - Reflection depth, object budgets, UI traversal, and nested-result traversal are bounded.
+
+## Cold-launch failure addressed
+
+On a cold launch the first feed page is bound before the view hierarchy has
+settled. Two things went wrong at that moment.
+
+First, the label itself was not recognized. Threads renders a short `Ad` badge
+next to the author name, and the rendered-label vocabulary only listed longer
+words such as `Sponsored`. The vocabulary now includes `Ad` and further
+localized variants. Matching remains whole-label only, so a caption containing
+one of those words is still treated as organic content.
+
+Second, the card could not be identified yet. The hider walks up from the label
+looking either for a direct child of a `RecyclerView`/`ListView`, or for an
+ancestor wide enough to be a card. During the first bind the card is often
+still detached, and every ancestor measures zero, so neither test could
+succeed. The old code fell straight through to its last-resort branch and hid
+only the badge, leaving the advertisement on screen.
+
+`FeedItemHider` now treats "cannot tell yet" as distinct from "no card". When
+the hierarchy cannot answer, it arms a single deferred retry: an attach
+listener when the label is still detached, otherwise a one-shot pre-draw
+listener so the retry runs after the next layout pass. Up to four retries are
+attempted before the label-only fallback is used. Each retry re-reads the
+current label text, so a recycled view that has since been rebound to organic
+content is never collapsed.
+
+## Module structure
+
+The entry point only wires layers together. Each package owns one concern.
+
+| Package | Responsibility |
+| --- | --- |
+| `core` | Logging and rate-limited counters |
+| `detect` | Label vocabulary, model ad signals, bounded reflective detection |
+| `model` | List and nested-collection sanitization |
+| `discovery` | DexKit search and candidate classification |
+| `hook` | Installing model-level hooks |
+| `ui` | Rendered-label fallback, view traversal, hide/restore |
+
+The sanitizers depend on the `AdDetector` interface rather than on the
+reflective implementation, so detection can be replaced without touching them.

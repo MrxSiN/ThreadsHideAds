@@ -2,7 +2,7 @@
 
 # <img src="branding/threads-hide-ads-icon.png" width="36" height="36"> Threads Hide Ads
 
-### A focused LSPosed module for removing sponsored feed items from Threads
+### A focused Xposed module for removing sponsored feed items from Threads, for LSPosed or LSPatch
 
 [![Android](https://img.shields.io/badge/Android-LSPosed-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://github.com/LSPosed/LSPosed)
 [![Target](https://img.shields.io/badge/Target-Threads-000000?style=for-the-badge&logo=threads&logoColor=white)](https://www.threads.net/)
@@ -48,10 +48,21 @@ The current module uses several independent layers because Threads frequently ch
 8. Collection fields inside returned feed-wrapper objects are sanitized with bounded recursion.
 9. A UI fallback collapses a feed card when a localized sponsored label is rendered, after revalidating the marker at callback execution time.
 
-The runtime log used for this revision identifies the active boundary as:
+An advertisement is recognized by its feed unit type. Threads tags every feed item with a unit-type enum whose constants keep readable names even in an obfuscated build, and its advertisement values are matched whole:
 
 ```text
-X.02AX.Dqi(Integer, Integer, List) -> X.00l1
+AD, AD4AD, INTENT_AWARE_AD_PIVOT, STAND_ALONE_MULTI_AD_PIVOT,
+ADS_FEEDBACK_INTERFACE and its two variants
+```
+
+Recommendation units, such as the `NETEGO` and `SUGGESTED` families, are deliberately left in place.
+
+A Pando layer additionally filters the list accessors on `com.facebook.pando.TreeJNI`, selected by shape. Their names come from the native binding rather than from the obfuscator, so that layer needs neither DexKit nor its native library and stays installed when either fails.
+
+On Threads 445.0.0.46.83 the removals occur at:
+
+```text
+BarcelonaFeedCache.A0G(X.0nD, Integer, String, String, List, X.2cx, Function3, boolean)
 ```
 
 The UI fallback tracks the exact label view that hid each card. This prevents caption, author, timestamp, or engagement updates from accidentally restoring a sponsored card. A card is restored only when that original label view is rebound for a recycled organic item.
@@ -60,10 +71,9 @@ The UI fallback tracks the exact label view that hid each card. This prevents ca
 
 ### Runtime
 
-- A rooted Android device.
-- A working LSPosed installation.
+- A rooted Android device with LSPosed, **or** a non-rooted device using LSPatch (see below).
 - The official Threads application (`com.instagram.barcelona`).
-- The **Threads Hide Ads** APK installed and enabled in LSPosed.
+- The **Threads Hide Ads** APK installed and enabled in LSPosed, or embedded into Threads with LSPatch.
 
 ### Build environment
 
@@ -119,9 +129,33 @@ Gradle installation is available.
 ThreadsHideAds:
 ```
 
+### Non-rooted devices (LSPatch)
+
+Root is not strictly required. The module is an ordinary Xposed module with no
+root-only calls, so LSPatch can embed it directly into Threads:
+
+1. Install the LSPatch manager, or use the LSPatch command-line jar.
+2. Patch Threads with **Threads Hide Ads** selected as an embedded module. Patch
+   the base APK together with all of its split APKs.
+3. Uninstall the store copy of Threads, then install the patched APKs as a set.
+   The patched build is signed with LSPatch's key, so it cannot be installed
+   over the store copy.
+
+Both LSPatch modes are usable:
+
+- **Embedded (portable) mode** injects the module into the APK, so no manager or
+  background service is needed afterwards.
+- **Local mode** keeps the module managed by LSPatch and works alongside Shizuku.
+
+Verification status: patching was confirmed here with LSPatch v1.2, which embeds
+the module and its DexKit native library into the APK and re-signs every split
+without error. Running the patched build was reported working by the author of
+[issue #1](https://github.com/MrxSiN/ThreadsHideAds/issues/1) in both modes; it
+has not been re-run by the maintainer, whose testing is done under LSPosed.
+
 ## 🧪 Validation status
 
-The release version is `1.1.2` (`versionCode 3`). Static project checks cover the attach-gated initialization path, retry support, feed sanitization, release signing configuration, APK verification, artifact upload, and GitHub Release publishing. Cold-start behavior should still be confirmed on the target device before the release tag is pushed.
+The release version is `1.2.0` (`versionCode 4`). Static project checks cover the attach-gated initialization path, retry support, feed sanitization, release signing configuration, APK verification, artifact upload, and GitHub Release publishing. Feed filtering was additionally measured on a Pixel 8 Pro against Threads 445.0.0.46.83: advertisements are removed at the cache boundary, no sponsored label reaches the view hierarchy, and the feed renders normally.
 
 The included GitHub Actions workflow builds a release APK on every push, pull request, and manual run. Repository pushes and tag builds are signed and uploaded as workflow artifacts when the four signing secrets are configured. Pull-request builds remain unsigned for security. A `v*` tag also creates or updates the GitHub Release and attaches the signed APK.
 

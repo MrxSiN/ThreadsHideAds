@@ -1,11 +1,12 @@
 # Hook notes
 
-## v1.2.0 release scope
+## v1.2.x release scope
 
 Version 1.2.0 adds unit-type detection, the `allowEmptying` rule for top-level
 feed batches, and the Pando response layer. The findings behind those changes
 are recorded at the end of this file, under "What actually identifies an
-advertisement".
+advertisement". Version 1.2.1 separates `Diagnostics` from `ModelProbes` and
+drops the probes that never produced a signal, without changing filtering.
 
 ## v1.1.2 release scope
 

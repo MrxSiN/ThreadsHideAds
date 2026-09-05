@@ -2,6 +2,22 @@
 
 ## Unreleased
 
+## 1.2.1 — 2026-09-06
+
+- Split model inspection out of `Diagnostics` into a new `ModelProbes` class, so
+  recording what the hooks did and inspecting an unknown model are separate
+  concerns.
+- Removed the marker-keyword walk and the JSON top-level-key dump. Both were
+  written to find the sponsored signal and neither could: Pando models expose no
+  fields to the walk, and the tree JSON is a shallow wrapper. The class-shape and
+  enum-constant probes that did identify the unit-type enum are kept.
+- Removed a per-row tree serialization that the Pando response hooks performed
+  only for tracing.
+- Refreshed the documented behavior of the static project checks.
+
+No change to filtering behavior; verified on the same device and Threads build as
+1.2.0.
+
 ## 1.2.0 — 2026-09-06
 
 - Advertisements are now identified by their feed unit type. Threads tags every

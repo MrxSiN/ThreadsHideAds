@@ -1,6 +1,6 @@
-# Threads Hide Ads v1.2.0
+# Threads Hide Ads v1.2.1
 
-## Feed-filtering release
+## Feed-filtering release, with an internal cleanup in 1.2.1
 
 This release makes model-level filtering work again on current Threads builds, where the feed is Jetpack Compose and every feed model is a Pando tree.
 
@@ -20,17 +20,23 @@ This release makes model-level filtering work again on current Threads builds, w
 - Adds the short `Ad` badge and further localized variants to the rendered-label vocabulary, still matched whole-label only.
 - Splits the entry point into `core`, `detect`, `model`, `discovery`, `hook`, and `ui` packages, each with one responsibility.
 
+### Internal (1.2.1)
+
+- Splits model inspection out of `Diagnostics` into a new `ModelProbes` class.
+- Removes the marker-keyword walk and the JSON key dump, neither of which could see a sponsored signal in a Pando model, and a per-row tree serialization the response hooks performed only for tracing.
+- Filtering behavior is unchanged from 1.2.0.
+
 ### Verified
 
-Measured on a Pixel 8 Pro against Threads 445.0.0.46.83: nine advertisements removed at the cache boundary over one launch and fourteen scroll passes, no `Ad` badge or `Sponsored` label present in any `uiautomator` dump, no crash-buffer entries, and the feed rendering normally.
+Measured on a Pixel 8 Pro against Threads 445.0.0.46.83: advertisements removed at the cache boundary across repeated launches and scroll passes, no `Ad` badge or `Sponsored` label present in any `uiautomator` dump, no crash-buffer entries, and the feed rendering normally.
 
 ### Version metadata
 
-- Version name: `1.2.0`
-- Android version code: `4`
-- Recommended Git tag: `v1.2.0`
-- APK filename: `ThreadsHideAds-v1.2.0.apk`
+- Version name: `1.2.1`
+- Android version code: `5`
+- Recommended Git tag: `v1.2.1`
+- APK filename: `ThreadsHideAds-v1.2.1.apk`
 
 ### Updating
 
-Install the v1.2.0 APK over v1.1.2, keep Threads as the module’s only LSPosed scope, then force-stop and reopen Threads once. Confirm the LSPosed log reports `Application.attach observed` followed by `Hook initialization complete`.
+Install the v1.2.1 APK over v1.1.2, keep Threads as the module’s only LSPosed scope, then force-stop and reopen Threads once. Confirm the LSPosed log reports `Application.attach observed` followed by `Hook initialization complete`.

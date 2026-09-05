@@ -155,7 +155,7 @@ has not been re-run by the maintainer, whose testing is done under LSPosed.
 
 ## 🧪 Validation status
 
-The release version is `1.2.0` (`versionCode 4`). Static project checks cover the attach-gated initialization path, retry support, feed sanitization, release signing configuration, APK verification, artifact upload, and GitHub Release publishing. Feed filtering was additionally measured on a Pixel 8 Pro against Threads 445.0.0.46.83: advertisements are removed at the cache boundary, no sponsored label reaches the view hierarchy, and the feed renders normally.
+The release version is `1.2.1` (`versionCode 5`). Static project checks cover the attach-gated initialization path, retry support, feed sanitization, release signing configuration, APK verification, artifact upload, and GitHub Release publishing. Feed filtering was additionally measured on a Pixel 8 Pro against Threads 445.0.0.46.83: advertisements are removed at the cache boundary, no sponsored label reaches the view hierarchy, and the feed renders normally.
 
 The included GitHub Actions workflow builds a release APK on every push, pull request, and manual run. Repository pushes and tag builds are signed and uploaded as workflow artifacts when the four signing secrets are configured. Pull-request builds remain unsigned for security. A `v*` tag also creates or updates the GitHub Release and attaches the signed APK.
 

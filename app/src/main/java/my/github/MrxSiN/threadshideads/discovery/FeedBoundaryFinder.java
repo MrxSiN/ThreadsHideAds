@@ -9,6 +9,7 @@ import org.luckypray.dexkit.result.MethodDataList;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -41,6 +42,13 @@ public final class FeedBoundaryFinder {
      * Those match thousands of unrelated methods.
      */
     private static final String PRIMARY_BOUNDARY_MARKER = "Sponsored";
+
+    /*
+     * The boundary is an interface method with a small number of concrete
+     * implementations. More matches than this means the shape stopped being
+     * specific on that build, so broad discovery is safer.
+     */
+    private static final int MAX_PRIMARY_BOUNDARIES = 8;
 
     private static final String[] DEX_MARKERS = {
             "is_sponsored",
@@ -94,10 +102,18 @@ public final class FeedBoundaryFinder {
     }
 
     /**
-     * Returns the confirmed {@code (Integer, Integer, List) -> non-void} feed
-     * boundary when exactly one structural match exists, otherwise null.
+     * Returns every implementable {@code (Integer, Integer, List) -> non-void}
+     * feed boundary that also carries the sponsored marker.
+     *
+     * <p>The boundary is an interface method, so a build can expose it through
+     * several classes at once. Threads 445 declares it on one interface with
+     * two concrete implementations, and every implementation feeds the same
+     * list to the UI. Requiring a single unique match therefore rejected the
+     * real boundary and fell through to broad discovery; each concrete match is
+     * now sanitized instead. Abstract and interface methods are skipped because
+     * they cannot be hooked.
      */
-    public Method findPrimaryFeedBoundary() {
+    public List<Method> findPrimaryFeedBoundaries() {
         LinkedHashSet<Method> matches = new LinkedHashSet<>();
 
         try {
@@ -113,16 +129,26 @@ public final class FeedBoundaryFinder {
             }
         } catch (Throwable throwable) {
             ModuleLog.log("Primary feed-boundary search failed: " + throwable);
-            return null;
+            return Collections.emptyList();
         }
 
-        if (matches.size() != 1) {
+        if (matches.isEmpty()) {
+            ModuleLog.log("Primary feed-boundary search found no structural match; "
+                    + "using broad fallback");
+            return Collections.emptyList();
+        }
+
+        if (matches.size() > MAX_PRIMARY_BOUNDARIES) {
             ModuleLog.log("Primary feed-boundary search found " + matches.size()
-                    + " structural match(es); using broad fallback");
-            return null;
+                    + " structural matches, which is too broad to trust; "
+                    + "using broad fallback");
+            return Collections.emptyList();
         }
 
-        return matches.iterator().next();
+        ModuleLog.log("Primary feed-boundary search found " + matches.size()
+                + " structural match(es)");
+
+        return new ArrayList<>(matches);
     }
 
     public Map<Method, Set<String>> discoverCandidates() {
@@ -251,8 +277,11 @@ public final class FeedBoundaryFinder {
 
     private static boolean isPrimaryFeedBoundaryShape(Method method) {
         Class<?>[] parameters = method.getParameterTypes();
+        int modifiers = method.getModifiers();
 
-        return !Modifier.isStatic(method.getModifiers())
+        return !Modifier.isStatic(modifiers)
+                && !Modifier.isAbstract(modifiers)
+                && !method.getDeclaringClass().isInterface()
                 && parameters.length == 3
                 && isIntegerType(parameters[0])
                 && isIntegerType(parameters[1])

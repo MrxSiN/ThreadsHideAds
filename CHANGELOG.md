@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- Fixed the primary feed boundary being rejected on current Threads builds. The
+  boundary is an interface method, and Threads 445 exposes it through one
+  interface plus two concrete implementations. Requiring exactly one structural
+  match therefore discarded the real target and fell through to broad
+  discovery. Every concrete match is now sanitized, up to a sanity limit of
+  eight, and abstract or interface methods are skipped because they cannot be
+  hooked.
 - Fixed advertisements slipping through on a cold launch. The rendered-label
   layer now waits for the card to be attached and laid out before deciding
   which view to collapse, instead of hiding only the label badge while the

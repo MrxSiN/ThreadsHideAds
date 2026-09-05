@@ -107,3 +107,58 @@ The entry point only wires layers together. Each package owns one concern.
 
 The sanitizers depend on the `AdDetector` interface rather than on the
 reflective implementation, so detection can be replaced without touching them.
+
+## Threads 445.0.0.46.83 findings
+
+Taken from the installed APK on a Pixel 8 Pro (13 dex files, `dexdump -l xml`).
+
+### The feed boundary now has several implementations
+
+The `(Integer, Integer, List) -> non-void` shape carrying the `Sponsored`
+marker resolves to three methods:
+
+```text
+X.1Cb.DuY(Integer, Integer, List) -> X.0k7   (interface declaration)
+X.1Ca.DuY(Integer, Integer, List) -> X.0k7   (implementation)
+X.PbI.DuY(Integer, Integer, List) -> X.0k7   (implementation)
+```
+
+`X.1Cb` is an interface; `X.1Ca` and `X.PbI` implement it. This is the renamed
+successor of the `X.02AX.Dqi(Integer, Integer, List) -> X.00l1` boundary
+recorded above. Because startup accepted the target only when exactly one
+structural match existed, three matches meant the boundary was discarded and
+broad discovery ran instead. Startup now hooks every concrete match and skips
+abstract and interface methods, which cannot be hooked.
+
+### The rendered-label fallback cannot fire on this build
+
+The feed is Jetpack Compose. A `uiautomator` dump shows one real view,
+`com.instagram.barcelona:id/compose_view`, with the feed list carrying the test
+tag `IgLazyColumn` and each post carrying `FeedPostRow`. Every node below the
+`ComposeView` is a semantics node, so the `android.widget.TextView` and
+`android.widget.Button` class names in a dump are Compose roles rather than
+real classes.
+
+That makes all three rendered-label hooks inert on this build:
+
+- `TextView.setText` never sees feed text, because no `TextView` holds it.
+- `View.setContentDescription` never fires, because Compose sets semantics.
+- The card walk looks for a `RecyclerView` or `ListView` ancestor, and a
+  `LazyColumn` is neither.
+
+The advertisement badge renders as a semantics node with content description
+`"Ad "`, alongside an author line reading `"<author> · Ad "`. Filtering has to
+happen in the model layer on this build.
+
+### Client-side ad injection
+
+`com.instagram.barcelona.feed.data.cache.BarcelonaSpoolFeedCacheHandler` holds
+`A0i(X.0hJ, int) -> boolean`, whose Kotlin lambda class names it as
+`injectAdToFeedSessionAtPosition`. `X.0hJ` is the feed item type. The same
+class also exposes `A0G(X.2dU, Integer, Integer, Integer, X.2cx, boolean,
+boolean, boolean)`, the stored-feed read path.
+
+Feed item fields are obfuscated, so field-name detection cannot match on this
+build. Detection has to rely on nested class names and on the structured
+`toString` check for `"is_sponsored":true`; both `is_sponsored` and
+`sponsored_label` are still present as strings in the dex.

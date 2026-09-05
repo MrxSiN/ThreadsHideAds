@@ -17,6 +17,11 @@ public final class Reflection {
 
     private static final int MAX_CLASS_DEPTH = 6;
 
+    /**
+     * A serialized feed row is well under this; anything larger is a blob.
+     */
+    private static final int MAX_INSPECTED_TEXT_LENGTH = 262144;
+
     private static final Map<Class<?>, Field[]> INSTANCE_FIELD_CACHE =
             new ConcurrentHashMap<>();
 
@@ -102,6 +107,17 @@ public final class Reflection {
                 || value instanceof Map<?, ?>
                 || value instanceof Enum<?>) {
             return true;
+        }
+
+        /*
+         * Cached feed rows carry their payload as a serialized string field.
+         * Skipping strings here meant the structured-value check never saw that
+         * payload on obfuscated builds, where no field name or toString is
+         * readable. Very long strings are still skipped, because media blobs
+         * and base64 are not worth scanning.
+         */
+        if (value instanceof CharSequence) {
+            return ((CharSequence) value).length() <= MAX_INSPECTED_TEXT_LENGTH;
         }
 
         return isAppModelClass(type.getName());

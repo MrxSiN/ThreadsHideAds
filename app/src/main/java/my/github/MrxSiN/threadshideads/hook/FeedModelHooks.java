@@ -10,6 +10,7 @@ import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XposedBridge;
 
+import my.github.MrxSiN.threadshideads.core.Diagnostics;
 import my.github.MrxSiN.threadshideads.core.ModuleLog;
 import my.github.MrxSiN.threadshideads.core.ModuleStats;
 import my.github.MrxSiN.threadshideads.model.ListSanitizer;
@@ -63,12 +64,45 @@ public final class FeedModelHooks {
                     return;
                 }
 
+                Diagnostics.traceBoundaryCall(
+                        method.getDeclaringClass().getSimpleName()
+                                + "." + method.getName(),
+                        param.args,
+                        param.getResult()
+                );
+
                 sanitizeArgumentsAfterCall(method, param);
                 sanitizeResult(method, param);
             }
         });
 
         ModuleLog.log("Installed list sanitizer: " + method);
+        return true;
+    }
+
+    /**
+     * Neutralizes the client-side ad injector: the call is traced and then
+     * reported as "nothing injected".
+     */
+    public boolean hookAdInjectionPredicate(final Method method) {
+        if (!HOOKED_METHODS.add(method.toGenericString() + "#injector")) {
+            return false;
+        }
+
+        XposedBridge.hookMethod(method, new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) {
+                Diagnostics.traceBoundaryCall(
+                        "injector " + method.getName(),
+                        param.args,
+                        param.getResult()
+                );
+
+                param.setResult(Boolean.FALSE);
+            }
+        });
+
+        ModuleLog.log("Neutralized ad injector: " + method);
         return true;
     }
 
@@ -102,6 +136,11 @@ public final class FeedModelHooks {
                     listSanitizer.sanitize(argument, parameterTypes[i], true);
 
             if (!sanitized.changed) {
+                Diagnostics.traceUnfilteredList(
+                        method.getDeclaringClass().getSimpleName()
+                                + "." + method.getName() + " arg" + i,
+                        (List<?>) argument
+                );
                 continue;
             }
 

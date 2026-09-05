@@ -2,7 +2,7 @@ plugins {
     id("com.android.application")
 }
 
-val appVersion = "1.1.2"
+val appVersion = "1.2.0"
 
 val envKeystorePath = System.getenv("ANDROID_KEYSTORE_PATH")
 val envKeystoreAlias = System.getenv("ANDROID_KEYSTORE_ALIAS")
@@ -34,7 +34,7 @@ android {
         applicationId = "my.github.MrxSiN.threadshideads"
         minSdk = 23
         targetSdk = 36
-        versionCode = 3
+        versionCode = 4
         versionName = appVersion
     }
 

@@ -1,4 +1,4 @@
-# Publishing v1.1.2 on GitHub
+# Publishing v1.2.0 on GitHub
 
 ## GitHub Actions behavior
 
@@ -12,7 +12,7 @@ The workflow in `.github/workflows/android.yml` performs the following:
 The expected APK name is:
 
 ```text
-ThreadsHideAds-v1.1.2.apk
+ThreadsHideAds-v1.2.0.apk
 ```
 
 ## Required repository secrets
@@ -75,21 +75,21 @@ ANDROID_KEYSTORE_PASSWORD
 ANDROID_KEY_PASSWORD
 ```
 
-## Publish v1.1.2
+## Publish v1.2.0
 
-Commit the v1.1.2 release files first:
+Commit the v1.2.0 release files first:
 
 ```bash
 git add .
-git commit -m "Release Threads Hide Ads v1.1.2"
+git commit -m "Release Threads Hide Ads v1.2.0"
 git push origin HEAD
 ```
 
 After the branch workflow succeeds, create and push the release tag:
 
 ```bash
-git tag -a v1.1.2 -m "Threads Hide Ads v1.1.2"
-git push origin v1.1.2
+git tag -a v1.2.0 -m "Threads Hide Ads v1.2.0"
+git push origin v1.2.0
 ```
 
-The tag run will attach `ThreadsHideAds-v1.1.2.apk` to the GitHub Release using the built-in `GITHUB_TOKEN`.
+The tag run will attach `ThreadsHideAds-v1.2.0.apk` to the GitHub Release using the built-in `GITHUB_TOKEN`.

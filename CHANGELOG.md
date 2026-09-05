@@ -1,5 +1,49 @@
 # Changelog
 
+## Unreleased
+
+## 1.2.0 — 2026-09-06
+
+- Advertisements are now identified by their feed unit type. Threads tags every
+  feed item with a unit-type enum whose constants keep readable names, and its
+  advertisement values (`AD`, `AD4AD`, `INTENT_AWARE_AD_PIVOT`,
+  `STAND_ALONE_MULTI_AD_PIVOT`, and the `ADS_FEEDBACK_INTERFACE` variants) are
+  matched whole. Recommendation units such as the `NETEGO` and `SUGGESTED`
+  families are deliberately left alone.
+- Fixed every removal being blocked on Threads 445. Feed items reach the cache
+  one at a time, so filtering a batch left it empty, and the rule that a
+  non-empty list is never emptied then discarded the result. Feed boundaries
+  may now empty a batch, while nested inner lists still may not, which is what
+  that rule was written to protect.
+- Added a Pando response layer that hooks the list accessors on
+  `com.facebook.pando.TreeJNI` by shape. Their names come from the native
+  binding rather than the obfuscator, so this layer needs neither DexKit nor
+  its native library and survives the renaming that breaks boundary discovery.
+- Pando tree JSON is now read with whichever flag pair yields the most content,
+  chosen once per model class, instead of always using the default pair that
+  answers `{}` for generated model classes.
+- Fixed the primary feed boundary being rejected on current Threads builds. The
+  boundary is an interface method, and Threads 445 exposes it through one
+  interface plus two concrete implementations. Requiring exactly one structural
+  match therefore discarded the real target and fell through to broad
+  discovery. Every concrete match is now sanitized, up to a sanity limit of
+  eight, and abstract or interface methods are skipped because they cannot be
+  hooked.
+- Fixed advertisements slipping through on a cold launch. The rendered-label
+  layer now waits for the card to be attached and laid out before deciding
+  which view to collapse, instead of hiding only the label badge while the
+  first feed page was still unmeasured.
+- Added the short `Ad` badge, plus further localized label variants, to the
+  rendered-label vocabulary. Matching stays whole-label only, so captions that
+  merely contain these words are still treated as organic content.
+- Labels are now normalized with their decorative separators stripped, so
+  forms such as `Sponsored ·` are recognized.
+- Split the single `MainHook` class into `core`, `detect`, `model`,
+  `discovery`, `hook`, and `ui` packages, each with one responsibility. The
+  entry point now only observes `Application.attach()` and delegates startup to
+  a model-hook installer, and the sanitizers depend on an `AdDetector`
+  abstraction rather than on the reflective implementation.
+
 ## 1.1.2 — 2026-08-01
 
 - Replaced the placeholder launcher artwork with a custom Threads-style ad-blocking shield icon.

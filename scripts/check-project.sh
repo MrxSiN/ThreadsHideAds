@@ -44,8 +44,8 @@ grep -q 'markerView' "$SRC/ui/FeedItemHider.java"
 grep -q 'ENABLED = false' "$SRC/core/Diagnostics.java"
 
 # Release metadata and signing configuration.
-grep -q 'val appVersion = "1.2.0"' "$ROOT/app/build.gradle.kts"
-grep -q 'versionCode = 4' "$ROOT/app/build.gradle.kts"
+grep -q 'val appVersion = "1.2.1"' "$ROOT/app/build.gradle.kts"
+grep -q 'versionCode = 5' "$ROOT/app/build.gradle.kts"
 grep -q 'envKeystorePath' "$ROOT/app/build.gradle.kts"
 grep -q 'envKeyPassword' "$ROOT/app/build.gradle.kts"
 

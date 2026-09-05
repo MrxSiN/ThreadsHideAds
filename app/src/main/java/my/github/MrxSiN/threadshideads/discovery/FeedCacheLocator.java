@@ -37,7 +37,17 @@ public final class FeedCacheLocator {
             "com.instagram.barcelona.feed.common.data.BcnFeedRepository",
             "com.instagram.barcelona.feed.data.repository.BarcelonaFeedRepository",
             "com.instagram.barcelona.feed.data.repository.ForYouFeedRepository",
-            "com.instagram.barcelona.feed.data.spool.ForYouFeedSpoolStateMapper"
+            "com.instagram.barcelona.feed.data.spool.ForYouFeedSpoolStateMapper",
+
+            /*
+             * A cold launch renders most of its first screen straight from the
+             * fetch, without the items ever crossing the cache.
+             */
+            "com.instagram.barcelona.feed.data.networksource.BarcelonaFeedNetworkSource",
+            "com.instagram.barcelona.feed.data.networksource.BarcelonaSpoolFeedNetworkSource",
+            "com.instagram.barcelona.feed.data.networksource.FollowingFeedNetworkSource",
+            "com.instagram.barcelona.feed.data.prefetch.BcnInjectedPostPrefetcher",
+            "com.instagram.barcelona.feed.data.cache.BarcelonaFeedItemDatabase"
     };
 
     private final ClassLoader classLoader;

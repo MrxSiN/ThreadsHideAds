@@ -1,7 +1,14 @@
 package my.github.MrxSiN.threadshideads.core;
 
+import java.lang.reflect.Array;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.Collection;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -9,8 +16,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Bounded, opt-in tracing for working out why a hooked boundary produces no
  * removals on a given Threads build.
  *
- * Only shapes are logged: method names, list sizes, and item class names. Feed
- * content is never written to the log.
+ * Only shapes are logged: method names, list sizes, model type names, and which
+ * marker keywords matched. Feed content is never written to the log.
  */
 public final class Diagnostics {
 
@@ -21,11 +28,68 @@ public final class Diagnostics {
     public static final boolean ENABLED = true;
 
     private static final int MAX_EVENTS_PER_SITE = 8;
+    private static final int MAX_ITEMS_PER_LIST = 12;
+
+    private static final int MAX_WALK_DEPTH = 6;
+    private static final int MAX_WALK_BUDGET = 1500;
+    private static final int MAX_TEXT_LENGTH = 262144;
+    private static final int MAX_REPORTED_TYPES = 60;
+
+    /**
+     * Keywords searched for in nested model type names and in nested text.
+     */
+    private static final String[] MARKER_KEYWORDS = {
+            "sponsor",
+            "netego",
+            "advertis",
+            "paid_partner",
+            "paidpartner",
+            "branded",
+            "boost",
+            "ad_id",
+            "ad_type",
+            "ad_label",
+            "adchoices",
+            "commercial",
+            "promoted"
+    };
 
     private static final Map<String, AtomicInteger> EVENT_COUNTS =
             new ConcurrentHashMap<>();
 
     private Diagnostics() {
+    }
+
+    /**
+     * Records where an advertisement was recognized, so detection can be moved
+     * up to the item that owns it.
+     */
+    public static void traceAdMatch(Class<?> type, String reason) {
+        if (!ENABLED || !shouldTrace("match " + type.getSimpleName())) {
+            return;
+        }
+
+        ModuleLog.log("match " + type.getName() + " via " + reason);
+    }
+
+    /**
+     * Records a list that was left alone because filtering would have emptied
+     * it, naming the element type that should be dropped one level higher.
+     */
+    public static void traceEmptyingBlocked(List<?> list) {
+        if (!ENABLED || list == null || list.isEmpty()) {
+            return;
+        }
+
+        Object first = list.get(0);
+        String type = first == null ? "null" : first.getClass().getName();
+
+        if (!shouldTrace("blocked " + type)) {
+            return;
+        }
+
+        ModuleLog.log("blocked emptying a list of " + list.size()
+                + " " + type + "; the owning item should be dropped instead");
     }
 
     public static void traceBoundaryCall(
@@ -52,186 +116,138 @@ public final class Diagnostics {
     }
 
     /**
-     * Records that a list passed through untouched, naming the element types so
-     * the detector can be pointed at the right model shape.
+     * Records that a list passed through untouched, then fingerprints its items
+     * so the model type that distinguishes an advertisement can be identified.
      */
     public static void traceUnfilteredList(String site, List<?> list) {
         if (!ENABLED || list == null || list.isEmpty() || !shouldTrace(site)) {
             return;
         }
 
-        StringBuilder message = new StringBuilder("trace ")
-                .append(site)
-                .append(" kept ")
-                .append(list.size())
-                .append(" item(s); types=");
+        ModuleLog.log("trace " + site + " kept " + list.size() + " item(s)");
 
         int described = 0;
+
         for (Object item : list) {
-            if (described++ >= 4) {
+            if (described >= MAX_ITEMS_PER_LIST) {
                 break;
             }
 
-            message.append(item == null ? "null" : item.getClass().getName())
-                    .append(' ');
-        }
-
-        ModuleLog.log(message.toString());
-
-        for (Object item : list) {
-            traceItemShape(site, item);
+            traceItemFingerprint(site + " #" + described, item);
+            described++;
         }
     }
 
     /**
-     * Logs the runtime types of an item's populated fields.
-     *
-     * Feed items on obfuscated builds have neither readable field names nor a
-     * structured toString, so the only distinguishing signal left is which
-     * nested model types are present. Types are logged; values never are.
+     * Walks an item's object graph and reports the model types it contains plus
+     * any marker keyword that appeared, so an advertisement can be told apart
+     * from an organic post by shape alone.
      */
-    public static void traceItemShape(String site, Object item) {
-        if (!ENABLED || item == null || !shouldTrace("shape " + site)) {
+    public static void traceItemFingerprint(String site, Object item) {
+        if (!ENABLED || item == null) {
             return;
         }
 
-        StringBuilder message = new StringBuilder("shape ")
-                .append(site)
-                .append(' ')
-                .append(item.getClass().getName())
-                .append(" populated=");
+        TreeSet<String> types = new TreeSet<>();
+        TreeSet<String> markers = new TreeSet<>();
 
-        int described = 0;
-
-        for (java.lang.reflect.Field field : item.getClass().getDeclaredFields()) {
-            if (java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
-                continue;
-            }
-
-            Object value;
-            try {
-                field.setAccessible(true);
-                value = field.get(item);
-            } catch (Throwable ignored) {
-                continue;
-            }
-
-            if (value == null || described++ >= 40) {
-                continue;
-            }
-
-            message.append(field.getName())
-                    .append(':')
-                    .append(value.getClass().getSimpleName());
-
-            if (value instanceof CharSequence) {
-                CharSequence text = (CharSequence) value;
-                message.append("[len=").append(text.length())
-                        .append(text.length() > 0 && text.charAt(0) == '{'
-                                ? " json]" : "]");
-            } else if (isAppModel(value)) {
-                message.append('(').append(populatedFieldTypes(value, 2)).append(')');
-            }
-
-            message.append(' ');
+        try {
+            walk(item, 0, new IdentityHashMap<Object, Boolean>(), new int[]{0},
+                    types, markers);
+        } catch (Throwable ignored) {
+            // A partial fingerprint is still useful.
         }
 
-        message.append("markers=").append(probeMarkers(item, 0));
+        StringBuilder message = new StringBuilder("fingerprint ")
+                .append(site)
+                .append(" markers=")
+                .append(markers.isEmpty() ? "-" : join(markers, MAX_REPORTED_TYPES))
+                .append(" types=")
+                .append(join(types, MAX_REPORTED_TYPES));
 
         ModuleLog.log(message.toString());
     }
 
-    private static boolean isAppModel(Object value) {
-        String className = value.getClass().getName();
-        return className.startsWith("X.")
-                || className.startsWith("com.instagram.");
-    }
-
-    /**
-     * One nested level of populated field types, so the model that actually
-     * carries the post content can be identified.
-     */
-    private static String populatedFieldTypes(Object value, int levels) {
-        StringBuilder types = new StringBuilder();
-        int described = 0;
-
-        for (java.lang.reflect.Field field : value.getClass().getDeclaredFields()) {
-            if (java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
-                continue;
-            }
-
-            Object child;
-            try {
-                field.setAccessible(true);
-                child = field.get(value);
-            } catch (Throwable ignored) {
-                continue;
-            }
-
-            if (child == null || described++ >= 30) {
-                continue;
-            }
-
-            types.append(field.getName())
-                    .append(':')
-                    .append(child.getClass().getSimpleName());
-
-            if (levels > 1 && isAppModel(child)) {
-                types.append('[')
-                        .append(populatedFieldTypes(child, levels - 1))
-                        .append(']');
-            }
-
-            types.append(' ');
-        }
-
-        return types.toString();
-    }
-
-    /**
-     * Reports which advertisement markers appear anywhere in the item's nested
-     * text, without logging any of that text.
-     */
-    private static String probeMarkers(Object value, int depth) {
-        StringBuilder found = new StringBuilder();
-
-        if (depth > 3 || value == null) {
-            return "-";
+    private static void walk(
+            Object value,
+            int depth,
+            IdentityHashMap<Object, Boolean> visited,
+            int[] budget,
+            TreeSet<String> types,
+            TreeSet<String> markers
+    ) {
+        if (value == null
+                || depth > MAX_WALK_DEPTH
+                || budget[0]++ > MAX_WALK_BUDGET) {
+            return;
         }
 
         if (value instanceof CharSequence) {
-            String text = value.toString();
-
-            if (text.length() > 262144) {
-                return "-";
-            }
-
-            if (text.contains("is_sponsored")) {
-                found.append("is_sponsored ");
-            }
-            if (text.contains("\"is_sponsored\":true")
-                    || text.contains("\"is_sponsored\": true")) {
-                found.append("is_sponsored=true ");
-            }
-            if (text.contains("sponsored_label")) {
-                found.append("sponsored_label ");
-            }
-            if (text.contains("ad_id")) {
-                found.append("ad_id ");
-            }
-
-            return found.length() == 0 ? "-" : found.toString();
+            collectMarkers(value.toString(), markers);
+            return;
         }
 
-        String className = value.getClass().getName();
-
-        if (!className.startsWith("X.")
-                && !className.startsWith("com.instagram.")) {
-            return "-";
+        if (value instanceof Number
+                || value instanceof Boolean
+                || value instanceof Character) {
+            return;
         }
 
-        for (java.lang.reflect.Field field : value.getClass().getDeclaredFields()) {
-            if (java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
+        if (value instanceof Enum<?>) {
+            collectMarkers(((Enum<?>) value).name(), markers);
+            return;
+        }
+
+        if (visited.put(value, Boolean.TRUE) != null) {
+            return;
+        }
+
+        Class<?> type = value.getClass();
+
+        if (isAppModel(type)) {
+            types.add(type.getSimpleName());
+            collectMarkers(type.getName(), markers);
+            probeStructuredText(value, type, budget, markers);
+            probePandoTree(value, type, markers);
+        }
+
+        if (value instanceof Map<?, ?>) {
+            int seen = 0;
+            for (Map.Entry<?, ?> entry : ((Map<?, ?>) value).entrySet()) {
+                if (seen++ >= 32) {
+                    break;
+                }
+                collectMarkers(String.valueOf(entry.getKey()), markers);
+                walk(entry.getValue(), depth + 1, visited, budget, types, markers);
+            }
+            return;
+        }
+
+        if (value instanceof Collection<?>) {
+            int seen = 0;
+            for (Object element : (Collection<?>) value) {
+                if (seen++ >= 32) {
+                    break;
+                }
+                walk(element, depth + 1, visited, budget, types, markers);
+            }
+            return;
+        }
+
+        if (type.isArray()) {
+            int length = Math.min(Array.getLength(value), 32);
+            for (int i = 0; i < length; i++) {
+                walk(Array.get(value, i), depth + 1, visited, budget, types, markers);
+            }
+            return;
+        }
+
+        if (!isAppModel(type)) {
+            return;
+        }
+
+        for (Field field : type.getDeclaredFields()) {
+            if (Modifier.isStatic(field.getModifiers())) {
                 continue;
             }
 
@@ -243,14 +259,136 @@ public final class Diagnostics {
                 continue;
             }
 
-            String nested = probeMarkers(child, depth + 1);
+            walk(child, depth + 1, visited, budget, types, markers);
+        }
+    }
 
-            if (!"-".equals(nested)) {
-                found.append(field.getName()).append('{').append(nested).append("} ");
-            }
+    /**
+     * Pando models keep their values in a native tree, so field reflection sees
+     * nothing. Their toString, when overridden, is the only Java-side view of
+     * the tree. Matches are attributed to the declaring type.
+     */
+    private static void probeStructuredText(
+            Object value,
+            Class<?> type,
+            int[] budget,
+            TreeSet<String> markers
+    ) {
+        if (budget[0] > MAX_WALK_BUDGET) {
+            return;
         }
 
-        return found.length() == 0 ? "-" : found.toString();
+        try {
+            if (type.getMethod("toString").getDeclaringClass() == Object.class) {
+                return;
+            }
+        } catch (Throwable ignored) {
+            return;
+        }
+
+        String text;
+        try {
+            text = String.valueOf(value);
+        } catch (Throwable ignored) {
+            return;
+        }
+
+        if (text == null || text.length() > MAX_TEXT_LENGTH) {
+            return;
+        }
+
+        TreeSet<String> found = new TreeSet<>();
+        collectMarkers(text, found);
+
+        for (String marker : found) {
+            markers.add(marker + "@" + type.getSimpleName());
+        }
+    }
+
+    /**
+     * Candidate JSON keys for the sponsored signal. Only the key name is
+     * reported when present, never the surrounding content.
+     */
+    private static final String[] CANDIDATE_KEYS = {
+            "is_sponsored",
+            "sponsored",
+            "sponsor_tags",
+            "sponsored_label",
+            "is_paid_partnership",
+            "ad_id",
+            "ad_type",
+            "ad_label",
+            "ad_metadata",
+            "is_ad",
+            "netego",
+            "commerciality",
+            "boosted_status",
+            "ad_action"
+    };
+
+    /**
+     * Reports which candidate keys appear in a Pando model's tree JSON, so the
+     * sponsored marker used by this build can be identified.
+     */
+    private static void probePandoTree(
+            Object value,
+            Class<?> type,
+            TreeSet<String> markers
+    ) {
+        String json = my.github.MrxSiN.threadshideads.detect.PandoTrees
+                .readJson(value);
+
+        if (json == null) {
+            return;
+        }
+
+        markers.add("tree:" + type.getSimpleName() + "[" + json.length() + "]");
+
+        for (String key : CANDIDATE_KEYS) {
+            if (json.contains("\"" + key + "\"")) {
+                markers.add("key:" + key
+                        + (json.contains("\"" + key + "\":true") ? "=true" : ""));
+            }
+        }
+    }
+
+    private static void collectMarkers(String text, TreeSet<String> markers) {
+        if (text == null || text.length() > MAX_TEXT_LENGTH) {
+            return;
+        }
+
+        String normalized = text.toLowerCase(Locale.ROOT);
+
+        for (String keyword : MARKER_KEYWORDS) {
+            if (normalized.contains(keyword)) {
+                markers.add(keyword);
+            }
+        }
+    }
+
+    private static boolean isAppModel(Class<?> type) {
+        String className = type.getName();
+
+        return className.startsWith("X.")
+                || className.startsWith("com.instagram.")
+                || className.startsWith("com.facebook.")
+                || className.startsWith("com.meta.");
+    }
+
+    private static String join(TreeSet<String> values, int limit) {
+        StringBuilder joined = new StringBuilder();
+        int written = 0;
+
+        for (String value : values) {
+            if (written++ >= limit) {
+                joined.append("...");
+                break;
+            }
+
+            joined.append(value).append(' ');
+        }
+
+        return joined.length() == 0 ? "-" : joined.toString();
     }
 
     private static boolean shouldTrace(String site) {

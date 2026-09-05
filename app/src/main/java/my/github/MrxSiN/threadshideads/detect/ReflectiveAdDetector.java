@@ -16,8 +16,21 @@ import java.util.Map;
  */
 public final class ReflectiveAdDetector implements AdDetector {
 
-    private static final int MAX_DEPTH = 5;
-    private static final int MAX_BUDGET = 320;
+    /*
+     * A feed item wraps its posts several levels down: item, container,
+     * thread, post list, post, media. The advertisement evidence sits at the
+     * bottom of that chain, so the traversal has to reach it from the item
+     * that owns it, or the item cannot be dropped as a whole.
+     */
+    private static final int MAX_DEPTH = 8;
+
+    /*
+     * A feed item reaches its Pando tree several levels down, past ranking and
+     * container models. The previous budget ran out before the tree was read,
+     * so an advertisement was only recognized once the traversal reached its
+     * inner posts, which is too late to drop the item cleanly.
+     */
+    private static final int MAX_BUDGET = 1200;
     private static final int MAX_ENTRIES_PER_CONTAINER = 32;
 
     @Override
@@ -69,6 +82,19 @@ public final class ReflectiveAdDetector implements AdDetector {
 
         if (AdFieldSignals.hasStrongAdClassToken(
                 type.getName().toLowerCase(Locale.ROOT))) {
+            return true;
+        }
+
+        /*
+         * Pando models keep their values in a native tree, so this JSON view is
+         * the only place the sponsored markers are visible.
+         */
+        String treeJson = PandoTrees.readJson(value);
+
+        if (treeJson != null
+                && AdFieldSignals.isStructuredAdValue(treeJson)) {
+            my.github.MrxSiN.threadshideads.core.Diagnostics
+                    .traceAdMatch(type, "pando tree json");
             return true;
         }
 

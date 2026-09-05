@@ -23,10 +23,8 @@ import java.util.Set;
 import my.github.MrxSiN.threadshideads.core.ModuleLog;
 
 /**
- * Locates candidate advertisement methods in the Threads dex files.
- *
- * This class only finds and classifies methods. Installing hooks is a separate
- * concern and belongs to the hook package.
+ * Locates and classifies candidate advertisement methods in the Threads dex
+ * files. Hook installation is not performed here.
  */
 public final class FeedBoundaryFinder {
 

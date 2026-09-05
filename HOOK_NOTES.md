@@ -263,8 +263,18 @@ no crash buffer entries, feed rendering normally.
 
 ### Diagnostics used
 
-`Diagnostics` gained `traceClassShape`, `traceEnumConstants`, `traceTreeShape`,
-`tracePageRow`, `traceTreeKeys`, `traceDeclaredMethods` and `traceTreeList`.
-They report names, types, sizes and key names only, never feed content, and all
-are gated behind `Diagnostics.ENABLED`, which should be set to `false` for a
-release build.
+`Diagnostics` records what the hooks did: boundary calls, unfiltered lists,
+recognized advertisements, blocked emptying, and Pando tree lists.
+
+`ModelProbes` inspects an unknown model: `traceClassShape` reports supertypes
+and non-null fields one level down, `traceEnumConstants` lists an enum's
+constants with their server values, `traceDeclaredMethods` lists what a class
+declares, and `traceTreeKeys` names the sponsored-looking JSON keys a tree
+carries when the vocabulary did not match it.
+
+The class-shape and enum probes are what identified `X.3cp`. The earlier
+marker-keyword walk was removed: Pando models expose nothing to it, so it
+reported empty markers on every feed item.
+
+All of it reports names, types, sizes and key names only, never feed content,
+and is gated behind `Diagnostics.ENABLED`, which is `false` for release builds.

@@ -13,6 +13,7 @@ import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
 
 import my.github.MrxSiN.threadshideads.core.Diagnostics;
+import my.github.MrxSiN.threadshideads.core.ModelProbes;
 import my.github.MrxSiN.threadshideads.core.ModuleLog;
 import my.github.MrxSiN.threadshideads.core.ModuleStats;
 import my.github.MrxSiN.threadshideads.detect.PandoAdSignals;
@@ -76,7 +77,7 @@ public final class PandoResponseHooks {
          * When nothing installs, the log has to say whether the accessors are
          * missing, native, or shaped differently on this build.
          */
-        Diagnostics.traceDeclaredMethods(treeClass, declared);
+        ModelProbes.traceDeclaredMethods(treeClass, declared);
 
         int installed = 0;
 
@@ -150,16 +151,6 @@ public final class PandoResponseHooks {
         }
 
         Diagnostics.traceTreeList(method.getName(), size, source.get(0));
-
-        /*
-         * A list this long is a response page rather than a single-valued
-         * field, so its first row is worth reporting on its own site key; the
-         * per-class trace is consumed by the small leaf fragments otherwise.
-         */
-        if (size >= 5) {
-            Diagnostics.tracePageRow(
-                    method.getName() + "[" + size + "]", source.get(0));
-        }
 
         ArrayList<Object> kept = new ArrayList<>(size);
         int removed = 0;

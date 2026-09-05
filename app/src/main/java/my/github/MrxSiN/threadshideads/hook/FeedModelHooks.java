@@ -133,7 +133,8 @@ public final class FeedModelHooks {
             }
 
             SanitizedList sanitized =
-                    listSanitizer.sanitize(argument, parameterTypes[i], true);
+                    listSanitizer.sanitize(
+                            argument, parameterTypes[i], true, true);
 
             if (!sanitized.changed) {
                 Diagnostics.traceUnfilteredList(
@@ -171,7 +172,8 @@ public final class FeedModelHooks {
             }
 
             SanitizedList postCall =
-                    listSanitizer.sanitize(argument, argument.getClass(), false);
+                    listSanitizer.sanitize(
+                            argument, argument.getClass(), false, true);
 
             if (postCall.changed) {
                 ModuleStats.recordModelRemoval(
@@ -190,7 +192,8 @@ public final class FeedModelHooks {
 
         if (result instanceof List<?>) {
             SanitizedList sanitized =
-                    listSanitizer.sanitize(result, method.getReturnType(), true);
+                    listSanitizer.sanitize(
+                            result, method.getReturnType(), true, true);
 
             if (sanitized.changed) {
                 if (sanitized.value != result) {

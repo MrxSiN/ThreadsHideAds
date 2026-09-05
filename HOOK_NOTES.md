@@ -162,3 +162,102 @@ Feed item fields are obfuscated, so field-name detection cannot match on this
 build. Detection has to rely on nested class names and on the structured
 `toString` check for `"is_sponsored":true`; both `is_sponsored` and
 `sponsored_label` are still present as strings in the dex.
+
+## Pando response path
+
+Every feed model on this build is a `com.facebook.pando.TreeJNI` subtree, and
+the app reads its rows through the list accessors declared on that base class.
+Those accessors are the first point where a GraphQL response becomes readable
+Java objects, which makes them a better filtering point than the feed
+boundaries used so far:
+
+- their names come from the native binding rather than from the obfuscator, so
+  they survive the renaming that repeatedly broke boundary discovery;
+- they need neither DexKit nor its native library, so they are installed before
+  the bridge is opened and stay installed when it fails; and
+- a sponsored row is removed before the feed cache, the repository, or the
+  client-side ad injector has seen it.
+
+`PandoResponseHooks` selects them by shape — declared on `TreeJNI`, returning a
+`List`, neither abstract nor native, because a native method cannot be hooked —
+and filters each returned list after the call.
+
+### Detection and cost
+
+`PandoAdSignals` decides whether one tree is sponsored. The tree JSON is still
+the only Java-side view of a Pando model, and producing it serializes the whole
+subtree, so:
+
+- lists are rejected on their first element unless it is a Pando tree, which
+  skips the string and number lists that share the same accessors;
+- lists longer than 256 entries are skipped as bulk value lists; and
+- every verdict is cached against the tree that produced it, through weak keys
+  so the cache never keeps a feed model alive.
+
+A tree whose JSON exceeds 64 KB is reported as not sponsored even when it
+carries a sponsored marker. A single feed item serializes well below that, so an
+oversized tree is a page or a ranking container, and dropping it would take
+organic posts with it. Those trees are traced and left to the boundary layer.
+
+### Writing the filtered list back
+
+Pando hands out immutable lists. The filtered copy is returned as an
+`ArrayList` only when the declared return type accepts one; otherwise the
+original list type rebuilds itself through a static `copyOf` factory found on
+its own class or a supertype. When neither works the result is left untouched
+and counted as a replacement failure rather than risking a `ClassCastException`.
+
+The rule that a non-empty list is never emptied applies here as well: when every
+entry is sponsored, the item owning the list is what should be dropped, one
+level above.
+
+## What actually identifies an advertisement (Threads 445.0.0.46.83)
+
+Verified on a Pixel 8 Pro against the running app.
+
+The Pando JSON view is a dead end on this build. `TreeJNI.asJSONNative` answers
+`{}` for the generated model classes and returns only a shallow
+`{"fields": ...}` wrapper for the base `TreeWithGraphQL`, whichever pair of
+boolean flags it is given. Sponsored markers never appear in it, which is why
+JSON-based detection removed nothing.
+
+The unit type does identify an advertisement, and it is not obfuscated. A feed
+item `X.0hJ` carries:
+
+| Field | Meaning |
+| --- | --- |
+| `A0q` (`X.0hK`) | payload wrapper holding the `Thread` and the same type enum |
+| `A0r` (`X.3cp`) | feed unit type, for example `THREAD(thread)` |
+
+`X.3cp` keeps readable constant names, and its advertisement constants are
+`AD(ad)`, `AD4AD(ad4ad)`, `INTENT_AWARE_AD_PIVOT(intent_aware_ad_pivot)`,
+`STAND_ALONE_MULTI_AD_PIVOT(stand_alone_multi_ad_pivot)` and the three
+`ADS_FEEDBACK_INTERFACE` variants. Those values are now matched whole, as unit
+types, by `AdFieldSignals.isAdUnitType`. The remaining constants are
+recommendation units (`*_NETEGO`, `SUGGESTED_*`) and are deliberately left
+alone.
+
+### Emptying a top-level feed list is required
+
+Threads delivers feed items to the cache one at a time, so the list crossing
+`BarcelonaFeedCache.A0G(..., List, ...)` usually holds a single item. The rule
+that a non-empty list is never emptied therefore blocked every removal.
+
+`ListSanitizer` now takes an explicit `allowEmptying` flag. The feed-boundary
+hooks pass `true`, because emptying a top-level batch means "this batch was
+nothing but an advertisement". Nested inner lists still pass `false`, which is
+what the original crash required.
+
+### Measured result
+
+One launch plus sixteen scroll passes: 9 advertisements removed at the cache
+boundary, no `Ad` badge or `Sponsored` label present in any `uiautomator` dump,
+no crash buffer entries, feed rendering normally.
+
+### Diagnostics used
+
+`Diagnostics` gained `traceClassShape`, `traceEnumConstants`, `traceTreeShape`,
+`tracePageRow`, `traceTreeKeys`, `traceDeclaredMethods` and `traceTreeList`.
+They report names, types, sizes and key names only, never feed content, and all
+are gated behind `Diagnostics.ENABLED`, which should be set to `false` for a
+release build.

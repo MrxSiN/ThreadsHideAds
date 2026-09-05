@@ -8,7 +8,45 @@ import java.util.Locale;
  */
 public final class AdFieldSignals {
 
+    /**
+     * Feed unit types that are advertisements on this build.
+     *
+     * Threads tags every feed item with a unit-type enum whose constants keep
+     * readable names, so an advertisement identifies itself before any of its
+     * content is inspected. Matching is whole-value only: a caption or a class
+     * name containing "ad" is not a unit type.
+     */
+    private static final String[] AD_UNIT_TYPES = {
+            "ad",
+            "ad4ad",
+            "intent_aware_ad_pivot",
+            "stand_alone_multi_ad_pivot",
+            "ads_feedback_interface",
+            "ads_feedback_interface_repetition",
+            "ads_feedback_interface_interests_picker"
+    };
+
     private AdFieldSignals() {
+    }
+
+    /**
+     * True when the text is exactly one of the advertisement unit types, in
+     * either its enum-constant form or its server form.
+     */
+    public static boolean isAdUnitType(String value) {
+        if (value == null) {
+            return false;
+        }
+
+        String normalized = value.trim().toLowerCase(Locale.ROOT);
+
+        for (String unitType : AD_UNIT_TYPES) {
+            if (normalized.equals(unitType)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public static boolean hasStrongAdClassToken(String className) {
@@ -85,7 +123,8 @@ public final class AdFieldSignals {
         String normalized = value.trim().toLowerCase(Locale.ROOT);
         String compact = normalized.replace(" ", "");
 
-        return normalized.equals("sponsored")
+        return isAdUnitType(normalized)
+                || normalized.equals("sponsored")
                 || normalized.equals("promotion")
                 || normalized.equals("advertisement")
                 || normalized.equals("direct_ad")

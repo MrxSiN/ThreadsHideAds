@@ -21,6 +21,13 @@ public final class PandoTrees {
 
     private static final int MAX_JSON_LENGTH = 524288;
 
+    private static final Boolean[][] FLAG_COMBINATIONS = {
+            {Boolean.FALSE, Boolean.FALSE},
+            {Boolean.TRUE, Boolean.FALSE},
+            {Boolean.FALSE, Boolean.TRUE},
+            {Boolean.TRUE, Boolean.TRUE}
+    };
+
     /**
      * Cached per model class: the accessor, or NONE when the class is not a
      * Pando tree. Feed lists repeat the same few classes constantly.
@@ -29,6 +36,12 @@ public final class PandoTrees {
             new ConcurrentHashMap<>();
 
     private static final Object NONE = new Object();
+
+    /**
+     * The flag pair that produced the longest JSON for a model class.
+     */
+    private static final Map<Class<?>, Boolean[]> FLAG_CACHE =
+            new ConcurrentHashMap<>();
 
     private PandoTrees() {
     }
@@ -52,9 +65,42 @@ public final class PandoTrees {
             return null;
         }
 
+        Class<?> type = value.getClass();
+        Boolean[] known = FLAG_CACHE.get(type);
+
+        if (known != null) {
+            return invoke(accessor, value, known);
+        }
+
+        /*
+         * The two flags select how much of the tree is serialized, and which
+         * combination yields the whole subtree differs by model: several
+         * classes return "{}" for the default pair. Combinations are tried
+         * once per class and the most productive one is remembered, because
+         * every attempt serializes the tree again.
+         */
+        String best = null;
+        Boolean[] bestFlags = FLAG_COMBINATIONS[0];
+
+        for (Boolean[] flags : FLAG_COMBINATIONS) {
+            String text = invoke(accessor, value, flags);
+
+            if (text != null && (best == null || text.length() > best.length())) {
+                best = text;
+                bestFlags = flags;
+            }
+        }
+
+        FLAG_CACHE.putIfAbsent(type, bestFlags);
+
+        return best;
+    }
+
+    private static String invoke(Method accessor, Object value, Boolean[] flags) {
         Object json;
+
         try {
-            json = accessor.invoke(value, Boolean.FALSE, Boolean.FALSE);
+            json = accessor.invoke(value, flags[0], flags[1]);
         } catch (Throwable ignored) {
             return null;
         }

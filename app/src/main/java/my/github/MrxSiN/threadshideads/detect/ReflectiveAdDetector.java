@@ -86,15 +86,11 @@ public final class ReflectiveAdDetector implements AdDetector {
         }
 
         /*
-         * Pando models keep their values in a native tree, so this JSON view is
-         * the only place the sponsored markers are visible.
+         * Pando models keep their values in a native tree, so its JSON view is
+         * the only place the sponsored markers are visible. The verdict is
+         * shared with the response hooks, which cache it per tree.
          */
-        String treeJson = PandoTrees.readJson(value);
-
-        if (treeJson != null
-                && AdFieldSignals.isStructuredAdValue(treeJson)) {
-            my.github.MrxSiN.threadshideads.core.Diagnostics
-                    .traceAdMatch(type, "pando tree json");
+        if (PandoAdSignals.isSponsoredTree(value)) {
             return true;
         }
 

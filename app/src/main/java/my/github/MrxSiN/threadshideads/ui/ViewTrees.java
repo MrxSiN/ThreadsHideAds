@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * View hierarchy questions used by the rendered-label layer.
+ * Bounded view-hierarchy queries: list containers, card ancestors, and depth.
  */
 public final class ViewTrees {
 

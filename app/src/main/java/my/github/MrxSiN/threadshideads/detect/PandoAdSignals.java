@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 import my.github.MrxSiN.threadshideads.core.Diagnostics;
+import my.github.MrxSiN.threadshideads.core.ModelProbes;
 
 /**
  * Decides whether a single Pando tree is a sponsored feed item.
@@ -54,8 +55,6 @@ public final class PandoAdSignals {
     private static boolean evaluate(Object value) {
         String json = PandoTrees.readJson(value);
 
-        Diagnostics.traceTreeShape(value.getClass(), json);
-
         if (json == null) {
             return false;
         }
@@ -71,7 +70,7 @@ public final class PandoAdSignals {
              * a renamed marker shows up in the log instead of silently letting
              * an advertisement through.
              */
-            Diagnostics.traceTreeKeys(value.getClass(), json);
+            ModelProbes.traceTreeKeys(value.getClass(), json);
             return false;
         }
 

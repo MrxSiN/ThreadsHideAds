@@ -18,6 +18,7 @@ import my.github.MrxSiN.threadshideads.core.ModuleLog;
 import my.github.MrxSiN.threadshideads.detect.AdDetector;
 import my.github.MrxSiN.threadshideads.detect.ReflectiveAdDetector;
 import my.github.MrxSiN.threadshideads.discovery.FeedBoundaryFinder;
+import my.github.MrxSiN.threadshideads.discovery.FeedCacheLocator;
 import my.github.MrxSiN.threadshideads.model.ListSanitizer;
 import my.github.MrxSiN.threadshideads.model.NestedCollectionSanitizer;
 
@@ -188,6 +189,8 @@ public final class ModelHookInstaller {
             FeedBoundaryFinder finder =
                     new FeedBoundaryFinder(bridge, classLoader);
 
+            installFeedCacheHooks(classLoader, hooks);
+
             int primaryHooks = installPrimaryBoundaries(finder, hooks);
 
             if (primaryHooks > 0) {
@@ -201,6 +204,46 @@ public final class ModelHookInstaller {
         }
 
         return FeedModelHooks.hasInstalledHooks();
+    }
+
+    /**
+     * Hooks the feed cache handler located by class name. This is independent
+     * of the string-marker search, which stops matching whenever Threads
+     * renames the boundary.
+     */
+    private static void installFeedCacheHooks(
+            ClassLoader classLoader,
+            FeedModelHooks hooks
+    ) {
+        FeedCacheLocator locator = new FeedCacheLocator(classLoader);
+
+        int installed = 0;
+
+        for (Method method : locator.findListBoundaries()) {
+            try {
+                if (hooks.hookListBoundary(method)) {
+                    installed++;
+                }
+            } catch (Throwable throwable) {
+                ModuleLog.log("Unable to hook feed cache boundary "
+                        + method + ": " + throwable);
+            }
+        }
+
+        Method injector = locator.findAdInjectionPredicate();
+
+        if (injector != null) {
+            try {
+                if (hooks.hookAdInjectionPredicate(injector)) {
+                    installed++;
+                }
+            } catch (Throwable throwable) {
+                ModuleLog.log("Unable to hook ad injector "
+                        + injector + ": " + throwable);
+            }
+        }
+
+        ModuleLog.log("Feed cache hooks installed: " + installed);
     }
 
     private static int installPrimaryBoundaries(

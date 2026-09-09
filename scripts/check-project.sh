@@ -45,7 +45,7 @@ grep -q 'ENABLED = false' "$SRC/core/Diagnostics.java"
 
 # Release metadata and signing configuration.
 grep -q 'val appVersion = "1.2.1"' "$ROOT/app/build.gradle.kts"
-grep -q 'versionCode = 5' "$ROOT/app/build.gradle.kts"
+grep -q 'versionCode = 6' "$ROOT/app/build.gradle.kts"
 grep -q 'envKeystorePath' "$ROOT/app/build.gradle.kts"
 grep -q 'envKeyPassword' "$ROOT/app/build.gradle.kts"
 

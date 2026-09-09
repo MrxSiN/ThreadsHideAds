@@ -31,10 +31,10 @@ android {
     }
 
     defaultConfig {
-        applicationId = "my.github.MrxSiN.threadshideads"
+        applicationId = "io.github.mrxsin.threadshideads"
         minSdk = 23
         targetSdk = 36
-        versionCode = 5
+        versionCode = 6
         versionName = appVersion
     }
 

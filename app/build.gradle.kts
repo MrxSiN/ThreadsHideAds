@@ -149,4 +149,5 @@ tasks.withType<Test>().configureEach {
     // A regenerated core must re-run the parity tests.
     inputs.file(hostCoreLibrary)
     systemProperty("threadsbf.hostlib", hostCoreLibrary.absolutePath)
+    systemProperty("threadsbf.debugErrors", project.hasProperty("debugErrors").toString())
 }

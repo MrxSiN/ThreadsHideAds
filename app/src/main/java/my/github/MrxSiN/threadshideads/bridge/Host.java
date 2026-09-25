@@ -28,7 +28,9 @@ final class Host {
     /** Result flag telling the runtime that an answer continues. */
     static final int MORE = 0x40000000;
 
-    private static final int DESCRIPTOR_SIZE = 24;
+    private static final int DESCRIPTOR_SIZE = 25;
+
+    static boolean DEBUG_ERRORS = Boolean.getBoolean("threadsbf.debugErrors");
 
     final HandleTable handles = new HandleTable();
     final Reflector reflector = new Reflector();
@@ -63,7 +65,7 @@ final class Host {
     private final boolean[] streamEnded = new boolean[NativeCore.LEVELS];
     private final byte[] encodeScratch = new byte[NativeCore.LEVEL_IN_CAP];
     private final int[] written = new int[1];
-    private final byte[] payload = new byte[64];
+    private final byte[] payload = new byte[NativeCore.LEVEL_IN_CAP - BfAbi.HEADER_SIZE];
 
     // ------------------------------------------------------------ lifecycle
 
@@ -71,8 +73,13 @@ final class Host {
         handles.reset();
         frame = null;
         reports.clear();
-        visited[0].clear();
-        visited[1].clear();
+        // IdentityHashMap.clear() costs its capacity, which one large
+        // traversal can grow; a used set is replaced instead.
+        for (int i = 0; i < visited.length; i++) {
+            if (!visited[i].isEmpty()) {
+                visited[i] = new IdentityHashMap<>();
+            }
+        }
         marks.clear();
         markedList = null;
         scanQueue.clear();
@@ -95,6 +102,10 @@ final class Host {
                     break;
                 case BfAbi.CAP_CHILD:
                     size = child(request.getInt(8), request.getInt(12), request.get(16));
+                    break;
+                case BfAbi.CAP_CHILDREN:
+                    size = children(request.getInt(8), request.getInt(12),
+                            request.getShort(16) & 0xFFFF, request.get(18));
                     break;
                 case BfAbi.CAP_VISIT:
                     size = visit(request.get(8), request.get(9), request.getInt(10));
@@ -175,6 +186,9 @@ final class Host {
             status = BfAbi.ST_NOT_FOUND;
             size = 0;
         } catch (Throwable t) {
+            if (DEBUG_ERRORS) {
+                System.err.println("capability 0x" + Integer.toHexString(op) + " failed: " + t);
+            }
             status = BfAbi.ST_HOST_ERROR;
             size = 0;
         }
@@ -269,9 +283,13 @@ final class Host {
         for (int i = 0; i < 8; i++) {
             out[at + 15 + i] = (byte) (number >>> (8 * i));
         }
-        // Known Pando trees carry their cached verdict (class fact bit 3).
+        // Known Pando trees carry their cached verdict (class fact bit 3):
+        // 1 not sponsored, 2 sponsored, 3 looked up and not cached. Their
+        // class's JSON flag pair comes along too.
         if (memo != null && (memo[BfAbi.SLOT_FACTS] & 8) != 0) {
-            out[at + 23] = treeVerdictGet(value);
+            byte verdict = treeVerdictGet(value);
+            out[at + 23] = verdict == 0 ? 3 : verdict;
+            out[at + 24] = memo[BfAbi.SLOT_PANDO_FLAGS];
         }
     }
 
@@ -279,7 +297,33 @@ final class Host {
      * CHILD response: child handle[4], descriptor, declared slot facts[3],
      * field-name memo, key handle[4].
      */
+    /** Size of one CHILD record. */
+    private static final int CHILD_RECORD = 4 + DESCRIPTOR_SIZE + 8;
+
     private int child(int handle, int index, int mode) {
+        return child(handle, index, mode, 0);
+    }
+
+    /**
+     * CHILDREN: up to `count` consecutive CHILD records from `start`. Stops
+     * early (and the reader sees zeros) when an element cannot be read.
+     */
+    private int children(int handle, int start, int count, int mode) {
+        int max = Math.min(count, payload.length / CHILD_RECORD);
+        int at = 0;
+        for (int i = 0; i < max; i++) {
+            try {
+                at += child(handle, start + i, mode, at);
+            } catch (StaleHandle e) {
+                throw e;
+            } catch (Throwable unreadable) {
+                break;
+            }
+        }
+        return at;
+    }
+
+    private int child(int handle, int index, int mode, int at) {
         Object owner = object(handle);
         Object value;
         int childHandle;
@@ -349,12 +393,12 @@ final class Host {
             default:
                 throw new IllegalArgumentException("mode " + mode);
         }
-        putInt(payload, 0, childHandle);
-        describe(value, payload, 4);
-        Reflector.declaredFacts(declared, payload, 4 + DESCRIPTOR_SIZE);
-        payload[4 + DESCRIPTOR_SIZE + 3] = (byte) fieldFact;
-        putInt(payload, 4 + DESCRIPTOR_SIZE + 4, keyHandle);
-        return 4 + DESCRIPTOR_SIZE + 8;
+        putInt(payload, at, childHandle);
+        describe(value, payload, at + 4);
+        Reflector.declaredFacts(declared, payload, at + 4 + DESCRIPTOR_SIZE);
+        payload[at + 4 + DESCRIPTOR_SIZE + 3] = (byte) fieldFact;
+        putInt(payload, at + 4 + DESCRIPTOR_SIZE + 4, keyHandle);
+        return CHILD_RECORD;
     }
 
     /** A field value, or null when it cannot be read (skipped, as before). */

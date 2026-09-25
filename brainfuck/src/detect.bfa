@@ -220,7 +220,7 @@ macro inspect() {
   }
   if go {
     if f_pando {
-      pando_verdict h, facts, n_tree, found
+      pando_verdict h, facts, n_tree, n_flags, found
       if found { clear go }
     }
   }
@@ -334,7 +334,7 @@ ifne rq_major ABI_MAJOR {
       in h, depth, budget, known
       if known {
         in n_charseq, n_enum, n_number, n_boolean, n_character, n_class
-        in n_map, n_collection, n_list, n_array, n_facts, n_size, n_value, n_tree
+        in n_map, n_collection, n_list, n_array, n_facts, n_size, n_value, n_tree, n_flags
       }
       inspect
       respond ST_OK, 3

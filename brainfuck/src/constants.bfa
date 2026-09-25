@@ -91,6 +91,8 @@ const CAP_SET_ARG = 0x51
 const CAP_TREE_VERDICT_GET = 0x52
 const CAP_TREE_VERDICT_PUT = 0x53
 const CAP_REPORT = 0x54
+# Records of consecutive children in one answer (read-only first passes).
+const CAP_CHILDREN = 0x55
 
 # ---- runtime call (BF -> runtime -> BF), handled natively
 const CAP_CALL = 0x60

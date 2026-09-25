@@ -36,6 +36,20 @@ android {
         targetSdk = 36
         versionCode = 6
         versionName = appVersion
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        // Hot-path timing logs (hook/HotPathStats): debug builds, or -PhotPathStats.
+        buildConfigField("boolean", "HOT_PATH_STATS", project.hasProperty("hotPathStats").toString())
+    }
+
+    sourceSets {
+        // Frozen v1.2.1 policy, model fixtures and graph generators, shared by
+        // the host parity tests and the on-device parity/benchmark tests.
+        getByName("test").java.srcDir("src/sharedTest/java")
+        getByName("androidTest").java.srcDir("src/sharedTest/java")
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     externalNativeBuild {
@@ -45,10 +59,21 @@ android {
         }
     }
 
+    // -PbenchmarkRelease runs the instrumented tests against the release
+    // build (no CheckJNI, optimized native code), signed with the debug key
+    // when no release key is configured. Local benchmarking only.
+    val benchmarkRelease = project.hasProperty("benchmarkRelease")
+    if (benchmarkRelease) {
+        testBuildType = "release"
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
             releaseSigningConfig?.let { signingConfig = it }
+            if (releaseSigningConfig == null && (benchmarkRelease || project.hasProperty("hotPathStats"))) {
+                signingConfig = signingConfigs.getByName("debug")
+            }
         }
     }
 
@@ -77,6 +102,8 @@ dependencies {
     compileOnly("de.robv.android.xposed:api:82")
 
     testImplementation("junit:junit:4.13.2")
+    androidTestImplementation("androidx.test:runner:1.6.2")
+    androidTestImplementation("androidx.test.ext:junit:1.2.1")
 }
 
 // ---- Brainfuck core: generation, checks and the host build used by JVM tests.
@@ -119,5 +146,7 @@ val testBrainfuck by tasks.registering(Exec::class) {
 
 tasks.withType<Test>().configureEach {
     dependsOn(buildHostCore)
+    // A regenerated core must re-run the parity tests.
+    inputs.file(hostCoreLibrary)
     systemProperty("threadsbf.hostlib", hostCoreLibrary.absolutePath)
 }

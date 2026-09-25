@@ -4,33 +4,27 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.TextView;
 
 import java.util.Collections;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import my.github.MrxSiN.threadshideads.bridge.Policy;
 import my.github.MrxSiN.threadshideads.core.ModuleLog;
 import my.github.MrxSiN.threadshideads.core.ModuleStats;
 
 /**
- * Collapses the feed card that owns a rendered advertisement label, and
- * restores it when RecyclerView rebinds the card to organic content.
+ * Collapses the card that owns a rendered advertisement label and restores it
+ * when the card is rebound to organic content.
  *
- * <p>Cold launch needs the deferred retry below. The first feed page binds its
- * labels while the cards are still detached and unmeasured, so neither the list
- * container nor the size heuristic can identify the card yet. Collapsing on
- * that first pass would hide only the "Ad" badge and leave the advertisement
- * on screen. The hider therefore waits for attach and for the first layout
- * pass before deciding, and only falls back to the label itself once the
- * hierarchy has had a real chance to settle.
+ * The Brainfuck core picks the card from the measured ancestor chain
+ * (OP_UI_CARD), chooses between collapsing, waiting for layout and the
+ * label-only fallback (OP_UI_HIDE), and decides whether a card may come back
+ * (OP_UI_RESTORE). Listener registration, layout parameters and visibility
+ * are handled here.
  */
 public final class FeedItemHider {
-
-    private static final int MAX_LAYOUT_RETRIES = 4;
-
-    private static final float MIN_CARD_WIDTH_RATIO = 0.70f;
-    private static final float MAX_CARD_HEIGHT_RATIO = 0.80f;
-    private static final int MIN_CARD_HEIGHT_DP = 80;
 
     private static final Map<View, Boolean> PENDING_RETRIES =
             Collections.synchronizedMap(new WeakHashMap<View, Boolean>());
@@ -38,124 +32,87 @@ public final class FeedItemHider {
     private FeedItemHider() {
     }
 
-    public static void hide(View labelView) {
-        hide(labelView, 0);
+    public static void hide(Policy policy, View labelView) {
+        hide(policy, labelView, 0);
     }
 
-    private static void hide(final View labelView, final int attempt) {
-        if (!AdLabelScanner.isCurrentAdMarker(labelView)) {
-            return;
+    private static void hide(final Policy policy, final View labelView, int attempt) {
+        boolean marker = policy.uiMarker(labelView, labelView instanceof TextView);
+        View card = marker ? findFeedCard(policy, labelView) : null;
+        int[] decision = policy.uiHide(marker, card != null, attempt, false);
+        if (decision[0] == Policy.HIDE_RETRY && !retryWhenHierarchyIsReady(policy, labelView, decision[1])) {
+            decision = policy.uiHide(marker, false, attempt, true);
         }
-
-        View card = findFeedCard(labelView);
-
-        if (card != null) {
+        if (decision[0] == Policy.HIDE_CARD) {
             collapse(card, labelView);
-            ModuleStats.recordUiCollapse(
-                    "feed item " + card.getClass().getName());
-            return;
+            ModuleStats.recordUiCollapse("feed item " + card.getClass().getName());
+        } else if (decision[0] == Policy.HIDE_LABEL) {
+            // Hide only the label rather than risk the whole activity.
+            collapse(labelView, labelView);
+            ModuleStats.recordUiCollapse("label-only fallback");
         }
-
-        if (attempt < MAX_LAYOUT_RETRIES
-                && retryWhenHierarchyIsReady(labelView, attempt + 1)) {
-            return;
-        }
-
-        /*
-         * Last resort: hide only the label, rather than risking hiding the
-         * complete activity.
-         */
-        collapse(labelView, labelView);
-        ModuleStats.recordUiCollapse("label-only fallback");
     }
 
-    /**
-     * Returns the card to collapse, or null while the hierarchy cannot yet
-     * answer the question.
-     */
-    private static View findFeedCard(View labelView) {
+    /** Measures the ancestor chain and lets the core pick the card, or null. */
+    private static View findFeedCard(Policy policy, View labelView) {
         DisplayMetrics metrics = labelView.getResources().getDisplayMetrics();
-        int screenWidth = metrics.widthPixels;
-        int screenHeight = metrics.heightPixels;
-        int minimumHeight = Math.max(
-                MIN_CARD_HEIGHT_DP,
-                (int) (MIN_CARD_HEIGHT_DP * metrics.density)
-        );
-
+        int limit = ViewTrees.maxAncestorDepth;
+        View[] chain = new View[limit];
+        boolean[] listContainer = new boolean[limit];
+        boolean[] rootOrDecor = new boolean[limit];
+        int[] width = new int[limit];
+        int[] height = new int[limit];
+        View root = labelView.getRootView();
+        int count = 0;
         View current = labelView;
-        View fallbackCandidate = null;
-
-        for (int depth = 0; depth < ViewTrees.MAX_ANCESTOR_DEPTH; depth++) {
+        while (count < limit) {
             View parent = ViewTrees.parentOf(current);
-
             if (parent == null) {
                 break;
             }
-
-            /*
-             * current is the direct child/card when its parent is a
-             * RecyclerView or ListView.
-             */
-            if (ViewTrees.isListContainer(parent) && current != labelView) {
-                return current;
-            }
-
-            if (depth >= 2
-                    && parent.getWidth() >= screenWidth * MIN_CARD_WIDTH_RATIO
-                    && parent.getHeight() >= minimumHeight
-                    && parent.getHeight() <= screenHeight * MAX_CARD_HEIGHT_RATIO) {
-                fallbackCandidate = parent;
-            }
-
-            if (parent == labelView.getRootView()
-                    || ViewTrees.isDecorView(parent)) {
-                break;
-            }
-
+            boolean[] facts = policy.uiViewClass(parent);
+            chain[count] = parent;
+            listContainer[count] = facts[0];
+            rootOrDecor[count] = parent == root || facts[1];
+            width[count] = parent.getWidth();
+            height[count] = parent.getHeight();
+            count++;
             current = parent;
         }
-
-        return fallbackCandidate;
+        int index = policy.uiCard(trim(listContainer, count), trim(rootOrDecor, count), trim(width, count),
+                trim(height, count), metrics.widthPixels, metrics.heightPixels, metrics.density);
+        return index < count ? chain[index] : null;
     }
 
     /**
-     * Arms a single deferred retry: on attach when the label is still detached,
-     * otherwise after the next layout pass.
-     *
-     * @return true when a retry was armed and the caller should stop.
+     * Arms one deferred retry: on attach while the label is detached, else
+     * after the next layout pass. Returns false when none could be armed.
      */
-    private static boolean retryWhenHierarchyIsReady(
-            final View labelView,
-            final int nextAttempt
-    ) {
+    private static boolean retryWhenHierarchyIsReady(final Policy policy, final View labelView,
+                                                     final int nextAttempt) {
         if (PENDING_RETRIES.put(labelView, Boolean.TRUE) != null) {
-            // A retry for this label is already armed.
             return true;
         }
-
         if (!ViewTrees.isAttached(labelView)) {
-            labelView.addOnAttachStateChangeListener(
-                    new View.OnAttachStateChangeListener() {
-                        @Override
-                        public void onViewAttachedToWindow(View view) {
-                            view.removeOnAttachStateChangeListener(this);
-                            PENDING_RETRIES.remove(view);
-                            hide(view, nextAttempt);
-                        }
+            labelView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+                @Override
+                public void onViewAttachedToWindow(View view) {
+                    view.removeOnAttachStateChangeListener(this);
+                    PENDING_RETRIES.remove(view);
+                    hide(policy, view, nextAttempt);
+                }
 
-                        @Override
-                        public void onViewDetachedFromWindow(View view) {
-                        }
-                    });
+                @Override
+                public void onViewDetachedFromWindow(View view) {
+                }
+            });
             return true;
         }
-
         ViewTreeObserver observer = labelView.getViewTreeObserver();
         if (!observer.isAlive()) {
             PENDING_RETRIES.remove(labelView);
             return false;
         }
-
         observer.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @Override
             public boolean onPreDraw() {
@@ -163,63 +120,38 @@ public final class FeedItemHider {
                 if (current.isAlive()) {
                     current.removeOnPreDrawListener(this);
                 }
-
                 PENDING_RETRIES.remove(labelView);
-                hide(labelView, nextAttempt);
+                hide(policy, labelView, nextAttempt);
                 return true;
             }
         });
-
         return true;
     }
 
     private static void collapse(View view, View markerView) {
         ViewGroup.LayoutParams params = view.getLayoutParams();
-
-        HiddenViewRegistry.rememberIfAbsent(
-                view,
-                view.getVisibility(),
-                params == null ? HiddenViewRegistry.UNSET_HEIGHT : params.height,
-                markerView
-        );
-
+        HiddenViewRegistry.rememberIfAbsent(view, view.getVisibility(),
+                params == null ? HiddenViewRegistry.UNSET_HEIGHT : params.height, markerView);
         if (params != null && params.height != 0) {
             params.height = 0;
             view.setLayoutParams(params);
         }
-
         view.setVisibility(View.GONE);
         view.requestLayout();
     }
 
-    /**
-     * Restores a previously hidden card once RecyclerView rebinds it.
-     *
-     * Only the exact label view that hid the card may restore it. A sponsored
-     * card keeps binding its author, caption, and timestamp after the label has
-     * already collapsed it, and any of those updates would otherwise bring the
-     * advertisement back.
-     */
-    public static void restoreMarkedAncestor(View child) {
+    /** Restores the nearest hidden ancestor when the core allows it. */
+    public static void restoreMarkedAncestor(Policy policy, View child) {
         View current = child;
-
-        for (int depth = 0; depth < ViewTrees.MAX_ANCESTOR_DEPTH; depth++) {
-            HiddenViewRegistry.SavedViewState savedState =
-                    HiddenViewRegistry.get(current);
-
+        for (int depth = 0; depth < ViewTrees.maxAncestorDepth; depth++) {
+            HiddenViewRegistry.SavedViewState savedState = HiddenViewRegistry.get(current);
             if (savedState != null) {
-                if (!savedState.wasHiddenBy(child)) {
-                    return;
+                boolean stillLabelled = policy.uiScan(current, true) != null;
+                if (policy.uiRestore(savedState.wasHiddenBy(child), stillLabelled)) {
+                    restore(current, savedState);
                 }
-
-                if (AdLabelScanner.containsAdLabel(current)) {
-                    return;
-                }
-
-                restore(current, savedState);
                 return;
             }
-
             View parent = ViewTrees.parentOf(current);
             if (parent == null) {
                 return;
@@ -228,24 +160,27 @@ public final class FeedItemHider {
         }
     }
 
-    private static void restore(
-            View view,
-            HiddenViewRegistry.SavedViewState savedState
-    ) {
+    private static void restore(View view, HiddenViewRegistry.SavedViewState savedState) {
         HiddenViewRegistry.forget(view);
-
         ViewGroup.LayoutParams params = view.getLayoutParams();
-
-        if (params != null
-                && savedState.originalHeight != HiddenViewRegistry.UNSET_HEIGHT) {
+        if (params != null && savedState.originalHeight != HiddenViewRegistry.UNSET_HEIGHT) {
             params.height = savedState.originalHeight;
             view.setLayoutParams(params);
         }
-
         view.setVisibility(savedState.originalVisibility);
         view.requestLayout();
+        ModuleLog.log("Restored recycled feed item after sponsored marker was rebound");
+    }
 
-        ModuleLog.log(
-                "Restored recycled feed item after sponsored marker was rebound");
+    private static boolean[] trim(boolean[] values, int count) {
+        boolean[] out = new boolean[count];
+        System.arraycopy(values, 0, out, 0, count);
+        return out;
+    }
+
+    private static int[] trim(int[] values, int count) {
+        int[] out = new int[count];
+        System.arraycopy(values, 0, out, 0, count);
+        return out;
     }
 }

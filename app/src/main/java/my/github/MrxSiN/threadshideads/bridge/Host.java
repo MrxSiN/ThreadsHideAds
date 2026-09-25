@@ -28,7 +28,7 @@ final class Host {
     /** Result flag telling the runtime that an answer continues. */
     static final int MORE = 0x40000000;
 
-    private static final int DESCRIPTOR_SIZE = 23;
+    private static final int DESCRIPTOR_SIZE = 24;
 
     final HandleTable handles = new HandleTable();
     final Reflector reflector = new Reflector();
@@ -171,6 +171,9 @@ final class Host {
         } catch (StaleHandle e) {
             status = BfAbi.ST_STALE_HANDLE;
             size = 0;
+        } catch (NoMoreFields e) {
+            status = BfAbi.ST_NOT_FOUND;
+            size = 0;
         } catch (Throwable t) {
             status = BfAbi.ST_HOST_ERROR;
             size = 0;
@@ -185,13 +188,21 @@ final class Host {
         dst.put(offset + 3, (byte) status);
         dst.putShort(offset + 4, (short) size);
         dst.putShort(offset + 6, (short) 0);
-        for (int i = 0; i < size; i++) {
-            dst.put(offset + BfAbi.HEADER_SIZE + i, payload[i]);
+        if (size > 0) {
+            ByteBuffer view = dst.duplicate();
+            view.position(offset + BfAbi.HEADER_SIZE);
+            view.put(payload, 0, size);
         }
         return BfAbi.HEADER_SIZE + size;
     }
 
     // ------------------------------------------------------------ objects
+
+    private static final class NoMoreFields extends RuntimeException {
+        NoMoreFields() {
+            super(null, null, false, false);
+        }
+    }
 
     private static final class StaleHandle extends RuntimeException {
         StaleHandle() {
@@ -258,6 +269,10 @@ final class Host {
         for (int i = 0; i < 8; i++) {
             out[at + 15 + i] = (byte) (number >>> (8 * i));
         }
+        // Known Pando trees carry their cached verdict (class fact bit 3).
+        if (memo != null && (memo[BfAbi.SLOT_FACTS] & 8) != 0) {
+            out[at + 23] = treeVerdictGet(value);
+        }
     }
 
     /**
@@ -308,18 +323,24 @@ final class Host {
                 childHandle = handles.putSlot(value, HandleTable.SLOT_ARRAY, owner, null, index);
                 break;
             }
-            case BfAbi.MODE_FIELD: {
+            case BfAbi.MODE_FIELD:
+            case BfAbi.MODE_FIELD_NEXT: {
                 Field[] fields = reflector.instanceFields(owner.getClass());
+                if (mode == BfAbi.MODE_FIELD_NEXT) {
+                    while (index < fields.length && readField(fields[index], owner) == null) {
+                        index++;
+                    }
+                    if (index >= fields.length) {
+                        throw new NoMoreFields();
+                    }
+                    keyHandle = index;
+                }
                 if (index >= fields.length) {
                     throw new IndexOutOfBoundsException();
                 }
                 Field field = fields[index];
                 declared = field.getType();
-                try {
-                    value = field.get(owner);
-                } catch (Throwable unreadable) {
-                    value = null; // skipped, as the legacy walk did
-                }
+                value = readField(field, owner);
                 childHandle = handles.putSlot(value, HandleTable.SLOT_FIELD, owner, field, index);
                 byte[] facts = fieldMemo.get(owner.getClass());
                 fieldFact = facts == null || index >= facts.length ? 0 : facts[index];
@@ -336,12 +357,24 @@ final class Host {
         return 4 + DESCRIPTOR_SIZE + 8;
     }
 
+    /** A field value, or null when it cannot be read (skipped, as before). */
+    private static Object readField(Field field, Object owner) {
+        try {
+            return field.get(owner);
+        } catch (Throwable unreadable) {
+            return null;
+        }
+    }
+
     private int visit(int set, int mode, int handle) {
         Map<Object, Boolean> seen = visited[set & 1];
         if (mode == BfAbi.VISIT_CLEAR) {
             seen.clear();
             payload[0] = 0;
         } else {
+            if (mode == BfAbi.VISIT_RESET_ADD) {
+                seen.clear();
+            }
             Object value = object(handle);
             payload[0] = bool(value != null && seen.put(value, Boolean.TRUE) == null);
         }
@@ -431,11 +464,13 @@ final class Host {
     }
 
     private byte treeVerdictGet(int handle) {
+        return treeVerdictGet(object(handle));
+    }
+
+    private byte treeVerdictGet(Object tree) {
         try {
-            Boolean verdict = treeVerdicts.get(object(handle));
+            Boolean verdict = treeVerdicts.get(tree);
             return verdict == null ? 0 : (byte) (verdict ? 2 : 1);
-        } catch (StaleHandle e) {
-            throw e;
         } catch (Throwable ignored) {
             // equals/hashCode over a native tree may throw: no cache.
             return 0;

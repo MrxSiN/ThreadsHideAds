@@ -5,7 +5,8 @@
 # deeper, so the recursion depth is the runtime level depth (bounded by
 # DETECT_MAX_DEPTH). The host only reads objects: every decision is here.
 #
-# OP_DETECT       payload h[4], depth, budget[2] -> found, budget[2]
+# OP_DETECT       payload h[4], depth, budget[2], descriptor known,
+#                 [descriptor as CAP_NODE answers it] -> found, budget[2]
 # OP_CLASS_FACTS  payload h[4]                    -> facts
 #
 # Class facts, packed LSB first and memoized per class by the host:
@@ -17,7 +18,12 @@ include "lib.bfa"
 
 var h[4], depth, budget[2], found, facts
 var go, flag, fresh, d1, strong, value
-var i[4], limit[4], looping, fi[2]
+var i[4], limit[4], looping, fi[2], known, first[4]
+
+# Remembers the first handle a loop allocated; one CAP_RELEASE frees them all.
+macro note_first(value) {
+  ifz first { copy value -> first }
+}
 
 # isAdFieldValue for the child descriptor.
 macro ad_field_value(v) {
@@ -150,19 +156,20 @@ macro inspect_children(mode, cap) {
       ifne r_status ST_OK {
         clear looping
       } else {
-        detect c_h, d1, budget, found
+        detect_child d1, budget, found
         if found { clear looping }
-        if c_h { release c_h }
+        if c_h { note_first c_h }
       }
       inc i
     }
   }
+  release first
+  clear first
 }
 
 macro inspect() {
   clear found
   set go 1
-  ifz depth { clear_visited SET_DETECT }
   ifz h { clear go }
   if go {
     gt depth, DETECT_MAX_DEPTH -> flag
@@ -175,7 +182,7 @@ macro inspect() {
     if flag { clear go }
   }
   if go {
-    node h
+    ifz known { node h }
     if n_charseq {
       text MT_STRUCTURED_VALUE, h, SRC_STRING, TX_LOWER_ROOT, found
       clear go
@@ -194,7 +201,12 @@ macro inspect() {
     if n_class { clear go }
   }
   if go {
-    visit SET_DETECT, h, fresh
+    # A new traversal starts with an empty identity set.
+    ifz depth {
+      visit_first SET_DETECT, h, fresh
+    } else {
+      visit SET_DETECT, h, fresh
+    }
     ifz fresh { clear go }
   }
   if go {
@@ -208,7 +220,7 @@ macro inspect() {
   }
   if go {
     if f_pando {
-      pando_verdict h, found
+      pando_verdict h, facts, n_tree, found
       if found { clear go }
     }
   }
@@ -242,13 +254,15 @@ macro inspect() {
               ad_field_value value
               if value { set found 1 }
             }
-            ifz found { detect c_h, d1, budget, found }
+            ifz found { detect_child d1, budget, found }
             if found { clear looping }
-            if c_key { release c_key } else { if c_h { release c_h } }
+            if c_key { note_first c_key } else { if c_h { note_first c_h } }
           }
           inc i
         }
       }
+      release first
+      clear first
     } else {
       if n_collection {
         inspect_children MODE_ITER, DETECT_MAX_ENTRIES
@@ -256,7 +270,8 @@ macro inspect() {
         if n_array {
           inspect_children MODE_ARRAY, DETECT_MAX_ENTRIES
         } else {
-          # Declared instance fields, all of them.
+          # Declared instance fields. A null field can neither be a strong ad
+          # field nor be inspected, so only non-null ones are fetched.
           copy n_size -> limit
           clear i
           set looping 1
@@ -265,10 +280,11 @@ macro inspect() {
             ifz flag {
               clear looping
             } else {
-              child h, i, MODE_FIELD
+              child h, i, MODE_FIELD_NEXT
               ifne r_status ST_OK {
                 clear looping
               } else {
+                copy c_key -> i
                 if c_h {
                   clear strong
                   ifeq c_field_fact 2 { set strong 1 }
@@ -290,17 +306,19 @@ macro inspect() {
                     lt depth, DETECT_MAX_DEPTH -> flag
                     if flag {
                       should_inspect_child value
-                      if value { detect c_h, d1, budget, found }
+                      if value { detect_child d1, budget, found }
                     }
                     clear flag
                   }
                   if found { clear looping }
-                  release c_h
+                  note_first c_h
                 }
               }
               inc i
             }
           }
+          release first
+          clear first
         }
       }
     }
@@ -313,7 +331,11 @@ ifne rq_major ABI_MAJOR {
 } else {
   switch rq_op {
     case OP_DETECT {
-      in h, depth, budget
+      in h, depth, budget, known
+      if known {
+        in n_charseq, n_enum, n_number, n_boolean, n_character, n_class
+        in n_map, n_collection, n_list, n_array, n_facts, n_size, n_value, n_tree
+      }
       inspect
       respond ST_OK, 3
       out found

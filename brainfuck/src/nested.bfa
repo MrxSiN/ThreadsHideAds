@@ -134,10 +134,11 @@ macro visit_value() {
               ifz flag {
                 clear walking
               } else {
-                child h, i, MODE_FIELD
+                child h, i, MODE_FIELD_NEXT
                 ifne r_status ST_OK {
                   clear walking
                 } else {
+                  copy c_key -> i
                   if c_h {
                     visit_child
                     release c_h

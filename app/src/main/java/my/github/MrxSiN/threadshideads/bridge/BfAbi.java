@@ -113,6 +113,7 @@ public final class BfAbi {
     public static final int MODE_MAP_ENTRY = 2;
     public static final int MODE_ARRAY = 3;
     public static final int MODE_FIELD = 4;
+    public static final int MODE_FIELD_NEXT = 5;
     public static final int SLOT_FACTS = 0;
     public static final int SLOT_PANDO_FLAGS = 1;
     public static final int SLOT_FIELD = 2;
@@ -121,6 +122,7 @@ public final class BfAbi {
     public static final int SET_NESTED = 1;
     public static final int VISIT_ADD = 0;
     public static final int VISIT_CLEAR = 1;
+    public static final int VISIT_RESET_ADD = 2;
     public static final int SITE_ARG = 1;
     public static final int SITE_LATE_ARG = 2;
     public static final int SITE_RESULT = 3;

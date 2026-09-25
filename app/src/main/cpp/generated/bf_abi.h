@@ -109,6 +109,7 @@
 #define BF_MODE_MAP_ENTRY 2
 #define BF_MODE_ARRAY 3
 #define BF_MODE_FIELD 4
+#define BF_MODE_FIELD_NEXT 5
 #define BF_SLOT_FACTS 0
 #define BF_SLOT_PANDO_FLAGS 1
 #define BF_SLOT_FIELD 2
@@ -117,6 +118,7 @@
 #define BF_SET_NESTED 1
 #define BF_VISIT_ADD 0
 #define BF_VISIT_CLEAR 1
+#define BF_VISIT_RESET_ADD 2
 #define BF_SITE_ARG 1
 #define BF_SITE_LATE_ARG 2
 #define BF_SITE_RESULT 3

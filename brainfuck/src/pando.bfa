@@ -4,7 +4,8 @@
 # probing and PandoResponseHooks.filterResult. The host serializes trees,
 # caches verdicts per tree and rebuilds lists; the decisions are here.
 #
-# OP_PANDO_VERDICT h[4]                                  -> sponsored
+# OP_PANDO_VERDICT h[4], class facts, cached verdict       -> sponsored
+#                  (facts or verdict 0 when the caller does not know them)
 # OP_PANDO_FILTER  h[4], declared object|null, declared interface,
 #                  declared accepts ArrayList, declared type h[4]
 #                  -> action, result h[4], removed[4]
@@ -12,7 +13,7 @@
 include "lib.bfa"
 
 var h[4], d_object, d_interface, d_arraylist, h_declared[4]
-var sponsored, action, h_out[4], removed[4], flag, facts
+var sponsored, action, h_out[4], removed[4], flag, facts, tree
 
 # length := JSON length for (target, flags), JSON_NULL when absent. A text
 # longer than PANDO_MAX_JSON reads as absent, as PandoTrees.invoke did.
@@ -31,12 +32,15 @@ macro json_length(target, flags, length) {
 macro verdict() {
   clear sponsored
   var memo, flags, length[4], best[4], have, probe, candidate[4], better, transform
-  class_facts h, facts
+  ifz facts { class_facts h, facts }
   unpack_facts facts
   if f_pando {
-    cap CAP_TREE_VERDICT_GET, h
-    read_reply r_status
-    in memo
+    copy tree -> memo
+    ifz memo {
+      cap CAP_TREE_VERDICT_GET, h
+      read_reply r_status
+      in memo
+    }
     ifz memo {
       # PandoTrees.readJson: the flag pair remembered for this class, else
       # all four pairs once, keeping the longest (first wins a tie).
@@ -110,11 +114,11 @@ macro filter() {
       ifz facts { class_facts c_h, facts }
       unpack_facts facts
       copy f_pando -> first_ok
-      release c_h
     }
   }
+  # A filter request is top level: the host starts it with no marks, and at
+  # most PANDO_MAX_LIST handles are taken, all freed when the request ends.
   if first_ok {
-    reset_marks h
     set walking 1
     while walking {
       lt i, n_size -> flag
@@ -126,14 +130,17 @@ macro filter() {
           clear walking
         } else {
           clear item
-          if c_h { pando_verdict c_h, item }
+          # The descriptor already carries a cached verdict for known trees.
+          ifeq c_tree 2 { set item 1 }
+          ifz c_tree {
+            if c_h { pando_verdict c_h, c_facts, c_tree, item }
+          }
           if item {
             mark h, i
             inc removed
           } else {
             inc kept
           }
-          if c_h { release c_h }
         }
         inc i
       }
@@ -178,7 +185,7 @@ ifne rq_major ABI_MAJOR {
 } else {
   switch rq_op {
     case OP_PANDO_VERDICT {
-      in h
+      in h, facts, tree
       verdict
       respond ST_OK, 1
       out sponsored

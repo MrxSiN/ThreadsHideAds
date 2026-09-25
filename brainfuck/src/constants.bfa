@@ -136,6 +136,9 @@ const MODE_ITER = 1
 const MODE_MAP_ENTRY = 2
 const MODE_ARRAY = 3
 const MODE_FIELD = 4
+# The first non-null field at or after the index; its index comes back in
+# the key slot, ST_NOT_FOUND past the last field.
+const MODE_FIELD_NEXT = 5
 
 # ---- per-class memo slots (CAP_MEMO_GET/PUT)
 const SLOT_FACTS = 0
@@ -148,6 +151,8 @@ const SET_DETECT = 0
 const SET_NESTED = 1
 const VISIT_ADD = 0
 const VISIT_CLEAR = 1
+# Clear the set, then add: the first visit of a traversal.
+const VISIT_RESET_ADD = 2
 
 # ---- removal sites reported by OP_BOUNDARY_BEFORE/AFTER
 const SITE_ARG = 1

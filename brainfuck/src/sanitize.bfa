@@ -41,7 +41,7 @@ macro sanitize_list() {
           # A nested list is a container, not a feed item.
           ifz c_list {
             clear root_depth, root_budget
-            detect c_h, root_depth, root_budget, ad
+            detect_child root_depth, root_budget, ad
           }
           if ad {
             mark h, i

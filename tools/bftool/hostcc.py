@@ -54,7 +54,7 @@ def build(sources, output, include_dirs=(), shared=False, defines=()):
     if kind == "msvc":
         cl = shutil.which("cl", path=value.get("Path") or value.get("PATH"))
         args = [cl, "/nologo", "/O2", "/W3", "/std:c11", "/utf-8"]
-        args += ["/I" + d for d in include_dirs] + ["/D" + d for d in defines]
+        args += ["/I" + os.path.abspath(d) for d in include_dirs] + ["/D" + d for d in defines]
         args += [os.path.abspath(s) for s in sources]
         if shared:
             args += ["/LD", "/Fe" + output]

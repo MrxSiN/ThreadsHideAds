@@ -1,0 +1,109 @@
+# Text policy: every word list and normalization rule used to recognize an
+# advertisement. Each `regex` compiles to a minimal DFA over the modified
+# UTF-8 bytes the host sends (docs/BRAINFUCK_ABI.md, "Text streams").
+# Where a matcher says "lower", the host applies String.toLowerCase(Locale.ROOT)
+# before streaming; everything else below happens here.
+
+# ---- character classes (Java semantics)
+
+# String.trim(): every char <= U+0020. U+0000 arrives as C0 80.
+charset TRIM = 0x01..0x20 | u+0000
+# Character.isWhitespace.
+charset WS_LOW = 0x09..0x0D | 0x1C..0x20
+charset WS_HIGH = u+1680 | u+2000..u+2006 | u+2008..u+200A | u+2028 | u+2029 | u+205F | u+3000
+charset WS = WS_LOW | WS_HIGH
+# Trimmed by String.trim() but not whitespace.
+charset CTRL = u+0000 | 0x01..0x08 | 0x0E..0x1B
+# Decorative separators around a rendered label ("Sponsored ·").
+charset SEP = u+00B7 | u+2022 | "-" | u+2013 | u+2014 | "|" | "," | ":"
+charset SPACE = " "
+charset IGNORED_IN_FIELD_NAME = "_" | "-" | "$"
+
+# ---- feed unit types: whole value after trim, lower
+
+regex UNIT_TYPES = "ad" | "ad4ad" | "intent_aware_ad_pivot" | "stand_alone_multi_ad_pivot"
+  | "ads_feedback_interface" | "ads_feedback_interface_repetition"
+  | "ads_feedback_interface_interests_picker"
+
+regex UNIT_TYPE = TRIM* UNIT_TYPES TRIM*
+
+# ---- structured values (AdFieldSignals.isStructuredAdValue), lower
+
+regex STRUCTURED_WORDS = UNIT_TYPES | "sponsored" | "promotion" | "advertisement"
+  | "direct_ad" | "directad" | "multi_ads" | "multiads" | "quick_promotion" | "quickpromotion"
+
+# Contains-checks run on the value with every U+0020 removed.
+regex STRUCTURED_FRAGMENTS = spaced("\"is_sponsored\":true", SPACE)
+  | spaced("is_sponsored=true", SPACE) | spaced("issponsored=true", SPACE)
+  | spaced("\"direct_ad\":true", SPACE) | spaced("direct_ad=true", SPACE)
+  | spaced("\"sponsored_label\":", SPACE) | spaced("sponsored_label=", SPACE)
+  | spaced("\"ad_metadata\":{", SPACE) | spaced("\"sponsored_metadata\":{", SPACE)
+  | spaced("\"ad_id\":\"", SPACE) | spaced("ad_id=", SPACE)
+  | spaced("\"is_paid_partnership\":true", SPACE)
+
+# Two DFAs run side by side (`match A, B`), which is far smaller than one
+# DFA for the union.
+regex STRUCTURED_EXACT = TRIM* STRUCTURED_WORDS TRIM*
+regex STRUCTURED_CONTAINS = ANY* STRUCTURED_FRAGMENTS ANY*
+
+# ---- field names (AdFieldSignals.isStrongAdFieldName), lower, _ - $ removed
+
+regex FIELD_NAME = IGNORED_IN_FIELD_NAME* (spaced("issponsored", IGNORED_IN_FIELD_NAME)
+  | spaced("sponsoredlabel", IGNORED_IN_FIELD_NAME) | spaced("directad", IGNORED_IN_FIELD_NAME)
+  | spaced("adid", IGNORED_IN_FIELD_NAME) | spaced("adtype", IGNORED_IN_FIELD_NAME)
+  | spaced("adunit", IGNORED_IN_FIELD_NAME) | spaced("adchoices", IGNORED_IN_FIELD_NAME)
+  | spaced("isadvertisement", IGNORED_IN_FIELD_NAME) | spaced("admetadata", IGNORED_IN_FIELD_NAME)
+  | spaced("sponsoredmetadata", IGNORED_IN_FIELD_NAME)
+  | spaced("commercialcontent", IGNORED_IN_FIELD_NAME)) IGNORED_IN_FIELD_NAME*
+
+# ---- text field values that do not mark an ad (isAdFieldValue), lower
+
+regex STOP_VALUE = TRIM* ("false" | "none" | "null" | "organic" | "unknown" | "0")? TRIM*
+
+# ---- class names
+
+regex CLASS_TOKEN = ANY* ("multiadsfeedunit" | "quickpromotion" | "sponsored" | "adfeedunit"
+  | "advertisementunit" | "directad") ANY*
+
+regex APP_MODEL = ("X." | "p000X." | "com.instagram." | "com.facebook." | "com.meta.") ANY*
+
+regex PANDO_TREE_CLASS = "com.facebook.pando.TreeJNI"
+
+regex LIST_CONTAINER = ANY* ("RecyclerView" | "ListView") ANY*
+
+regex DECOR_VIEW = ANY* "DecorView" ANY*
+
+# ---- discovery, lower
+
+regex NON_FEED_SIGNATURE = ANY* ("bugreport" | "notification" | "armadillo" | "direct.store"
+  | "directsqlite" | "message" | "messaging" | "exoplayer" | "heroplayer" | "music"
+  | "quickpromotion" | "upload") ANY*
+
+regex BOOLEAN_NEGATIVE = ANY* ("hide" | "remove" | "filter" | "block") ANY*
+
+regex BOOLEAN_POSITIVE = ANY* ("issponsored" | "isdirectad" | "shouldshowad" | "shouldinsertad"
+  | "caninsertad" | "adsenabled" | "adeligible") ANY*
+
+# ---- scope
+
+regex THREADS_PACKAGE = "com.instagram.barcelona"
+
+# ---- rendered labels (AdLabelVocabulary.isAdLabel), lower
+#
+# normalize() trims, collapses whitespace runs to one space, strips separators
+# and whitespace from both ends, then trims again. The accepted strings are
+# exactly LEAD word TRAIL, where each word's inner space may be any whitespace
+# run; see docs/PARITY.md for the derivation and the fuzz test that checks it.
+
+regex LABEL_WORDS = word("ad", WS) | word("ads", WS) | word("sponsored", WS)
+  | word("promoted", WS) | word("advertisement", WS) | word("paid partnership", WS)
+  | word("iklan", WS) | word("ditaja", WS) | word("disponsori", WS) | word("bersponsor", WS)
+  | word("anuncio", WS) | word("patrocinado", WS) | word("patrocinada", WS)
+  | word("publicidad", WS) | word("publicidade", WS) | word("annonce", WS)
+  | word("annons", WS) | word("annonse", WS) | word("annuncio", WS) | word("anzeige", WS)
+  | word("gesponsert", WS) | word("gesponsord", WS) | word("sponsrad", WS)
+  | word("sponsorisé", WS) | word("sponsorizzato", WS) | word("sponsorowane", WS)
+  | word("реклама", WS) | word("広告", WS) | word("광고", WS) | word("广告", WS)
+  | word("赞助", WS)
+
+regex AD_LABEL = TRIM* (SEP | WS)* (CTRL | WS)* LABEL_WORDS (CTRL | WS)* (SEP | WS)* TRIM*

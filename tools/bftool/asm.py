@@ -238,8 +238,14 @@ class Parser:
     # Regex grammar: alt := cat ('|' cat)* ; cat := post+ ; post := atom ('*'|'+'|'?')*
     def regex_alt(self):
         options = [self.regex_cat()]
-        while self.peek().kind == "op" and self.peek().value == "|":
-            self.i += 1
+        while True:
+            # A line starting with `|` continues the alternation.
+            k = 0
+            while self.peek(k).kind == "nl":
+                k += 1
+            if not (self.peek(k).kind == "op" and self.peek(k).value == "|"):
+                break
+            self.i += k + 1
             options.append(self.regex_cat())
         return options[0] if len(options) == 1 else ("alt", options)
 
@@ -284,7 +290,7 @@ class Parser:
             self.take("op", ")")
             return inner
         if t.kind == "id":
-            if self.peek().kind == "op" and self.peek().value == "(":
+            if t.value in ("spaced", "word") and self.peek().kind == "op" and self.peek().value == "(":
                 self.i += 1
                 self._depth += 1
                 args = [self.regex_alt()]
@@ -538,51 +544,117 @@ class Assembler:
 
     # --- DFA lowering ----------------------------------------------------
 
-    def run_dfa(self, dfa, flag):
-        """Reads a 0-terminated byte stream through `dfa`; flag := accepted.
-        Stops reading early once a sink state is reached."""
-        wide = dfa.size > 255
+    def run_dfas(self, dfas, flag):
+        """Reads a 0-terminated byte stream through every DFA in parallel;
+        flag := any of them accepted.
+
+        Bytes are first mapped to equivalence classes (bytes every state treats
+        alike), and each state is kept as two nibble cells so a step costs two
+        short switches instead of one switch over every state. Reading stops
+        early once a DFA reaches its accepting sink, or every DFA is dead."""
         with self.scope():
-            state = self.temp(2 if wide else 1)
-            more = self.temp()
-            c = self.temp()
-            self.setc(state, dfa.start)
+            states = [(self.temp(), self.temp()) for _ in dfas]
+            more, c, cls = self.temp(), self.temp(), self.temp()
+            for dfa, (hi, lo) in zip(dfas, states):
+                self._set_state(hi, lo, dfa.start)
             self.add(more, 1)
 
+            def step():
+                for dfa, (hi, lo) in zip(dfas, states):
+                    self._dfa_step(dfa, _byte_classes(dfa), hi, lo, c, cls)
+                self.clear(more)
+                for dfa, (hi, lo) in zip(dfas, states):
+                    self._switch_state(hi, lo, {s: (lambda: self.setc(more, 1))
+                                                for s in range(1, dfa.size)})
+                for dfa, (hi, lo) in zip(dfas, states):
+                    if dfa.accept_sink():
+                        self._switch_state(hi, lo, {dfa.accept_sink(): lambda: self.clear(more)})
+
             def body():
-                self.clear(c)
                 self.raw(c, ",")
-                self.if_nonzero(c, lambda: self._dfa_step(dfa, state, c, more),
-                                lambda: self.clear(more))
+                self.if_nonzero(c, step, lambda: self.clear(more))
             self.loop(more, body)
             self.clear(c)
-            accepting = sorted(dfa.accepting)
-            self.switch(state, [([s], lambda: self.setc(flag, 1)) for s in accepting], None)
-            self.clear(state)
+            for dfa, (hi, lo) in zip(dfas, states):
+                self._switch_state(hi, lo, {s: (lambda: self.setc(flag, 1)) for s in dfa.accepting})
+                self.clear(hi)
+                self.clear(lo)
 
-    def _dfa_step(self, dfa, state, c, more):
-        cases = []
-        for s in range(1, dfa.size):
-            groups = {}
-            for b, target in dfa.trans[s].items():
-                groups.setdefault(target, []).append(b)
-            if s == dfa.accept_sink():
-                continue
-            cases.append(([s], lambda s=s, groups=groups: self._dfa_transitions(state, c, groups)))
-        self.switch(state, cases, None)
-        sinks = [0] + ([dfa.accept_sink()] if dfa.accept_sink() else [])
-        self.switch(state, [(sinks, lambda: self.clear(more))], None)
+    def _set_state(self, hi, lo, state):
+        self.setc(hi, state >> 4)
+        self.setc(lo, state & 15)
 
-    def _dfa_transitions(self, state, c, groups):
-        # The biggest group becomes the default so most bytes cost one test.
-        groups = {t: list(bs) for t, bs in groups.items()}
-        leftover = set(range(1, 256)) - {b for bs in groups.values() for b in bs}
-        if leftover:
-            groups.setdefault(0, []).extend(sorted(leftover))
-        default = max(groups, key=lambda t: (len(groups[t]), -t))
-        cases = [(sorted(bs), lambda t=t: self.setc(state, t))
-                 for t, bs in sorted(groups.items()) if t != default]
-        self.switch(c, cases, lambda: self.setc(state, default))
+    def _switch_state(self, hi, lo, bodies):
+        by_hi = {}
+        for s, body in bodies.items():
+            by_hi.setdefault(s >> 4, {})[s & 15] = body
+        self.switch(hi, [([h], lambda inner=inner: self.switch(
+            lo, [([l], b) for l, b in sorted(inner.items())], None))
+            for h, inner in sorted(by_hi.items())], None)
+
+    def _dfa_step(self, dfa, classes, hi, lo, c, cls):
+        byte_class, members, default_class = classes
+        self.setc(cls, default_class)
+        self.switch(c, [(members[k], lambda k=k: self.setc(cls, k))
+                        for k in range(len(members)) if k != default_class], None)
+        sink = dfa.accept_sink()
+
+        def row(state):
+            return [dfa.trans[state].get(bytes_[0], 0) for bytes_ in members]
+
+        # States of a contains-automaton mostly fall back to the start state's
+        # transitions. A state may therefore list only the classes where it
+        # differs from the start state and delegate the rest to one shared
+        # dispatch, when that is shorter than listing its own default.
+        root = row(dfa.start)
+        with self.scope():
+            handled = self.temp()
+            bodies = {}
+            for s in range(1, dfa.size):
+                if s == sink:
+                    continue
+                targets = {}
+                for k, t in enumerate(row(s)):
+                    targets.setdefault(t, []).append(k)
+                default = max(targets, key=lambda t: (len(targets[t]), -t))
+                own_cost = sum(len(ks) for t, ks in targets.items() if t != default)
+                differs = {}
+                for k, t in enumerate(row(s)):
+                    if t != root[k]:
+                        differs.setdefault(t, []).append(k)
+                delegate_cost = sum(len(ks) for ks in differs.values())
+                if s != dfa.start and delegate_cost < own_cost:
+                    bodies[s] = lambda differs=differs: self._delegating_transitions(
+                        hi, lo, cls, differs, handled)
+                else:
+                    bodies[s] = lambda targets=targets: (
+                        self._class_transitions(hi, lo, cls, targets), self.setc(handled, 1))
+            self._switch_state(hi, lo, bodies)
+            root_targets = {}
+            for k, t in enumerate(root):
+                root_targets.setdefault(t, []).append(k)
+            # Dead and accepting-sink states never move.
+            self._switch_state(hi, lo, {q: (lambda: self.setc(handled, 1))
+                                        for q in ([0] + ([sink] if sink else []))})
+            self.if_eq(handled, 0, lambda: self._class_transitions(hi, lo, cls, root_targets))
+            self.clear(handled)
+        self.clear(cls)
+
+    def _delegating_transitions(self, hi, lo, cls, differs, handled):
+        cases = [(ks, lambda t=t: (self._set_state(hi, lo, t), self.setc(handled, 1)))
+                 for t, ks in sorted(differs.items())]
+        if cases:
+            self.switch(cls, cases, None)
+
+    def _class_transitions(self, hi, lo, cls, targets):
+        # The target reached by the most classes becomes the default.
+        default = max(targets, key=lambda t: (len(targets[t]), -t))
+        cases = [(ks, lambda t=t: self._set_state(hi, lo, t))
+                 for t, ks in sorted(targets.items()) if t != default]
+        if cases:
+            self.switch(cls, cases, lambda: self._set_state(hi, lo, default))
+        else:
+            self._set_state(hi, lo, default)
 
     # --- switch -----------------------------------------------------------
 
@@ -598,15 +670,17 @@ class Assembler:
             for values, body in cases:
                 if values is None:
                     continue
+                def run(body=body):
+                    if d is not None:
+                        self.clear(d)
+                    body()
+                if len(values) == 1:
+                    self.if_eq(snap, values[0], run)
+                    continue
                 with self.scope():
                     hit = self.temp()
                     for v in values:
                         self.if_eq(snap, v, lambda: self.setc(hit, 1))
-
-                    def run(body=body):
-                        if d is not None:
-                            self.clear(d)
-                        body()
                     self.if_flag(hit, run)
             if d is not None:
                 self.loop(d, lambda: (default(), self.clear(d)))
@@ -820,8 +894,8 @@ class Assembler:
             self.clear(dst)
             self.if_eq(src, 0, lambda: self.add(dst, 1))
         elif op == "match":
-            name = a[0][1]
-            self.run_dfa(self.dfa(name), C(1))
+            # match A[, B...] -> flag : flag := any regex accepted the stream.
+            self.run_dfas([self.dfa(e[1]) for e in a[:-1]], C(len(a) - 1))
         elif op == "switch":
             subject = self.cell(s.args[0], env)
             cases = []
@@ -951,6 +1025,23 @@ class Assembler:
                 parts.append(rx.Lit(rx.encode_text(chunk)))
             return rx.Cat(parts)
         raise AsmError("unknown regex function %s" % name)
+
+
+def _byte_classes(dfa):
+    """Groups bytes 1..255 that every state maps identically.
+    Returns (class of each byte, member bytes per class, largest class)."""
+    ids = {}
+    members = []
+    byte_class = {}
+    for b in range(1, 256):
+        signature = tuple(dfa.trans[s].get(b, 0) for s in range(dfa.size))
+        if signature not in ids:
+            ids[signature] = len(members)
+            members.append([])
+        members[ids[signature]].append(b)
+        byte_class[b] = ids[signature]
+    default = max(range(len(members)), key=lambda k: (len(members[k]), -k))
+    return byte_class, members, default
 
 
 def assemble(path, tape_size=4096):

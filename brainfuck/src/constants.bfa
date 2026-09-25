@@ -1,0 +1,126 @@
+# Single source of truth for the logical ABI (docs/BRAINFUCK_ABI.md).
+# tools/bftool/gen.py exports every constant below into
+# app/src/main/java/.../bridge/BfAbi.java and app/src/main/cpp/generated/bf_abi.h.
+# Values are stable: never renumber, only append.
+
+const ABI_MAJOR = 1
+const ABI_MINOR = 0
+const HEADER_SIZE = 8
+
+# Program ids (brainfuck/programs.json order).
+const PROG_CORE = 0
+const PROG_TEXT = 1
+const PROG_DETECT = 2
+const PROG_SANITIZE = 3
+const PROG_NESTED = 4
+const PROG_PANDO = 5
+
+# Request flags (header byte 3 of a request).
+const FLAG_STREAM = 1
+
+# Response status (header byte 3 of a response).
+const ST_OK = 0
+const ST_BAD_VERSION = 1
+const ST_BAD_OPCODE = 2
+const ST_BAD_FRAME = 3
+const ST_STALE_HANDLE = 4
+const ST_LIMIT = 5
+const ST_HOST_ERROR = 6
+const ST_NOT_FOUND = 7
+
+# Response opcodes are the request opcode | 0x80.
+const RESPONSE_BIT = 0x80
+
+# ---- top-level requests: core (0x01..0x2F)
+const OP_LOAD_PACKAGE = 0x01
+const OP_ATTACH_GUARD_FAILED = 0x02
+const OP_INIT_REQUEST = 0x03
+const OP_INIT_FINISH = 0x04
+const OP_INSTALL_STEP = 0x05
+const OP_PRIMARY_CANDIDATE = 0x06
+const OP_PRIMARY_DECISION = 0x07
+const OP_BROAD_CANDIDATE = 0x08
+const OP_FEED_OWNER_METHOD = 0x09
+const OP_INJECTOR_METHOD = 0x0A
+const OP_INJECTOR_DECISION = 0x0B
+const OP_PANDO_ACCESSOR = 0x0C
+const OP_CONST_STRING = 0x0D
+const OP_LIMITS = 0x0E
+const OP_STATS = 0x0F
+const OP_UI_TEXT_EVENT = 0x10
+const OP_UI_MARKER = 0x11
+const OP_UI_CARD = 0x12
+const OP_UI_HIDE = 0x13
+const OP_UI_RESTORE = 0x14
+const OP_UI_SCAN = 0x15
+const OP_UI_VIEW_CLASS = 0x16
+const OP_UI_ADD_VIEW = 0x17
+const OP_RESET = 0x2E
+const OP_VERSION = 0x2F
+
+# ---- top-level requests: other programs
+const OP_BOUNDARY_BEFORE = 0x30
+const OP_BOUNDARY_AFTER = 0x31
+const OP_SANITIZE_LIST = 0x32
+const OP_NESTED_SANITIZE = 0x33
+const OP_NESTED_VISIT = 0x34
+const OP_PANDO_FILTER = 0x35
+const OP_PANDO_VERDICT = 0x36
+const OP_DETECT = 0x37
+const OP_TEXT_MATCH = 0x38
+
+# ---- capability requests (BF -> host), 0x40..0x5F
+const CAP_NODE = 0x40
+const CAP_CHILD = 0x41
+const CAP_VISIT = 0x42
+const CAP_CLASS_INFO = 0x43
+const CAP_MEMO_GET = 0x44
+const CAP_MEMO_PUT = 0x45
+const CAP_JSON_LENGTH = 0x46
+const CAP_MARK = 0x47
+const CAP_REMOVE_MARKED = 0x48
+const CAP_FILTERED_COPY = 0x49
+const CAP_WRITE_BACK = 0x4A
+const CAP_COPY_OF = 0x4B
+const CAP_RELEASE = 0x4C
+const CAP_SUPERCLASS = 0x4D
+const CAP_FIND_ACCESSOR = 0x4E
+const CAP_SCAN_NEXT = 0x4F
+const CAP_ARG = 0x50
+const CAP_SET_ARG = 0x51
+const CAP_TREE_VERDICT_GET = 0x52
+const CAP_TREE_VERDICT_PUT = 0x53
+
+# ---- runtime call (BF -> runtime -> BF), handled natively
+const CAP_CALL = 0x60
+
+# ---- text matchers (OP_TEXT_MATCH payload byte 0)
+const MT_UNIT_TYPE = 1
+const MT_STRUCTURED_VALUE = 2
+const MT_FIELD_NAME = 3
+const MT_STOP_VALUE = 4
+const MT_CLASS_TOKEN = 5
+const MT_APP_MODEL = 6
+const MT_PANDO_TREE_CLASS = 7
+const MT_AD_LABEL = 8
+const MT_NON_FEED_SIGNATURE = 9
+const MT_BOOLEAN_NEGATIVE = 10
+const MT_BOOLEAN_POSITIVE = 11
+const MT_THREADS_PACKAGE = 12
+const MT_LIST_CONTAINER = 13
+const MT_DECOR_VIEW = 14
+
+# ---- text sources (what the host reads for a handle)
+const SRC_STRING = 0
+const SRC_ENUM_NAME = 1
+const SRC_CLASS_NAME = 2
+const SRC_FIELD_NAME = 3
+const SRC_PANDO_JSON = 4
+const SRC_METHOD_SIGNATURE = 5
+const SRC_METHOD_SEMANTIC = 6
+const SRC_VIEW_TEXT = 7
+const SRC_VIEW_DESCRIPTION = 8
+
+# ---- text transforms
+const TX_RAW = 0
+const TX_LOWER_ROOT = 1

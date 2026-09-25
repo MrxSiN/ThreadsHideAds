@@ -52,9 +52,14 @@ public final class FeedModelHooks {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) {
                 long start = HotPathStats.ENABLED ? System.nanoTime() : 0;
-                log(method, policy.boundaryBefore(new XposedCallFrame(param, parameterTypes, returnType)));
+                List<Policy.Report> reports =
+                        policy.boundaryBefore(new XposedCallFrame(param, parameterTypes, returnType));
                 if (HotPathStats.ENABLED) {
                     HotPathStats.BOUNDARY.record(System.nanoTime() - start);
+                }
+                log(method, reports);
+                if (Diagnostics.ENABLED) {
+                    traceUnfiltered(method, param.args, reports);
                 }
             }
 
@@ -96,6 +101,23 @@ public final class FeedModelHooks {
         XposedBridge.hookMethod(method, XC_MethodReplacement.returnConstant(false));
         ModuleLog.log("Disabled positive ad predicate: " + method);
         return true;
+    }
+
+    /** Reports the shape of list arguments the core left untouched. */
+    private static void traceUnfiltered(Method method, Object[] args, List<Policy.Report> reports) {
+        for (int i = 0; i < args.length; i++) {
+            if (!(args[i] instanceof List<?>)) {
+                continue;
+            }
+            boolean filtered = false;
+            for (Policy.Report report : reports) {
+                filtered |= report.site == BfAbi.SITE_ARG && report.index == i;
+            }
+            if (!filtered) {
+                Diagnostics.traceUnfilteredList(method.getDeclaringClass().getSimpleName()
+                        + "." + method.getName() + " arg" + i, (List<?>) args[i]);
+            }
+        }
     }
 
     private static void log(Method method, List<Policy.Report> reports) {

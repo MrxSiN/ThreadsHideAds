@@ -1,10 +1,10 @@
 {
   "programs": [
-    {"id": 0, "name": "core", "source": "src/core.bfa", "tape": 1024, "persist": 64},
-    {"id": 1, "name": "text", "source": "src/text.bfa", "tape": 256, "persist": 0},
-    {"id": 2, "name": "detect", "source": "src/detect.bfa", "tape": 512, "persist": 0},
-    {"id": 3, "name": "sanitize", "source": "src/sanitize.bfa", "tape": 512, "persist": 0},
-    {"id": 4, "name": "nested", "source": "src/nested.bfa", "tape": 512, "persist": 0},
-    {"id": 5, "name": "pando", "source": "src/pando.bfa", "tape": 512, "persist": 0}
+    {"id": 0, "name": "core", "source": "src/core.bfa", "tape": 256, "persist": 64},
+    {"id": 1, "name": "text", "source": "src/text.bfa", "tape": 64, "persist": 0},
+    {"id": 2, "name": "detect", "source": "src/detect.bfa", "tape": 256, "persist": 0},
+    {"id": 3, "name": "sanitize", "source": "src/sanitize.bfa", "tape": 256, "persist": 0},
+    {"id": 4, "name": "nested", "source": "src/nested.bfa", "tape": 256, "persist": 0},
+    {"id": 5, "name": "pando", "source": "src/pando.bfa", "tape": 256, "persist": 0}
   ]
 }

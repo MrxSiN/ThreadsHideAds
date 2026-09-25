@@ -25,6 +25,7 @@ def run(code, data=b""):
     expected = ref.run(code, data, tape_size=512)
     actual = ir.execute(ir.compile_bf(code), data, tape_size=512)
     assert expected == actual
+    assert expected == ir.execute(ir.compile_bf(code, zero_from=0), data, tape_size=512)
     return expected
 
 

@@ -108,9 +108,11 @@ def _writes(ops, cell):
         k = op[0]
         if k in ("add", "set", "in") and op[1] == cell:
             return True
-        if k == "mul" and op[2] == cell:
+        if k in ("mul", "mov") and op[2] == cell:
             return True
         if k in ("loop", "if") and _writes(op[2], cell):
+            return True
+        if k == "ifeq" and (_writes(op[3], cell) or _writes(op[4], cell)):
             return True
         if k in ("uloop", "move"):
             return True
@@ -173,8 +175,249 @@ def _peephole(ops):
     return out
 
 
-def compile_bf(code):
-    return optimize(parse(code))
+def compile_bf(code, zero_from=None):
+    """Parses and optimizes. `zero_from`: when given, every cell at or above
+    this offset is known to be zero when the program starts (the runtime
+    guarantees it for the scratch region), which enables value propagation."""
+    ops = optimize(parse(code))
+    if zero_from is not None and is_static(ops):
+        ops = _peephole(_propagate(ops, _Known(zero_from, {})))
+    return ops
+
+
+# ---------------------------------------------------------------- value propagation
+
+
+def _touches(ops, cells):
+    """True when any op reads or writes one of `cells`."""
+    for op in ops:
+        k = op[0]
+        if k in ("add", "set", "in", "out") and op[1] in cells:
+            return True
+        if k in ("mul", "mov") and (op[1] in cells or op[2] in cells):
+            return True
+        if k in ("loop", "if") and (op[1] in cells or _touches(op[2], cells)):
+            return True
+        if k in ("ifeq",) and (op[1] in cells or _touches(op[3], cells) or _touches(op[4], cells)):
+            return True
+        if k in ("uloop", "move"):
+            return True
+    return False
+
+
+def _match_copy(ops, i, known):
+    """copy s -> f through temp t (both known zero beforehand):
+    mul(s,f,1) mul(s,t,1) set(s,0) mul(t,s,1) set(t,0)  =>  f := s."""
+    if i + 5 > len(ops):
+        return None
+    a, b, c, d, e = ops[i:i + 5]
+    if (a[0] == "mul" and b[0] == "mul" and a[3] == 1 and b[3] == 1 and a[1] == b[1]
+            and c == ("set", a[1], 0) and d == ("mul", b[2], a[1], 1)
+            and e[0] == "set" and e[1] == b[2]
+            and len({a[1], a[2], b[2]}) == 3 and known.get(b[2]) == 0):
+        # The peephole may have folded a later `t += x` into the final clear.
+        return a[1], a[2], b[2], e[2]
+    return None
+
+
+def _match_ifeq(ops, i, known):
+    """The assembler's equality test on a copy (see asm.if_eq):
+    f := s; [f += n]; e += 1; if f {e = 0; OTHER; f = 0}; if e {THEN; e = 0}
+    with f and e zero beforehand  =>  if (s == -n) THEN else OTHER."""
+    copy = _match_copy(ops, i, known)
+    if copy is None or known.get(copy[1]) != 0:
+        return None
+    s, f, t, t_after = copy
+    if t_after:
+        return None
+    j = i + 5
+    n = 0
+    if j < len(ops) and ops[j][0] == "add" and ops[j][1] == f:
+        n = ops[j][2]
+        j += 1
+    if j + 3 > len(ops):
+        return None
+    inc, iff, ife = ops[j:j + 3]
+    if inc[0] != "add" or inc[2] != 1:
+        return None
+    e = inc[1]
+    if e in (s, f) or known.get(e) != 0:
+        return None
+    if iff[0] != "if" or iff[1] != f or ife[0] != "if" or ife[1] != e:
+        return None
+    fb, eb = iff[2], ife[2]
+    if len(fb) < 2 or fb[0] != ("set", e, 0) or fb[-1] != ("set", f, 0):
+        return None
+    if not eb or eb[-1] != ("set", e, 0):
+        return None
+    other, then = fb[1:-1], eb[:-1]
+    if _touches(other, {f, e}) or _touches(then, {f, e}):
+        return None
+    t = ops[i + 1][2]
+    return j + 3, s, (-n) & 255, then, other, (f, e, t)
+
+class _Known:
+    """Cell values known at a program point: explicit entries, else zero for
+    offsets >= zero_from, else unknown (None)."""
+
+    def __init__(self, zero_from, over):
+        self.zero_from, self.over = zero_from, over
+
+    def get(self, off):
+        if off in self.over:
+            return self.over[off]
+        if self.zero_from is not None and off >= self.zero_from:
+            return 0
+        return None
+
+    def put(self, off, value):
+        self.over[off] = value
+
+    def copy(self):
+        return _Known(self.zero_from, dict(self.over))
+
+    def forget(self, cells):
+        for off in cells:
+            self.over[off] = None
+
+    def same(self, other):
+        keys = set(self.over) | set(other.over)
+        return all(self.get(k) == other.get(k) for k in keys)
+
+    @staticmethod
+    def merge(a, b):
+        out = _Known(a.zero_from, {})
+        for off in set(a.over) | set(b.over):
+            va, vb = a.get(off), b.get(off)
+            out.over[off] = va if va == vb else None
+        return out
+
+
+def _written(ops, acc=None):
+    acc = set() if acc is None else acc
+    for op in ops:
+        k = op[0]
+        if k in ("add", "set", "in"):
+            acc.add(op[1])
+        elif k in ("mul", "mov"):
+            acc.add(op[2])
+        elif k in ("loop", "if"):
+            acc.add(op[1])
+            _written(op[2], acc)
+        elif k == "ifeq":
+            _written(op[3], acc)
+            _written(op[4], acc)
+    return acc
+
+
+def _propagate(ops, known):
+    out = []
+    i = 0
+    while i < len(ops):
+        m = _match_ifeq(ops, i, known)
+        if m is not None:
+            nxt, s, value, then, other, temps = m
+            sv = known.get(s)
+            if sv is not None:
+                out.extend(_propagate(then if sv == value else other, known))
+            else:
+                taken = known.copy()
+                taken.put(s, value)
+                then_ops = _propagate(then, taken)
+                rest = known.copy()
+                other_ops = _propagate(other, rest)
+                if then_ops or other_ops:
+                    out.append(("ifeq", s, value, then_ops, other_ops))
+                known.over = _Known.merge(taken, rest).over
+            i = nxt
+            continue
+        c = _match_copy(ops, i, known)
+        if c is not None and known.get(c[1]) == 0:
+            s, f, t, t_after = c
+            sv = known.get(s)
+            if sv is None:
+                out.append(("mov", s, f, 1, 0))
+            elif sv:
+                out.append(("set", f, sv))
+            known.put(f, sv)
+            if t_after:
+                out.append(("set", t, t_after))
+                known.put(t, t_after)
+            i += 5
+            continue
+        op = ops[i]
+        i += 1
+        k = op[0]
+        if k == "add":
+            v = known.get(op[1])
+            if v is None:
+                out.append(op)
+            else:
+                v = (v + op[2]) & 255
+                out.append(("set", op[1], v))
+                known.put(op[1], v)
+        elif k == "set":
+            if known.get(op[1]) != op[2]:
+                out.append(op)
+                known.put(op[1], op[2])
+        elif k == "mul":
+            src, dst, factor = op[1], op[2], op[3]
+            sv, dv = known.get(src), known.get(dst)
+            if sv is not None:
+                delta = (sv * factor) & 255
+                if delta:
+                    if dv is None:
+                        out.append(("add", dst, delta))
+                    else:
+                        out.append(("set", dst, (dv + delta) & 255))
+                        known.put(dst, (dv + delta) & 255)
+            elif dv is not None:
+                out.append(("mov", src, dst, factor & 255, dv))
+                known.put(dst, None)
+            else:
+                out.append(op)
+                known.put(dst, None)
+        elif k == "in":
+            out.append(op)
+            known.put(op[1], None)
+        elif k == "out":
+            out.append(op)
+        elif k == "loop":
+            if known.get(op[1]) == 0:
+                continue
+            # Fixpoint: the state at the loop head is the merge of the state
+            # before the loop and the state at the end of every iteration.
+            head = known.copy()
+            for _ in range(8):
+                end = head.copy()
+                _propagate(op[2], end)
+                merged = _Known.merge(known, end)
+                if merged.same(head):
+                    break
+                head = merged
+            else:
+                head = known.copy()
+                head.forget(_written(op[2]))
+            body = _propagate(op[2], head.copy())
+            out.append(("loop", op[1], body))
+            known.over = head.over
+            known.put(op[1], 0)
+        elif k == "if":
+            v = known.get(op[1])
+            if v == 0:
+                continue
+            taken = known.copy()
+            body = _propagate(op[2], taken)
+            if v is not None:
+                out.extend(body)
+                known.over = taken.over
+            else:
+                out.append(("if", op[1], body))
+                known.over = _Known.merge(known, taken).over
+            known.put(op[1], 0)
+        else:
+            raise ValueError("unexpected op in static program: %r" % (op,))
+    return out
 
 
 def is_static(ops):
@@ -184,6 +427,8 @@ def is_static(ops):
             return False
         if op[0] in ("loop", "if") and not is_static(op[2]):
             return False
+        if op[0] == "ifeq" and not (is_static(op[3]) and is_static(op[4])):
+            return False
     return True
 
 
@@ -192,11 +437,15 @@ def offset_range(ops, lo=0, hi=0):
         k = op[0]
         if k in ("add", "set", "in", "out"):
             lo, hi = min(lo, op[1]), max(hi, op[1])
-        elif k == "mul":
+        elif k in ("mul", "mov"):
             lo, hi = min(lo, op[1], op[2]), max(hi, op[1], op[2])
         elif k in ("loop", "if"):
             lo, hi = min(lo, op[1]), max(hi, op[1])
             lo, hi = offset_range(op[2], lo, hi)
+        elif k == "ifeq":
+            lo, hi = min(lo, op[1]), max(hi, op[1])
+            lo, hi = offset_range(op[3], lo, hi)
+            lo, hi = offset_range(op[4], lo, hi)
     return lo, hi
 
 
@@ -206,6 +455,8 @@ def count_ops(ops):
         total += 1
         if op[0] in ("loop", "if"):
             total += count_ops(op[2])
+        elif op[0] == "ifeq":
+            total += count_ops(op[3]) + count_ops(op[4])
         elif op[0] == "uloop":
             total += count_ops(op[1])
     return total
@@ -248,6 +499,8 @@ def _exec(ops, t, p, io):
             t[p + op[1]] = op[2]
         elif k == "mul":
             t[p + op[2]] = (t[p + op[2]] + t[p + op[1]] * op[3]) & 255
+        elif k == "mov":
+            t[p + op[2]] = (op[4] + t[p + op[1]] * op[3]) & 255
         elif k == "move":
             p += op[1]
             if p < 0 or p >= len(t):
@@ -262,6 +515,8 @@ def _exec(ops, t, p, io):
         elif k == "if":
             if t[p + op[1]]:
                 p = _exec(op[2], t, p, io)
+        elif k == "ifeq":
+            p = _exec(op[3] if t[p + op[1]] == op[2] else op[4], t, p, io)
         elif k == "uloop":
             while t[p]:
                 p = _exec(op[1], t, p, io)
@@ -299,6 +554,11 @@ def _emit_block(ops, lines, depth, static, tape_size):
                 lines.append("%sp[%d] += p[%d];" % (pad, op[2], op[1]))
             else:
                 lines.append("%sp[%d] += (uint8_t)(p[%d] * %d);" % (pad, op[2], op[1], op[3]))
+        elif k == "mov":
+            if op[3] == 1 and op[4] == 0:
+                lines.append("%sp[%d] = p[%d];" % (pad, op[2], op[1]))
+            else:
+                lines.append("%sp[%d] = (uint8_t)(%d + p[%d] * %d);" % (pad, op[2], op[4], op[1], op[3]))
         elif k == "move":
             lines.append("%sp += %d;" % (pad, op[1]))
             lines.append("%sif (p < t || p >= t + %d) return BF_ERR_TAPE;" % (pad, tape_size))
@@ -310,6 +570,13 @@ def _emit_block(ops, lines, depth, static, tape_size):
             keyword = "while" if k == "loop" else "if"
             lines.append("%s%s (p[%d]) {" % (pad, keyword, op[1]))
             _emit_block(op[2], lines, depth + 1, static, tape_size)
+            lines.append(pad + "}")
+        elif k == "ifeq":
+            lines.append("%sif (p[%d] == %d) {" % (pad, op[1], op[2]))
+            _emit_block(op[3], lines, depth + 1, static, tape_size)
+            if op[4]:
+                lines.append(pad + "} else {")
+                _emit_block(op[4], lines, depth + 1, static, tape_size)
             lines.append(pad + "}")
         elif k == "uloop":
             lines.append("%swhile (*p) {" % pad)

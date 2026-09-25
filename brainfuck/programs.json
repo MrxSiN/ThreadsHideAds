@@ -1,0 +1,6 @@
+{
+  "programs": [
+    {"id": 0, "name": "core", "source": "src/core.bfa", "tape": 1024, "persist": 64},
+    {"id": 1, "name": "text", "source": "src/text.bfa", "tape": 256, "persist": 0}
+  ]
+}

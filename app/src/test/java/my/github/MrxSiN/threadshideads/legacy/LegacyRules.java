@@ -43,12 +43,12 @@ public final class LegacyRules {
             "multi_ads", "MultiAds"
     };
 
-    private static final Set<String> STRONG_BOOLEAN_MARKERS = new LinkedHashSet<>(Arrays.asList(
+    public static final Set<String> STRONG_BOOLEAN_MARKERS = new LinkedHashSet<>(Arrays.asList(
             "is_sponsored", "isSponsored", "direct_ad", "directAd", "sponsored_label"));
 
     private static final Set<String> CORE_LIST_MARKERS = new LinkedHashSet<>(Arrays.asList(DEX_MARKERS));
 
-    private static final String[] NON_FEED_SIGNATURE_TOKENS = {
+    public static final String[] NON_FEED_SIGNATURE_TOKENS = {
             "bugreport", "notification", "armadillo", "direct.store", "directsqlite", "message",
             "messaging", "exoplayer", "heroplayer", "music", "quickpromotion", "upload"
     };

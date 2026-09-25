@@ -1,0 +1,122 @@
+{
+ "programs": [
+  {
+   "bf_commands": 0,
+   "bf_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "dfa_states": {},
+   "id": 0,
+   "ir_ops": 0,
+   "name": "core",
+   "persist": 64,
+   "symbols": [
+    {
+     "addr": 0,
+     "name": "x",
+     "region": "var",
+     "size": 1
+    }
+   ],
+   "tape": 1024
+  },
+  {
+   "bf_commands": 495740,
+   "bf_sha256": "2bbc32bf4fa11bba70fed64f13c4fc57ed39bd0a9ffd3d4c92b49846dffdb42c",
+   "dfa_states": {
+    "AD_LABEL": 182,
+    "APP_MODEL": 30,
+    "BOOLEAN_NEGATIVE": 19,
+    "BOOLEAN_POSITIVE": 50,
+    "CLASS_TOKEN": 58,
+    "DECOR_VIEW": 11,
+    "FIELD_NAME": 77,
+    "LIST_CONTAINER": 17,
+    "NON_FEED_SIGNATURE": 81,
+    "PANDO_TREE_CLASS": 28,
+    "STOP_VALUE": 25,
+    "STRUCTURED_CONTAINS": 120,
+    "STRUCTURED_EXACT": 129,
+    "THREADS_PACKAGE": 25,
+    "UNIT_TYPE": 90
+   },
+   "id": 1,
+   "ir_ops": 17525,
+   "name": "text",
+   "persist": 0,
+   "symbols": [
+    {
+     "addr": 0,
+     "name": "rq_major",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 1,
+     "name": "rq_minor",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 2,
+     "name": "rq_op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 3,
+     "name": "rq_flags",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 4,
+     "name": "rq_len",
+     "region": "var",
+     "size": 2
+    },
+    {
+     "addr": 6,
+     "name": "rq_id",
+     "region": "var",
+     "size": 2
+    },
+    {
+     "addr": 8,
+     "name": "matcher",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 9,
+     "name": "verdict",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 10,
+     "name": "known",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 13,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 15,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 15,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    }
+   ],
+   "tape": 256
+  }
+ ]
+}

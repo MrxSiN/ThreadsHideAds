@@ -40,6 +40,10 @@ class IrTest(unittest.TestCase):
         actual = ir.execute(ops, data, tape=actual_tape)
         self.assertEqual(expected, actual, code)
         self.assertEqual(expected_tape, actual_tape, code)
+        propagated_tape = bytearray(64)
+        propagated = ir.execute(ir.compile_bf(prefix + code, zero_from=0), data, tape=propagated_tape)
+        self.assertEqual(expected, propagated, code)
+        self.assertEqual(expected_tape, propagated_tape, code)
 
     def test_idioms(self):
         self.assertEqual([("set", 0, 0)], ir.compile_bf("[-]"))

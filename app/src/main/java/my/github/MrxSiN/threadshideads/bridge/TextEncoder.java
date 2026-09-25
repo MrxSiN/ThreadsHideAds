@@ -40,23 +40,29 @@ public final class TextEncoder {
      * full. Returns the index of the first char not written.
      */
     public static int encode(CharSequence value, int from, byte[] out, int offset, int[] written) {
+        return encode(value, from, out, offset, written, out.length);
+    }
+
+    /** As above, writing no further than {@code limit}. */
+    public static int encode(CharSequence value, int from, byte[] out, int offset, int[] written,
+                             int limit) {
         int pos = offset;
         int i = from;
         for (; i < value.length(); i++) {
             char c = value.charAt(i);
             if (c != 0 && c < 0x80) {
-                if (pos + 1 > out.length) {
+                if (pos + 1 > limit) {
                     break;
                 }
                 out[pos++] = (byte) c;
             } else if (c < 0x800) {
-                if (pos + 2 > out.length) {
+                if (pos + 2 > limit) {
                     break;
                 }
                 out[pos++] = (byte) (0xC0 | (c >> 6));
                 out[pos++] = (byte) (0x80 | (c & 0x3F));
             } else {
-                if (pos + 3 > out.length) {
+                if (pos + 3 > limit) {
                     break;
                 }
                 out[pos++] = (byte) (0xE0 | (c >> 12));

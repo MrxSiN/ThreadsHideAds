@@ -133,5 +133,9 @@ public final class BfAbi {
     public static final int PANDO_REPLACED = 1;
     public static final int PANDO_BLOCKED = 2;
     public static final int PANDO_REPLACE_FAILED = 3;
-    public static final int JSON_NULL = 4294967295;
+    public static final int JSON_NULL = 0xFFFFFFFF;
+    public static final int RUNTIME_LEVELS = 24;
+    public static final int RUNTIME_TAPE_MAX = 4096;
+    public static final int RUNTIME_LEVEL_IN_CAP = 16384;
+    public static final int RUNTIME_LEVEL_OUT_CAP = 8192;
 }

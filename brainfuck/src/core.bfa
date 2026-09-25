@@ -670,10 +670,7 @@ ifne rq_major ABI_MAJOR {
         ifz flag {
           clear go
         } else {
-          request CAP_SCAN_NEXT, 6
-          out root
-          outc MAX_CHILDREN_PER_GROUP
-          out reset
+          cap CAP_SCAN_NEXT, root, MAX_CHILDREN_PER_GROUP, reset
           read_reply r_status
           in view, text_view
           clear reset
@@ -702,9 +699,7 @@ ifne rq_major ABI_MAJOR {
       ifz memo {
         set walking 1
         while walking {
-          request CAP_SUPERCLASS, 5
-          out view
-          out k
+          cap CAP_SUPERCLASS, view, k
           read_reply r_status
           in super
           ifz super {

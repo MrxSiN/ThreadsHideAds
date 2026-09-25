@@ -19,18 +19,7 @@ var removed[4], failures[4], go, flag, fresh, d1
 # its counts to ours.
 macro visit_child() {
   var r[4], f[4]
-  request CAP_CALL, 17
-  outc PROG_NESTED
-  outc OP_NESTED_VISIT
-  outc 0
-  outc 13
-  out c_h
-  out d1
-  out budget
-  outc 1
-  out c_decl_object
-  out c_decl_interface
-  out c_decl_arraylist
+  call PROG_NESTED, OP_NESTED_VISIT, c_h, d1, budget, 1, c_decl_object, c_decl_interface, c_decl_arraylist
   read_reply r_status
   in r, f, budget
   addv removed, r
@@ -96,17 +85,7 @@ macro visit_value() {
     inc d1
     if n_list {
       var changed, h_out[4], count[4], blocked, current[4], diff[4], ok
-      request CAP_CALL, 13
-      outc PROG_SANITIZE
-      outc OP_SANITIZE_LIST
-      outc 0
-      outc 9
-      out h
-      out s_object
-      out s_interface
-      out s_arraylist
-      out has_replacer
-      outc 0
+      call PROG_SANITIZE, OP_SANITIZE_LIST, h, s_object, s_interface, s_arraylist, has_replacer, 0
       read_reply r_status
       in changed, h_out, count, blocked
       copy h -> current
@@ -117,9 +96,7 @@ macro visit_value() {
           addv removed, count
         } else {
           if has_replacer {
-            request CAP_WRITE_BACK, 8
-            out h
-            out h_out
+            cap CAP_WRITE_BACK, h, h_out
             read_reply r_status
             in ok
           }

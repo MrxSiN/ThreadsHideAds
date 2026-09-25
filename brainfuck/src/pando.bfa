@@ -17,9 +17,7 @@ var sponsored, action, h_out[4], removed[4], flag, facts
 # length := JSON length for (target, flags), JSON_NULL when absent. A text
 # longer than PANDO_MAX_JSON reads as absent, as PandoTrees.invoke did.
 macro json_length(target, flags, length) {
-  request CAP_JSON_LENGTH, 5
-  out target
-  out flags
+  cap CAP_JSON_LENGTH, target, flags
   read_reply r_status
   in length
   ifne r_status ST_OK { set length JSON_NULL }
@@ -36,8 +34,7 @@ macro verdict() {
   class_facts h, facts
   unpack_facts facts
   if f_pando {
-    request CAP_TREE_VERDICT_GET, 4
-    out h
+    cap CAP_TREE_VERDICT_GET, h
     read_reply r_status
     in memo
     ifz memo {
@@ -85,9 +82,7 @@ macro verdict() {
       }
       copy sponsored -> memo
       inc memo
-      request CAP_TREE_VERDICT_PUT, 5
-      out h
-      out memo
+      cap CAP_TREE_VERDICT_PUT, h, memo
       read_reply r_status
     } else {
       ifeq memo 2 { set sponsored 1 }
@@ -119,6 +114,7 @@ macro filter() {
     }
   }
   if first_ok {
+    reset_marks h
     set walking 1
     while walking {
       lt i, n_size -> flag
@@ -154,17 +150,11 @@ macro filter() {
         ifz declared_ok {
           var kept_h[4], copied[4]
           copy h_out -> kept_h
-          request CAP_COPY_OF, 9
-          out kept_h
-          out h_declared
-          outc COPY_DECLARED
+          cap CAP_COPY_OF, kept_h, h_declared, COPY_DECLARED
           read_reply r_status
           in copied
           ifz copied {
-            request CAP_COPY_OF, 9
-            out kept_h
-            out h
-            outc COPY_ORIGINAL
+            cap CAP_COPY_OF, kept_h, h, COPY_ORIGINAL
             read_reply r_status
             in copied
           }

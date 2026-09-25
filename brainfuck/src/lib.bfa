@@ -21,8 +21,7 @@ var c_map, c_collection, c_list, c_array, c_facts, c_size[4], c_value[8]
 var c_decl_object, c_decl_interface, c_decl_arraylist, c_field_fact, c_key[4]
 
 macro node(h) {
-  request CAP_NODE, 4
-  out h
+  cap CAP_NODE, h
   read_reply r_status
   in n_charseq, n_enum, n_number, n_boolean, n_character, n_class
   in n_map, n_collection, n_list, n_array, n_facts, n_size, n_value
@@ -30,10 +29,7 @@ macro node(h) {
 
 # child(h, index[4], mode): the index-th element, entry value or field.
 macro child(h, index, mode) {
-  request CAP_CHILD, 9
-  out h
-  out index
-  out mode
+  cap CAP_CHILD, h, index, mode
   read_reply r_status
   in c_h, c_charseq, c_enum, c_number, c_boolean, c_character, c_class
   in c_map, c_collection, c_list, c_array, c_facts, c_size, c_value
@@ -42,20 +38,14 @@ macro child(h, index, mode) {
 
 # visit(set, h, fresh): fresh := h was not yet in identity set `set`.
 macro visit(set, h, fresh) {
-  request CAP_VISIT, 6
-  out set
-  outc VISIT_ADD
-  out h
+  cap CAP_VISIT, set, VISIT_ADD, h
   read_reply r_status
   in fresh
 }
 
 macro clear_visited(set) {
-  var ignored
-  request CAP_VISIT, 6
-  out set
-  outc VISIT_CLEAR
-  outc32 0
+  var ignored, none[4]
+  cap CAP_VISIT, set, VISIT_CLEAR, none
   read_reply r_status
   in ignored
   clear ignored
@@ -64,22 +54,14 @@ macro clear_visited(set) {
 # Per-class memo of the object's runtime class. index is a 2-byte cell: a
 # field index for SLOT_FIELD, zero16 otherwise.
 macro memo_get(h, slot, index, value) {
-  request CAP_MEMO_GET, 8
-  out h
-  out slot
-  outc 0
-  out index
+  cap CAP_MEMO_GET, h, slot, 0, index
   read_reply r_status
   in value
 }
 
 macro memo_put(h, slot, index, value) {
   var ignored
-  request CAP_MEMO_PUT, 8
-  out h
-  out slot
-  out value
-  out index
+  cap CAP_MEMO_PUT, h, slot, value, index
   read_reply r_status
   in ignored
   clear ignored
@@ -87,8 +69,7 @@ macro memo_put(h, slot, index, value) {
 
 # Frees every handle allocated at or after h (h = 0 frees nothing).
 macro release(h) {
-  request CAP_RELEASE, 4
-  out h
+  cap CAP_RELEASE, h
   read_reply r_status
 }
 
@@ -111,14 +92,7 @@ macro text(matcher, h, source, transform, verdict) {
 # detect(h, depth, budget[2], found): one ReflectiveAdDetector.inspect step
 # in PROG_DETECT; budget is shared across the whole traversal.
 macro detect(h, depth, budget, found) {
-  request CAP_CALL, 11
-  outc PROG_DETECT
-  outc OP_DETECT
-  outc 0
-  outc 7
-  out h
-  out depth
-  out budget
+  call PROG_DETECT, OP_DETECT, h, depth, budget
   read_reply r_status
   in found
   in budget
@@ -126,59 +100,50 @@ macro detect(h, depth, budget, found) {
 
 # class_facts(h, facts): packed facts of h's runtime class, computed once.
 macro class_facts(h, facts) {
-  request CAP_CALL, 8
-  outc PROG_DETECT
-  outc OP_CLASS_FACTS
-  outc 0
-  outc 4
-  out h
+  call PROG_DETECT, OP_CLASS_FACTS, h
   read_reply r_status
   in facts
 }
 
 # pando_verdict(h, sponsored): PandoAdSignals.isSponsoredTree in PROG_PANDO.
 macro pando_verdict(h, sponsored) {
-  request CAP_CALL, 8
-  outc PROG_PANDO
-  outc OP_PANDO_VERDICT
-  outc 0
-  outc 4
-  out h
+  call PROG_PANDO, OP_PANDO_VERDICT, h
   read_reply r_status
   in sponsored
 }
 
 # ---- list mutation (the host keeps the marked indexes of one list)
 
+# reset_marks(h): forget any marks, the next ones belong to list h.
+macro reset_marks(h) {
+  var all[4]
+  set all 0xFFFFFFFF
+  cap CAP_MARK, h, all
+  read_reply r_status
+}
+
 macro mark(h, index) {
-  request CAP_MARK, 8
-  out h
-  out index
+  cap CAP_MARK, h, index
   read_reply r_status
 }
 
 # removed := entries removed in place, backwards, until one removal fails.
 macro remove_marked(h, removed) {
-  request CAP_REMOVE_MARKED, 4
-  out h
+  cap CAP_REMOVE_MARKED, h
   read_reply r_status
   in removed
 }
 
 # copy := new ArrayList of the unmarked entries.
 macro filtered_copy(h, copy) {
-  request CAP_FILTERED_COPY, 4
-  out h
+  cap CAP_FILTERED_COPY, h
   read_reply r_status
   in copy
 }
 
 # report(site, index, count[4]): removal accounting for the host's log.
 macro report(site, index, count) {
-  request CAP_REPORT, 6
-  out site
-  out index
-  out count
+  cap CAP_REPORT, site, index, count
   read_reply r_status
 }
 

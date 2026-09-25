@@ -879,6 +879,35 @@ class Assembler:
             width = {"outc": 1, "outc16": 2, "outc32": 4}[op]
             for i in range(len(a)):
                 self.emit_const(K(i), width)
+        elif op in ("cap", "call"):
+            # cap OP, args...           : capability request frame
+            # call PROGRAM, OP, args... : CAP_CALL frame running PROGRAM
+            # Lengths are computed from the operands: a cell sends its bytes,
+            # a constant one byte.
+            first = 1 if op == "cap" else 2
+            sizes = [C(i).size if self.is_cell(a[i], env) else 1 for i in range(first, len(a))]
+            args = sum(sizes)
+            header_op = K(0) if op == "cap" else self.consts["CAP_CALL"]
+            payload = args if op == "cap" else 4 + args
+            if op == "call" and args > 255:
+                raise AsmError("call arguments exceed 255 bytes")
+            self.emit_const(self.consts["ABI_MAJOR"], 1)
+            self.emit_const(self.consts["ABI_MINOR"], 1)
+            self.emit_const(header_op, 1)
+            self.emit_const(0, 1)
+            self.emit_const(payload, 2)
+            self.emit_const(0, 2)
+            if op == "call":
+                self.emit_const(K(0), 1)
+                self.emit_const(K(1), 1)
+                self.emit_const(0, 1)
+                self.emit_const(args, 1)
+            for i in range(first, len(a)):
+                if self.is_cell(a[i], env):
+                    for b in C(i).bytes():
+                        self.raw(b, ".")
+                else:
+                    self.emit_const(K(i), 1)
         elif op == "outs":
             # outs "text": the modified UTF-8 bytes, no terminator.
             self.emit_bytes(rx.encode_text(self.string_value(a[0], env)))

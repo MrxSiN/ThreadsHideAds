@@ -50,7 +50,8 @@ final class Host {
     private final Map<Object, Boolean>[] visited = new Map[]{
             new IdentityHashMap<Object, Boolean>(), new IdentityHashMap<Object, Boolean>()};
 
-    private int markedList;
+    /** The list whose entries are marked; compared by identity, not handle. */
+    private Object markedList;
     private final ArrayList<Integer> marks = new ArrayList<>();
 
     private final ArrayDeque<Object> scanQueue = new ArrayDeque<>();
@@ -73,7 +74,7 @@ final class Host {
         visited[0].clear();
         visited[1].clear();
         marks.clear();
-        markedList = 0;
+        markedList = null;
         scanQueue.clear();
         scanLast = null;
         for (int i = 0; i < streams.length; i++) {
@@ -453,19 +454,23 @@ final class Host {
 
     // ------------------------------------------------------------ list mutation
 
+    /** Marks one entry; index -1 starts a fresh set of marks for the list. */
     private void mark(int handle, int index) {
-        if (handle != markedList) {
+        Object list = object(handle);
+        if (index == -1 || list != markedList) {
             marks.clear();
-            markedList = handle;
+            markedList = list;
         }
-        marks.add(index);
+        if (index != -1) {
+            marks.add(index);
+        }
     }
 
     private int removeMarked(int handle) {
         @SuppressWarnings("unchecked")
         List<Object> list = (List<Object>) object(handle);
         int removed = 0;
-        if (handle != markedList) {
+        if (list != markedList) {
             return 0;
         }
         // Backwards, so shifts cannot skip entries; stop at the first
@@ -485,7 +490,7 @@ final class Host {
         List<?> list = (List<?>) object(handle);
         ArrayList<Object> kept = new ArrayList<>(list.size());
         int next = 0;
-        List<Integer> marked = handle == markedList ? marks : Collections.<Integer>emptyList();
+        List<Integer> marked = list == markedList ? marks : Collections.<Integer>emptyList();
         for (int i = 0; i < list.size(); i++) {
             if (next < marked.size() && marked.get(next) == i) {
                 next++;

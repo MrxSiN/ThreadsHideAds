@@ -1709,8 +1709,8 @@
    "tape": 256
   },
   {
-   "bf_commands": 155842,
-   "bf_sha256": "854bf891549c5aff0c4c06919afc975656c14a47bfbbb66d3c92fe532539ea71",
+   "bf_commands": 155871,
+   "bf_sha256": "500eaa6e0b58f92ddb1718829c45d5bed5262c00cf9b103dd45c0f6ab74600b1",
    "dfa_states": {},
    "id": 2,
    "ir_ops": 4837,
@@ -2091,6 +2091,12 @@
     },
     {
      "addr": 109,
+     "name": "none",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 113,
      "name": "skip",
      "region": "var",
      "size": 1
@@ -2735,11 +2741,11 @@
    "tape": 512
   },
   {
-   "bf_commands": 60356,
-   "bf_sha256": "dafbcc4ee1563610c35ca3b6804692fe9d764cd8944343326604bb899e81aba6",
+   "bf_commands": 60960,
+   "bf_sha256": "116d2c0be1d46df2ff3d4f1052c47cf8fc253fa1edc02d63a5fdc0b054d9b907",
    "dfa_states": {},
    "id": 3,
-   "ir_ops": 1688,
+   "ir_ops": 1727,
    "name": "sanitize",
    "persist": 0,
    "symbols": [
@@ -3224,6 +3230,18 @@
      "size": 1
     },
     {
+     "addr": 139,
+     "name": "all",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 143,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
      "addr": 141,
      "name": "skip",
      "region": "var",
@@ -3383,8 +3401,8 @@
    "tape": 512
   },
   {
-   "bf_commands": 214066,
-   "bf_sha256": "039640bf503e7f60045ab49d01354506fb768b22b65116db18944080155e9831",
+   "bf_commands": 214063,
+   "bf_sha256": "02312df4edc6ce101f083fbf387bcc8524815bf191a0f54b0aa418910b64b979",
    "dfa_states": {},
    "id": 4,
    "ir_ops": 6119,
@@ -3753,6 +3771,12 @@
     },
     {
      "addr": 104,
+     "name": "none",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 108,
      "name": "skip",
      "region": "var",
      "size": 1
@@ -4343,11 +4367,11 @@
    "tape": 512
   },
   {
-   "bf_commands": 72574,
-   "bf_sha256": "b17db54e88b33d58872f10f613c7905b1c48a3a91489b198d5a2dec3cdcb643d",
+   "bf_commands": 73090,
+   "bf_sha256": "6c0e3b760c6d36aea35ce2320c9b4ce0ee70efce25465838614d95832f7a5cac",
    "dfa_states": {},
    "id": 5,
-   "ir_ops": 2202,
+   "ir_ops": 2241,
    "name": "pando",
    "persist": 0,
    "symbols": [
@@ -4869,6 +4893,18 @@
     },
     {
      "addr": 118,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 117,
+     "name": "all",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 121,
      "name": "skip",
      "region": "var",
      "size": 1

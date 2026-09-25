@@ -24,6 +24,7 @@ macro sanitize_list() {
   copy h -> h_out
   node h
   if n_list {
+    reset_marks h
     set walking 1
     while walking {
       lt i, n_size -> flag
@@ -87,32 +88,19 @@ macro sanitize_list() {
 
 # arg(index): parameter or result (index RESULT_INDEX) of the hooked call.
 macro arg(which) {
-  request CAP_ARG, 1
-  out which
+  cap CAP_ARG, which
   read_reply r_status
   in a_h, a_list, p_object, p_interface, p_arraylist, r_object, r_interface, r_arraylist
 }
 
 macro set_arg(which, value) {
-  request CAP_SET_ARG, 5
-  out which
-  out value
+  cap CAP_SET_ARG, which, value
   read_reply r_status
 }
 
 # The list sanitizer, run one level deeper so its cells stay separate.
 macro sanitize_call(target, obj, iface, al, repl, empty) {
-  request CAP_CALL, 13
-  outc PROG_SANITIZE
-  outc OP_SANITIZE_LIST
-  outc 0
-  outc 9
-  out target
-  out obj
-  out iface
-  out al
-  out repl
-  out empty
+  call PROG_SANITIZE, OP_SANITIZE_LIST, target, obj, iface, al, repl, empty
   read_reply r_status
   in changed, h_out, removed, blocked
 }
@@ -191,12 +179,7 @@ ifne rq_major ABI_MAJOR {
         }
         if a_h {
           var nested_removed[4], failures[4]
-          request CAP_CALL, 8
-          outc PROG_NESTED
-          outc OP_NESTED_SANITIZE
-          outc 0
-          outc 4
-          out a_h
+          call PROG_NESTED, OP_NESTED_SANITIZE, a_h
           read_reply r_status
           in nested_removed, failures
           if nested_removed { report SITE_NESTED, 0, nested_removed }

@@ -74,9 +74,7 @@ macro compute_facts(target, out_facts) {
     # PandoTrees.isPandoTreeClass: the class or any superclass is TreeJNI.
     set walking 1
     while walking {
-      request CAP_SUPERCLASS, 5
-      out target
-      out k
+      cap CAP_SUPERCLASS, target, k
       read_reply r_status
       in super
       ifz super {
@@ -101,8 +99,7 @@ macro compute_facts(target, out_facts) {
     }
     # Reflection.hasStructuredToString.
     if app {
-      request CAP_CLASS_INFO, 4
-      out target
+      cap CAP_CLASS_INFO, target
       read_reply r_status
       in overrides
       if overrides { set structured 1 }

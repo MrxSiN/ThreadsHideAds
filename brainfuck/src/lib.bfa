@@ -1,0 +1,190 @@
+# Capability calls shared by the policy programs. Each macro writes one
+# request frame, reads the whole reply and leaves r_status set. A failed
+# capability answers zeros, so every caller fails open.
+# Frame layouts: docs/BRAINFUCK_ABI.md, "Capabilities".
+
+include "frame.bfa"
+include "limits.bfa"
+
+var r_status
+var zero16[2]
+
+# ---- object descriptors (CAP_NODE, CAP_CHILD)
+# kind flags, class facts memo, size (container length or text length),
+# value (Number.longValue(), or 1/0 for Boolean)
+
+var n_charseq, n_enum, n_number, n_boolean, n_character, n_class
+var n_map, n_collection, n_list, n_array, n_facts, n_size[4], n_value[8]
+
+var c_h[4], c_charseq, c_enum, c_number, c_boolean, c_character, c_class
+var c_map, c_collection, c_list, c_array, c_facts, c_size[4], c_value[8]
+var c_decl_object, c_decl_interface, c_decl_arraylist, c_field_fact, c_key[4]
+
+macro node(h) {
+  request CAP_NODE, 4
+  out h
+  read_reply r_status
+  in n_charseq, n_enum, n_number, n_boolean, n_character, n_class
+  in n_map, n_collection, n_list, n_array, n_facts, n_size, n_value
+}
+
+# child(h, index[4], mode): the index-th element, entry value or field.
+macro child(h, index, mode) {
+  request CAP_CHILD, 9
+  out h
+  out index
+  out mode
+  read_reply r_status
+  in c_h, c_charseq, c_enum, c_number, c_boolean, c_character, c_class
+  in c_map, c_collection, c_list, c_array, c_facts, c_size, c_value
+  in c_decl_object, c_decl_interface, c_decl_arraylist, c_field_fact, c_key
+}
+
+# visit(set, h, fresh): fresh := h was not yet in identity set `set`.
+macro visit(set, h, fresh) {
+  request CAP_VISIT, 6
+  out set
+  outc VISIT_ADD
+  out h
+  read_reply r_status
+  in fresh
+}
+
+macro clear_visited(set) {
+  var ignored
+  request CAP_VISIT, 6
+  out set
+  outc VISIT_CLEAR
+  outc32 0
+  read_reply r_status
+  in ignored
+  clear ignored
+}
+
+# Per-class memo of the object's runtime class. index is a 2-byte cell: a
+# field index for SLOT_FIELD, zero16 otherwise.
+macro memo_get(h, slot, index, value) {
+  request CAP_MEMO_GET, 8
+  out h
+  out slot
+  outc 0
+  out index
+  read_reply r_status
+  in value
+}
+
+macro memo_put(h, slot, index, value) {
+  var ignored
+  request CAP_MEMO_PUT, 8
+  out h
+  out slot
+  out value
+  out index
+  read_reply r_status
+  in ignored
+  clear ignored
+}
+
+# Frees every handle allocated at or after h (h = 0 frees nothing).
+macro release(h) {
+  request CAP_RELEASE, 4
+  out h
+  read_reply r_status
+}
+
+# text(matcher, h, source, transform, verdict): runs a vocabulary matcher of
+# PROG_TEXT over the text the host reads from h.
+macro text(matcher, h, source, transform, verdict) {
+  request CAP_CALL, 11
+  outc PROG_TEXT
+  outc OP_TEXT_MATCH
+  outc 1
+  outc 1
+  out matcher
+  out h
+  out source
+  out transform
+  read_reply r_status
+  in verdict
+}
+
+# detect(h, depth, budget[2], found): one ReflectiveAdDetector.inspect step
+# in PROG_DETECT; budget is shared across the whole traversal.
+macro detect(h, depth, budget, found) {
+  request CAP_CALL, 11
+  outc PROG_DETECT
+  outc OP_DETECT
+  outc 0
+  outc 7
+  out h
+  out depth
+  out budget
+  read_reply r_status
+  in found
+  in budget
+}
+
+# class_facts(h, facts): packed facts of h's runtime class, computed once.
+macro class_facts(h, facts) {
+  request CAP_CALL, 8
+  outc PROG_DETECT
+  outc OP_CLASS_FACTS
+  outc 0
+  outc 4
+  out h
+  read_reply r_status
+  in facts
+}
+
+# pando_verdict(h, sponsored): PandoAdSignals.isSponsoredTree in PROG_PANDO.
+macro pando_verdict(h, sponsored) {
+  request CAP_CALL, 8
+  outc PROG_PANDO
+  outc OP_PANDO_VERDICT
+  outc 0
+  outc 4
+  out h
+  read_reply r_status
+  in sponsored
+}
+
+# ---- list mutation (the host keeps the marked indexes of one list)
+
+macro mark(h, index) {
+  request CAP_MARK, 8
+  out h
+  out index
+  read_reply r_status
+}
+
+# removed := entries removed in place, backwards, until one removal fails.
+macro remove_marked(h, removed) {
+  request CAP_REMOVE_MARKED, 4
+  out h
+  read_reply r_status
+  in removed
+}
+
+# copy := new ArrayList of the unmarked entries.
+macro filtered_copy(h, copy) {
+  request CAP_FILTERED_COPY, 4
+  out h
+  read_reply r_status
+  in copy
+}
+
+# report(site, index, count[4]): removal accounting for the host's log.
+macro report(site, index, count) {
+  request CAP_REPORT, 6
+  out site
+  out index
+  out count
+  read_reply r_status
+}
+
+# Unpacked class facts (see detect.bfa, "Class facts").
+var f_known, f_app_model, f_strong_token, f_pando, f_structured
+
+macro unpack_facts(facts) {
+  unpack facts -> f_known, f_app_model, f_strong_token, f_pando, f_structured
+}

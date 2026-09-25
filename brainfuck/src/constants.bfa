@@ -90,6 +90,7 @@ const CAP_ARG = 0x50
 const CAP_SET_ARG = 0x51
 const CAP_TREE_VERDICT_GET = 0x52
 const CAP_TREE_VERDICT_PUT = 0x53
+const CAP_REPORT = 0x54
 
 # ---- runtime call (BF -> runtime -> BF), handled natively
 const CAP_CALL = 0x60
@@ -124,3 +125,47 @@ const SRC_VIEW_DESCRIPTION = 8
 # ---- text transforms
 const TX_RAW = 0
 const TX_LOWER_ROOT = 1
+
+# ---- more top-level ops and text sources
+const OP_CLASS_FACTS = 0x39
+const SRC_TYPE_NAME = 9
+
+# ---- CAP_CHILD modes
+const MODE_LIST = 0
+const MODE_ITER = 1
+const MODE_MAP_ENTRY = 2
+const MODE_ARRAY = 3
+const MODE_FIELD = 4
+
+# ---- per-class memo slots (CAP_MEMO_GET/PUT)
+const SLOT_FACTS = 0
+const SLOT_PANDO_FLAGS = 1
+const SLOT_FIELD = 2
+const SLOT_VIEW = 3
+
+# ---- identity sets (CAP_VISIT)
+const SET_DETECT = 0
+const SET_NESTED = 1
+const VISIT_ADD = 0
+const VISIT_CLEAR = 1
+
+# ---- removal sites reported by OP_BOUNDARY_BEFORE/AFTER
+const SITE_ARG = 1
+const SITE_LATE_ARG = 2
+const SITE_RESULT = 3
+const SITE_NESTED = 4
+const SITE_REPLACEMENT_FAILURE = 5
+const RESULT_INDEX = 255
+
+# ---- CAP_COPY_OF sources
+const COPY_DECLARED = 0
+const COPY_ORIGINAL = 1
+
+# ---- OP_PANDO_FILTER actions
+const PANDO_NONE = 0
+const PANDO_REPLACED = 1
+const PANDO_BLOCKED = 2
+const PANDO_REPLACE_FAILED = 3
+
+# JSON length answered for a null or failed serialization.
+const JSON_NULL = 0xFFFFFFFF

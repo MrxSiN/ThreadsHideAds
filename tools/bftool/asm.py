@@ -330,9 +330,16 @@ class Program:
         self.persist_size, self.tape_size, self.dfas = persist_size, tape_size, dfas
 
 
+class StrConst(str):
+    """A string literal bound to a macro parameter."""
+
+
 class Assembler:
-    def __init__(self, tape_size=4096, include_dirs=()):
+    def __init__(self, tape_size=4096, include_dirs=(), persist_capacity=None):
+        """persist_capacity: size of the persistent region at the start of the
+        tape. When None (tests), the region ends at the first scratch cell."""
         self.tape_size = tape_size
+        self.persist_capacity = persist_capacity
         self.include_dirs = list(include_dirs)
         self.out = []
         self.pos = 0
@@ -343,7 +350,7 @@ class Assembler:
         self.globals = {}
         self.persist_next = 0
         self.persist_frozen = False
-        self.scratch_next = None
+        self.scratch_next = persist_capacity
         self.included = set()
         self.symbols = []
         self.max_used = 0
@@ -708,8 +715,17 @@ class Assembler:
         if k == "call" and e[1] == "sizeof":
             return self.cell(e[2][0], env).size
         if k == "call" and e[1] == "len":
-            return len(rx.encode_text(e[2][0][1]))
+            return len(rx.encode_text(self.string_value(e[2][0], env)))
         raise AsmError("not a constant expression: %r" % (e,))
+
+    def string_value(self, e, env):
+        if e[0] == "str":
+            return e[1]
+        if e[0] == "name":
+            v = self.lookup(e[1], env)
+            if isinstance(v, StrConst):
+                return v
+        raise AsmError("not a string: %r" % (e,))
 
     def lookup(self, name, env):
         for scope in reversed(env):
@@ -749,10 +765,12 @@ class Assembler:
             if args[i][0] == "idx":
                 size = self.const_value(args[i][2], env)
             if region == "persist":
-                if self.persist_frozen:
+                if self.persist_capacity is None and self.persist_frozen:
                     raise AsmError("%s: persist after first var" % stmt.where)
                 cell = Cell(name, self.persist_next, size)
                 self.persist_next += size
+                if self.persist_capacity is not None and self.persist_next > self.persist_capacity:
+                    raise AsmError("persistent region exceeds %d cells" % self.persist_capacity)
                 self.max_used = max(self.max_used, self.persist_next)
             else:
                 cell = self.alloc(name, size)
@@ -861,6 +879,25 @@ class Assembler:
             width = {"outc": 1, "outc16": 2, "outc32": 4}[op]
             for i in range(len(a)):
                 self.emit_const(K(i), width)
+        elif op == "outs":
+            # outs "text": the modified UTF-8 bytes, no terminator.
+            self.emit_bytes(rx.encode_text(self.string_value(a[0], env)))
+        elif op == "unpack":
+            # unpack x -> b0, b1, ... : bk := bit k of x (x preserved, x < 2**n).
+            x = C(0)
+            bits = [C(i) for i in range(1, len(a))]
+            for b in bits:
+                self.clear(b)
+
+            def setter(value):
+                return lambda: [self.add(b, 1) for k, b in enumerate(bits) if value >> k & 1]
+            self.switch(x, [([v], setter(v)) for v in range(1, 1 << len(bits))], None)
+        elif op == "pack":
+            # pack b0, b1, ... -> x : x := sum of (bk != 0) << k.
+            x = C(len(a) - 1)
+            self.clear(x)
+            for k in range(len(a) - 1):
+                self.if_nonzero(C(k), lambda k=k: self.add(x, 1 << k))
         elif op == "drop":
             with self.scope():
                 t = self.temp()
@@ -913,11 +950,29 @@ class Assembler:
                 raise AsmError("macro %s expects %d arguments" % (op, len(params)))
             bound = {}
             for p, e in zip(params, a):
-                bound[p] = self.cell(e, env) if self.is_cell(e, env) else self.const_value(e, env)
+                if e[0] == "str":
+                    bound[p] = StrConst(e[1])
+                elif self.is_cell(e, env):
+                    bound[p] = self.cell(e, env)
+                elif e[0] == "name" and isinstance(self.lookup(e[1], env), StrConst):
+                    bound[p] = self.lookup(e[1], env)
+                else:
+                    bound[p] = self.const_value(e, env)
             with self.scope() as sc:
                 self.statements(body, [self.globals, bound, {}], base=base, scope=sc)
         else:
             raise AsmError("unknown instruction %s" % op)
+
+    def emit_bytes(self, data):
+        # Each byte is reached from the previous one by the shorter direction.
+        with self.scope():
+            t = self.temp()
+            previous = 0
+            for byte in data:
+                self.add(t, byte - previous)
+                self.raw(t, ".")
+                previous = byte
+            self.clear(t)
 
     def emit_const(self, value, width):
         with self.scope():
@@ -1044,8 +1099,8 @@ def _byte_classes(dfa):
     return byte_class, members, default
 
 
-def assemble(path, tape_size=4096):
-    asm = Assembler(tape_size)
+def assemble(path, tape_size=4096, persist_capacity=None):
+    asm = Assembler(tape_size, persist_capacity=persist_capacity)
     asm.assemble_file(path)
     code = "".join(asm.out)
     name = os.path.splitext(os.path.basename(path))[0]

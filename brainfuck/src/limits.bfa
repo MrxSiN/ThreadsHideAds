@@ -1,0 +1,25 @@
+# Every bound the policy enforces, derived from v1.2.1 (docs/BRAINFUCK_ABI.md,
+# "Limits"). OP_LIMITS hands the host-side ones to the bridge at startup.
+
+# ReflectiveAdDetector
+const DETECT_MAX_DEPTH = 8
+const DETECT_MAX_BUDGET = 1200
+const DETECT_MAX_ENTRIES = 32
+
+# NestedCollectionSanitizer
+const NESTED_MAX_DEPTH = 4
+const NESTED_MAX_BUDGET = 192
+const NESTED_MAX_ENTRIES = 48
+
+# Reflection
+const FIELD_CLASS_DEPTH = 6
+const MAX_INSPECTED_TEXT = 262144
+
+# PandoTrees / PandoAdSignals / PandoResponseHooks
+const PANDO_MAX_JSON = 524288
+const PANDO_MAX_ITEM_JSON = 65536
+const PANDO_MAX_LIST = 256
+const PANDO_FLAG_COMBINATIONS = 4
+
+# Superclass walks are bounded even though class chains are finite.
+const MAX_SUPERCLASS_WALK = 64

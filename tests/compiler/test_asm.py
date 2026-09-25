@@ -125,6 +125,19 @@ clear x, f
         ref.run(code, b"\x05", tape=tape)
         self.assertEqual(bytes(512), bytes(tape))
 
+    def test_strings_and_bits(self):
+        code = build("""
+var x, a, b, c, y
+outs "Hé"
+in x
+unpack x -> a, b, c
+out a, b, c
+pack c, b, a -> y
+out y
+""")
+        self.assertEqual("Hé".encode() + b"\x01\x00\x01\x05", run(code, b"\x05"))
+        self.assertEqual("Hé".encode() + b"\x00\x01\x01\x03", run(code, b"\x06"))
+
     def test_errors(self):
         with self.assertRaises(asm.AsmError):
             build("var x\nbogus x\n")

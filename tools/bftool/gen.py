@@ -87,7 +87,8 @@ def generate(manifest_path=MANIFEST):
     for index, entry in enumerate(manifest["programs"]):
         if entry["id"] != index:
             raise SystemExit("programs.json ids must be 0..n-1 in order")
-        program, _ = asm.assemble(os.path.join(base, entry["source"]), entry["tape"])
+        program, _ = asm.assemble(os.path.join(base, entry["source"]), entry["tape"],
+                                  entry.get("persist", 0))
         if program.persist_size > entry.get("persist", 0):
             raise SystemExit("%s declares %d persistent cells, manifest allows %d"
                              % (entry["name"], program.persist_size, entry.get("persist", 0)))

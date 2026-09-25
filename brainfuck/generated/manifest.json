@@ -8,6 +8,7 @@
    "ir_ops": 7342,
    "name": "core",
    "persist": 64,
+   "scratch_high_water": 209,
    "symbols": [
     {
      "addr": 64,
@@ -1630,7 +1631,7 @@
      "size": 1
     }
    ],
-   "tape": 1024
+   "tape": 256
   },
   {
    "bf_commands": 496894,
@@ -1656,6 +1657,7 @@
    "ir_ops": 17530,
    "name": "text",
    "persist": 0,
+   "scratch_high_water": 37,
    "symbols": [
     {
      "addr": 0,
@@ -1730,7 +1732,7 @@
      "size": 1
     }
    ],
-   "tape": 256
+   "tape": 64
   },
   {
    "bf_commands": 183975,
@@ -1740,6 +1742,7 @@
    "ir_ops": 5144,
    "name": "detect",
    "persist": 0,
+   "scratch_high_water": 164,
    "symbols": [
     {
      "addr": 0,
@@ -2780,7 +2783,7 @@
      "size": 1
     }
    ],
-   "tape": 512
+   "tape": 256
   },
   {
    "bf_commands": 61879,
@@ -2790,6 +2793,7 @@
    "ir_ops": 1759,
    "name": "sanitize",
    "persist": 0,
+   "scratch_high_water": 155,
    "symbols": [
     {
      "addr": 0,
@@ -3464,7 +3468,7 @@
      "size": 1
     }
    ],
-   "tape": 512
+   "tape": 256
   },
   {
    "bf_commands": 219337,
@@ -3474,6 +3478,7 @@
    "ir_ops": 6159,
    "name": "nested",
    "persist": 0,
+   "scratch_high_water": 158,
    "symbols": [
     {
      "addr": 0,
@@ -4454,7 +4459,7 @@
      "size": 1
     }
    ],
-   "tape": 512
+   "tape": 256
   },
   {
    "bf_commands": 85437,
@@ -4464,6 +4469,7 @@
    "ir_ops": 2454,
    "name": "pando",
    "persist": 0,
+   "scratch_high_water": 148,
    "symbols": [
     {
      "addr": 0,
@@ -5108,7 +5114,7 @@
      "size": 1
     }
    ],
-   "tape": 512
+   "tape": 256
   }
  ]
 }

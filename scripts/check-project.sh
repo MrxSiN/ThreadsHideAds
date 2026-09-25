@@ -2,56 +2,74 @@
 set -eu
 ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 SRC="$ROOT/app/src/main/java/my/github/MrxSiN/threadshideads"
+BF="$ROOT/brainfuck/src"
+CPP="$ROOT/app/src/main/cpp"
 
-# Entry point: Threads only, attach-gated startup, delegated installation.
-grep -q 'com.instagram.barcelona' "$SRC/MainHook.java"
+# Entry point: attach-gated startup, scope decided by the core.
+grep -q 'policy.loadPackage' "$SRC/MainHook.java"
 grep -q 'Application.attach observed' "$SRC/MainHook.java"
 grep -q 'ModelHookInstaller.request' "$SRC/MainHook.java"
+grep -q 'com.instagram.barcelona' "$ROOT/app/src/main/res/values/arrays.xml"
+grep -q 'regex THREADS_PACKAGE = "com.instagram.barcelona"' "$BF/vocabulary.bfa"
 
-# Startup: DexKit opening, bounded retries, lazy native library, Pando layer.
-grep -q 'DexKitBridge' "$SRC/hook/ModelHookInstaller.java"
-grep -q 'createBridge' "$SRC/hook/ModelHookInstaller.java"
-grep -q 'RETRY_DELAYS_MS' "$SRC/hook/ModelHookInstaller.java"
-grep -q 'NATIVE_LIBRARY_LOADED' "$SRC/hook/ModelHookInstaller.java"
+# Startup: DexKit opening, retry decisions and install order from the core.
+grep -q 'DexKitBridge.create' "$SRC/hook/ModelHookInstaller.java"
+grep -q 'policy.initRequest' "$SRC/hook/ModelHookInstaller.java"
+grep -q 'policy.installStep' "$SRC/hook/ModelHookInstaller.java"
+grep -q 'case 0 { outc32 250 }' "$BF/core.bfa"
+grep -q 'case 1 { outc32 1000 }' "$BF/core.bfa"
+grep -q 'default { outc32 3000 }' "$BF/core.bfa"
 grep -q 'PandoResponseHooks.install' "$SRC/hook/ModelHookInstaller.java"
 
-# Model hooks: list sanitizing, neutralized injector, disabled ad predicates.
-grep -q 'hookListBoundary' "$SRC/hook/FeedModelHooks.java"
-grep -q 'hookAdInjectionPredicate' "$SRC/hook/FeedModelHooks.java"
+# Model hooks: boundary flow, neutralized injector, disabled ad predicates.
+grep -q 'policy.boundaryBefore' "$SRC/hook/FeedModelHooks.java"
+grep -q 'policy.boundaryAfter' "$SRC/hook/FeedModelHooks.java"
 grep -q 'returnConstant(false)' "$SRC/hook/FeedModelHooks.java"
-grep -q 'nestedSanitizer.sanitize' "$SRC/hook/FeedModelHooks.java"
+grep -q 'policy.pandoFilter' "$SRC/hook/PandoResponseHooks.java"
 
-# Pando response layer: shape-based accessor selection, no native hooking.
-grep -q 'com.facebook.pando.TreeJNI' "$SRC/hook/PandoResponseHooks.java"
-grep -q 'Modifier.isNative' "$SRC/hook/PandoResponseHooks.java"
+# Policy lives in Brainfuck: unit types, emptying rule, bounded walks.
+grep -q '"intent_aware_ad_pivot"' "$BF/vocabulary.bfa"
+grep -q 'ifz allow_emptying { set blocked 1 }' "$BF/sanitize.bfa"
+grep -q 'const DETECT_MAX_BUDGET = 1200' "$BF/limits.bfa"
+grep -q 'const NESTED_MAX_DEPTH = 4' "$BF/limits.bfa"
+grep -q 'const PANDO_MAX_LIST = 256' "$BF/limits.bfa"
 
-# Detection: unit types, structured signals, bounded reflective walk.
-grep -q 'isAdUnitType' "$SRC/detect/AdFieldSignals.java"
-grep -q 'intent_aware_ad_pivot' "$SRC/detect/AdFieldSignals.java"
-grep -q 'isStructuredAdValue' "$SRC/detect/ReflectiveAdDetector.java"
-grep -q 'MAX_BUDGET' "$SRC/detect/ReflectiveAdDetector.java"
-grep -q 'isSponsoredTree' "$SRC/detect/PandoAdSignals.java"
+# The host holds no ad vocabulary: these words appear only in brainfuck/src.
+if grep -rqiE '"(ad4ad|is_sponsored|sponsorisé|quickpromotion)"' "$SRC"; then
+    echo "Ad vocabulary found in host code; it belongs in brainfuck/src." >&2
+    exit 1
+fi
 
-# Sanitizing: in-place removal, replacement accounting, emptying rule.
-grep -q 'removeIndexesInPlace' "$SRC/model/ListSanitizer.java"
-grep -q 'allowEmptying' "$SRC/model/ListSanitizer.java"
-grep -q 'recordReplacementFailure' "$SRC/model/NestedCollectionSanitizer.java"
+# Release path is AOT native code, not an interpreter.
+grep -q 'add_library(threadsbf SHARED' "$CPP/CMakeLists.txt"
+grep -q 'System.loadLibrary("threadsbf")' "$SRC/bridge/NativeCore.java"
+if grep -rq 'bftool.ref\|BfInterpreter' "$SRC"; then
+    echo "An interpreter is referenced from production code." >&2
+    exit 1
+fi
 
-# Rendered-label fallback: whole-label matching and restore safety.
-grep -q 'markerView' "$SRC/ui/FeedItemHider.java"
+# Rendered-label fallback: restore only by the label that hid a card.
+grep -q 'wasHiddenBy' "$SRC/ui/FeedItemHider.java"
 
 # Tracing stays off in a release build.
 grep -q 'ENABLED = false' "$SRC/core/Diagnostics.java"
 
+# Xposed metadata required by LSPosed and LSPatch.
+grep -q 'my.github.MrxSiN.threadshideads.MainHook' "$ROOT/app/src/main/assets/xposed_init"
+grep -q 'xposedmodule' "$ROOT/app/src/main/AndroidManifest.xml"
+grep -q 'xposedscope' "$ROOT/app/src/main/AndroidManifest.xml"
+
 # Release metadata and signing configuration.
-grep -q 'val appVersion = "1.2.1"' "$ROOT/app/build.gradle.kts"
-grep -q 'versionCode = 6' "$ROOT/app/build.gradle.kts"
+grep -q 'val appVersion = "1.3.0"' "$ROOT/app/build.gradle.kts"
+grep -q 'versionCode = 7' "$ROOT/app/build.gradle.kts"
+grep -q 'applicationId = "io.github.mrxsin.threadshideads"' "$ROOT/app/build.gradle.kts"
 grep -q 'envKeystorePath' "$ROOT/app/build.gradle.kts"
 grep -q 'envKeyPassword' "$ROOT/app/build.gradle.kts"
 
 # Release automation.
 grep -q 'workflow_dispatch:' "$ROOT/.github/workflows/android.yml"
 grep -q 'Build release APK' "$ROOT/.github/workflows/android.yml"
+grep -q 'gen.py --check' "$ROOT/.github/workflows/android.yml"
 grep -q 'actions/upload-artifact@v4' "$ROOT/.github/workflows/android.yml"
 grep -q 'softprops/action-gh-release@v2' "$ROOT/.github/workflows/android.yml"
 grep -qi 'apksigner.*verify' "$ROOT/.github/workflows/android.yml"

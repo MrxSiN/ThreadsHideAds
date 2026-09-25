@@ -9,7 +9,7 @@ import java.util.TreeSet;
  * Inspects an unknown Threads model so the marker that distinguishes an
  * advertisement can be found after an app update.
  *
- * Names, types, enum constants and JSON key names are reported; feed content is
+ * Names, types and enum constants are reported; feed content is
  * not. Field reporting stops one level below the item, and every entry point is
  * gated on {@link Diagnostics#ENABLED}.
  */
@@ -18,27 +18,6 @@ public final class ModelProbes {
     private static final int MAX_REPORTED_TYPES = 60;
     private static final int MAX_REPORTED_FIELDS = 40;
     private static final int MAX_ENUM_TEXT_LENGTH = 40;
-
-    /**
-     * Candidate JSON keys for the sponsored signal. Only the key name is
-     * reported when present, never the surrounding content.
-     */
-    private static final String[] CANDIDATE_KEYS = {
-            "is_sponsored",
-            "sponsored",
-            "sponsor_tags",
-            "sponsored_label",
-            "is_paid_partnership",
-            "ad_id",
-            "ad_type",
-            "ad_label",
-            "ad_metadata",
-            "is_ad",
-            "netego",
-            "commerciality",
-            "boosted_status",
-            "ad_action"
-    };
 
     private ModelProbes() {
     }
@@ -217,40 +196,6 @@ public final class ModelProbes {
 
         ModuleLog.log("declared on " + type.getName() + ": "
                 + Diagnostics.join(described, MAX_REPORTED_TYPES));
-    }
-
-    /**
-     * Reports which candidate sponsored keys a tree's JSON carries when the
-     * vocabulary did not classify it, which is how a renamed marker is found.
-     */
-    public static void traceTreeKeys(Class<?> type, String json) {
-        if (!Diagnostics.ENABLED || json == null
-                || !Diagnostics.shouldTrace("keys " + type.getSimpleName())) {
-            return;
-        }
-
-        TreeSet<String> keys = candidateKeys(json);
-
-        if (keys.isEmpty()) {
-            return;
-        }
-
-        ModuleLog.log("unmatched tree " + type.getName()
-                + " [" + json.length() + " chars] carries "
-                + Diagnostics.join(keys, 20));
-    }
-
-    private static TreeSet<String> candidateKeys(String json) {
-        TreeSet<String> keys = new TreeSet<>();
-
-        for (String key : CANDIDATE_KEYS) {
-            if (json.contains("\"" + key + "\"")) {
-                keys.add(key
-                        + (json.contains("\"" + key + "\":true") ? "=true" : ""));
-            }
-        }
-
-        return keys;
     }
 
     private static Field[] declaredFields(Class<?> type) {

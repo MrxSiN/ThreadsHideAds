@@ -2,7 +2,7 @@ plugins {
     id("com.android.application")
 }
 
-val appVersion = "1.2.1"
+val appVersion = "1.3.0"
 
 val envKeystorePath = System.getenv("ANDROID_KEYSTORE_PATH")
 val envKeystoreAlias = System.getenv("ANDROID_KEYSTORE_ALIAS")
@@ -34,7 +34,7 @@ android {
         applicationId = "io.github.mrxsin.threadshideads"
         minSdk = 23
         targetSdk = 36
-        versionCode = 6
+        versionCode = 7
         versionName = appVersion
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // Hot-path timing logs (hook/HotPathStats): debug builds, or -PhotPathStats.

@@ -32,45 +32,6 @@ public final class Diagnostics {
     }
 
     /**
-     * Records where an advertisement was recognized, so detection can be moved
-     * up to the item that owns it.
-     */
-    public static void traceAdMatch(Class<?> type, String reason) {
-        if (!ENABLED || !shouldTrace("match " + type.getSimpleName())) {
-            return;
-        }
-
-        ModuleLog.log("match " + type.getName() + " via " + reason);
-    }
-
-    /**
-     * Reports a Pando tree list seen by the response hooks, so a build that
-     * removes nothing can be told apart from one whose hooks never fire.
-     */
-    public static void traceTreeList(String site, int size, Object first) {
-        if (!ENABLED || !shouldTrace("treelist " + site)) {
-            return;
-        }
-
-        ModuleLog.log("pando list " + site + " size=" + size
-                + " of " + (first == null ? "null" : first.getClass().getName()));
-    }
-
-    /**
-     * Records a Pando tree that carried a sponsored marker but was too large to
-     * be a single feed item, so it was left for the boundary layer instead of
-     * being dropped whole.
-     */
-    public static void traceOversizedTree(Class<?> type, int jsonLength) {
-        if (!ENABLED || !shouldTrace("oversized " + type.getSimpleName())) {
-            return;
-        }
-
-        ModuleLog.log("skipped sponsored tree " + type.getName()
-                + " of " + jsonLength + " JSON chars; it owns more than one item");
-    }
-
-    /**
      * Records a list that was left alone because filtering would have emptied
      * it, naming the element type that should be dropped one level higher.
      */

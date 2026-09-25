@@ -51311,11 +51311,11 @@ BF_PROGRAM(pando)
 }
 
 const bf_program_info bf_programs[] = {
-    {"core", bf_prog_core, 1024, 64},
-    {"text", bf_prog_text, 256, 0},
-    {"detect", bf_prog_detect, 512, 0},
-    {"sanitize", bf_prog_sanitize, 512, 0},
-    {"nested", bf_prog_nested, 512, 0},
-    {"pando", bf_prog_pando, 512, 0},
+    {"core", bf_prog_core, 256, 64},
+    {"text", bf_prog_text, 64, 0},
+    {"detect", bf_prog_detect, 256, 0},
+    {"sanitize", bf_prog_sanitize, 256, 0},
+    {"nested", bf_prog_nested, 256, 0},
+    {"pando", bf_prog_pando, 256, 0},
 };
 const int bf_program_count = 6;

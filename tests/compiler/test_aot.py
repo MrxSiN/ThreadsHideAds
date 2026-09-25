@@ -15,6 +15,9 @@ PROGRAM = """
 persist counter
 var x, f
 in x
+charset SP = " "
+regex HIT = ANY* spaced("sponsored", SP) ANY*
+match HIT -> f
 inc counter
 out counter
 switch x {
@@ -22,9 +25,6 @@ switch x {
   case 2, 3 { outc 'b' }
   default { outc 'z' }
 }
-charset SP = " "
-regex HIT = ANY* spaced("sponsored", SP) ANY*
-match HIT -> f
 out f
 clear x, f
 """

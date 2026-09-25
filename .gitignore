@@ -8,3 +8,4 @@ local.properties
 *.keystore
 *.base64
 __pycache__/
+app/.cxx/

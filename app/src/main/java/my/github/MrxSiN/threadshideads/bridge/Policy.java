@@ -308,6 +308,7 @@ public final class Policy {
             out.putInt(handle(tree));
             out.put((byte) 0);
             out.put((byte) 0);
+            out.put((byte) 0);
             return core.send() == BfAbi.ST_OK && core.payload().get(0) != 0;
         } finally {
             core.end();

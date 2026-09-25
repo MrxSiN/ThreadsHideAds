@@ -4,7 +4,9 @@ Semantics (normative for every backend, see docs/BRAINFUCK_ABI.md):
 - unsigned 8-bit cells, wrapping on `+` and `-`;
 - the tape has a fixed size and moving outside it is an error;
 - `,` reads the next input byte, or 0 once input is exhausted;
-- `.` appends the current cell to the output.
+- `.` appends the current cell to the output; the first byte of a new frame
+  (nothing written since the last reply was served) discards any unread
+  input, so a program may stop reading a reply early.
 
 This interpreter executes the canonical program one command at a time and is
 never shipped. Production code is the AOT-compiled C in app/src/main/cpp.
@@ -44,6 +46,7 @@ def run(code, data=b"", tape=None, tape_size=4096, max_steps=500_000_000, reader
     data = bytearray(data)
     pos = 0
     out = bytearray()
+    mark = 0
     ptr = pc = steps = 0
     n = len(code)
     size = len(tape)
@@ -68,12 +71,15 @@ def run(code, data=b"", tape=None, tape_size=4096, max_steps=500_000_000, reader
             if tape[ptr] != 0:
                 pc = pairs[pc]
         elif c == ".":
+            if len(out) == mark:
+                pos = len(data)
             out.append(tape[ptr])
         elif c == ",":
             if pos >= len(data) and reader is not None:
                 more = reader(bytes(out))
                 if more:
                     data += more
+                    mark = len(out)
             if pos < len(data):
                 tape[ptr] = data[pos]
                 pos += 1

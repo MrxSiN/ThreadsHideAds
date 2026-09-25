@@ -469,13 +469,20 @@ class _Io:
         self.data = bytearray(data)
         self.pos = 0
         self.out = bytearray()
+        self.mark = 0
         self.reader = reader
+
+    def write(self, value):
+        if len(self.out) == self.mark:
+            self.pos = len(self.data)
+        self.out.append(value)
 
     def read(self):
         if self.pos >= len(self.data) and self.reader is not None:
             more = self.reader(bytes(self.out))
             if more:
                 self.data += more
+                self.mark = len(self.out)
         if self.pos < len(self.data):
             self.pos += 1
             return self.data[self.pos - 1]
@@ -508,7 +515,7 @@ def _exec(ops, t, p, io):
         elif k == "in":
             t[p + op[1]] = io.read()
         elif k == "out":
-            io.out.append(t[p + op[1]])
+            io.write(t[p + op[1]])
         elif k == "loop":
             while t[p + op[1]]:
                 p = _exec(op[2], t, p, io)

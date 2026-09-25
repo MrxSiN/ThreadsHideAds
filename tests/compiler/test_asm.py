@@ -93,7 +93,15 @@ out f
         for text, expected in cases:
             self.assertEqual(bytes([expected]), run(code, text + b"\0"))
         # Early exit: after the match the rest of the input is left unread.
-        self.assertEqual(b"\x01\x01", run(code + ",.", b"ad_id\x01\0"))
+        early = build("""
+charset SP = " "
+regex HIT = ANY* spaced("ad_id", SP) ANY*
+var f, next
+match HIT -> f
+in next
+out f, next
+""")
+        self.assertEqual(b"\x01\x07", run(early, b"ad_id\x07\0"))
 
     def test_macros_includes_and_scoping(self):
         code = build("""
@@ -128,8 +136,8 @@ clear x, f
     def test_strings_and_bits(self):
         code = build("""
 var x, a, b, c, y
-outs "Hé"
 in x
+outs "Hé"
 unpack x -> a, b, c
 out a, b, c
 pack c, b, a -> y

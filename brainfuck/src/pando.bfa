@@ -4,8 +4,9 @@
 # probing and PandoResponseHooks.filterResult. The host serializes trees,
 # caches verdicts per tree and rebuilds lists; the decisions are here.
 #
-# OP_PANDO_VERDICT h[4], class facts, cached verdict       -> sponsored
-#                  (facts or verdict 0 when the caller does not know them)
+# OP_PANDO_VERDICT h[4], class facts, cached verdict, flag memo -> sponsored
+#                  (each 0 when the caller does not know it; verdict 3 means
+#                  looked up and not cached)
 # OP_PANDO_FILTER  h[4], declared object|null, declared interface,
 #                  declared accepts ArrayList, declared type h[4]
 #                  -> action, result h[4], removed[4]
@@ -13,7 +14,7 @@
 include "lib.bfa"
 
 var h[4], d_object, d_interface, d_arraylist, h_declared[4]
-var sponsored, action, h_out[4], removed[4], flag, facts, tree
+var sponsored, action, h_out[4], removed[4], flag, facts, tree, flag_memo
 
 # length := JSON length for (target, flags), JSON_NULL when absent. A text
 # longer than PANDO_MAX_JSON reads as absent, as PandoTrees.invoke did.
@@ -41,10 +42,12 @@ macro verdict() {
       read_reply r_status
       in memo
     }
+    ifeq memo 3 { clear memo }
     ifz memo {
       # PandoTrees.readJson: the flag pair remembered for this class, else
       # all four pairs once, keeping the longest (first wins a tie).
-      memo_get h, SLOT_PANDO_FLAGS, zero16, memo
+      copy flag_memo -> memo
+      ifz memo { memo_get h, SLOT_PANDO_FLAGS, zero16, memo }
       if memo {
         copy memo -> flags
         sub flags 1
@@ -116,9 +119,37 @@ macro filter() {
       copy f_pando -> first_ok
     }
   }
+  # Read-only first pass over one batch: when every element is null or a
+  # tree already known to be organic, nothing can change.
+  if first_ok {
+    var start[4], count[2], work
+    copy n_size[0] -> count[0]
+    copy n_size[1] -> count[1]
+    children_begin h, start, count, MODE_LIST
+    clear i
+    set walking 1
+    while walking {
+      lt i, n_size -> flag
+      ifz flag {
+        clear walking
+      } else {
+        next_child
+        if c_h {
+          ifne c_tree 1 {
+            set work 1
+            clear walking
+          }
+        }
+        inc i
+      }
+    }
+    clear i
+    copy work -> first_ok
+  }
   # A filter request is top level: the host starts it with no marks, and at
   # most PANDO_MAX_LIST handles are taken, all freed when the request ends.
   if first_ok {
+    var failed
     set walking 1
     while walking {
       lt i, n_size -> flag
@@ -127,13 +158,18 @@ macro filter() {
       } else {
         child h, i, MODE_LIST
         ifne r_status ST_OK {
+          # The legacy iteration threw and nothing was replaced.
           clear walking
+          set failed 1
         } else {
           clear item
           # The descriptor already carries a cached verdict for known trees.
           ifeq c_tree 2 { set item 1 }
-          ifz c_tree {
-            if c_h { pando_verdict c_h, c_facts, c_tree, item }
+          clear flag
+          ifz c_tree { set flag 1 }
+          ifeq c_tree 3 { set flag 1 }
+          if flag {
+            if c_h { pando_verdict c_h, c_facts, c_tree, c_flags, item }
           }
           if item {
             mark h, i
@@ -145,6 +181,7 @@ macro filter() {
         inc i
       }
     }
+    if failed { clear removed }
     if removed {
       ifz kept {
         # Emptying breaks callers; the owning item is dropped a level up.
@@ -185,7 +222,7 @@ ifne rq_major ABI_MAJOR {
 } else {
   switch rq_op {
     case OP_PANDO_VERDICT {
-      in h, facts, tree
+      in h, facts, tree, flag_memo
       verdict
       respond ST_OK, 1
       out sponsored

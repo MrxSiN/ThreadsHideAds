@@ -49,8 +49,13 @@ static inline uint8_t bf_refill(bf_io *io)
 
 #define BF_IN(io) ((io)->in_pos < (io)->in_len ? (io)->in[(io)->in_pos++] : bf_refill(io))
 
+/* The first byte of a new frame supersedes whatever is left of the previous
+ * reply, so a program may stop reading a reply early. */
 #define BF_OUT(io, v)                                        \
     do {                                                     \
+        if ((io)->out_len == (io)->out_mark) {               \
+            (io)->in_pos = (io)->in_len;                     \
+        }                                                    \
         if ((io)->out_len < (io)->out_cap) {                 \
             (io)->out[(io)->out_len++] = (uint8_t) (v);      \
         } else {                                             \

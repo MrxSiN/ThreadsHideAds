@@ -68,4 +68,6 @@ androidComponents {
 dependencies {
     implementation("org.luckypray:dexkit:2.2.0")
     compileOnly("de.robv.android.xposed:api:82")
+
+    testImplementation("junit:junit:4.13.2")
 }

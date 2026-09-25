@@ -1,5 +1,14 @@
 # Hook notes
 
+## v1.3.0 release scope
+
+Version 1.3.0 moves every policy decision into a Brainfuck core
+(`brainfuck/src/*.bfa`, compiled ahead of time into `libthreadsbf.so`). The
+hooks, discovery queries and view handling below are unchanged in what they
+do; which of them run, in what order, and what they remove is now decided by
+the core. Behavior is checked against the frozen 1.2.1 code (`docs/PARITY.md`).
+The intentional differences are listed in `docs/MIGRATION.md`.
+
 ## v1.2.x release scope
 
 Version 1.2.0 adds unit-type detection, the `allowEmptying` rule for top-level
@@ -102,19 +111,17 @@ content is never collapsed.
 
 ## Module structure
 
-The entry point only wires layers together. Each package owns one concern.
+The entry point only wires layers together. Java owns mechanisms; the native
+core owns decisions (`docs/ARCHITECTURE.md`).
 
-| Package | Responsibility |
+| Package / directory | Responsibility |
 | --- | --- |
-| `core` | Logging and rate-limited counters |
-| `detect` | Label vocabulary, model ad signals, bounded reflective detection |
-| `model` | List and nested-collection sanitization |
-| `discovery` | DexKit search and candidate classification |
-| `hook` | Installing model-level hooks |
-| `ui` | Rendered-label fallback, view traversal, hide/restore |
-
-The sanitizers depend on the `AdDetector` interface rather than on the
-reflective implementation, so detection can be replaced without touching them.
+| `brainfuck/src` | Policy: scope, retries, install order, discovery rules, classification, sanitization, Pando, UI fallback, statistics |
+| `bridge` | ABI constants (generated), JNI entry points, handle table, host capabilities, typed `Policy` requests |
+| `core` | Logging, rate-limited counter wording, diagnostics (off in release) |
+| `discovery` | DexKit queries and class lookups requested by the core |
+| `hook` | Installing model-level and Pando hooks |
+| `ui` | Rendered-label listeners, view traversal, hide/restore |
 
 ## Threads 445.0.0.46.83 findings
 
@@ -279,3 +286,15 @@ reported empty markers on every feed item.
 
 All of it reports names, types, sizes and key names only, never feed content,
 and is gated behind `Diagnostics.ENABLED`, which is `false` for release builds.
+
+## Threads 448.0.0.54.85 findings
+
+- The primary boundary resolves to `X.4At.Dyg(Integer, Integer, List)`;
+  initialization installs 38 model hooks and 28 Pando hooks on every cold start.
+- The same unit-type enum identifies advertisements; 10–12 were removed per
+  launch and 25 scroll passes, the same as 1.2.1 on this build.
+- Hook code runs on several threads and can re-enter itself through class
+  initialization. A single global lock around the native core deadlocked
+  initialization here, so stateless requests now run on per-thread pooled
+  engines and only the persistent core state is serialized
+  (`docs/MIGRATION.md`, intentional changes).

@@ -1,0 +1,99 @@
+# Performance
+
+All numbers from a Pixel 8 Pro (arm64, Android SDK 37), Threads
+448.0.0.54.85, unless marked "host" (Windows, MSVC build of the same C).
+
+## In-app A/B (release builds, same signing key, same script)
+
+Cold launch, 25 scroll passes, per-hook timing logged every 10 s by
+`hook/HotPathStats` (release built with `-PhotPathStats`; the legacy build got
+identical probes). Steady-state windows after the first 10 s:
+
+| Hook | v1.2.1 legacy | v1.3.0 Brainfuck | Calls / 10 s |
+| --- | --- | --- | --- |
+| Feed boundary (before) | 1.6–2.5 ms/call | 1.9–2.8 ms/call | 60–90 |
+| Pando list accessor | 7–12 µs/call | 22–33 µs/call | 2 500–9 500 |
+| Time in hooks during scrolling (both hooks) | ≈ 210–260 ms per 10 s (≈ 2.3 % of one core) | ≈ 260–310 ms per 10 s (≈ 2.8 % of one core) | — |
+
+Removals and visible results were identical (10–12 ads per run, no labels in
+dumps). The feed boundary is within run-to-run noise of legacy. The Pando
+path is about 2–3× legacy per call; it is dominated by JNI up-calls (one per
+list element that is not already known organic, plus JSON streaming for new
+trees).
+
+## Micro-benchmarks (on device, release, `DeviceCoreTest.hotPathBenchmark`)
+
+| Case | Legacy p50 / p95 | Brainfuck p50 / p95 | Programs / call | Host callbacks / call |
+| --- | --- | --- | --- | --- |
+| feed item (unit-type enum + payload) | 4.2 / 7.0 µs | 17.1 / 26.8 µs | 8.7 | 12.7 |
+| random model graph | 0.2 / 1.5 µs | 2.1 / 4.3 µs | 1.3 | 1.2 |
+| one-item batch sanitize | 4.4 / 7.5 µs | 18.0 / 27.8 µs | 9.7 | 16.0 |
+| Pando string list | 0.3 / 0.4 µs | 3.1 / 4.7 µs | 1.0 | 2.0 |
+| Pando tree list (5, cached) | 1.3 / 1.4 µs | 5.4 / 7.2 µs | 1.0 | 3.0 |
+| label `Sponsored ·` | 1.0 / 1.3 µs | 1.9 / 2.4 µs | 1.0 | 0 |
+| 3 KB organic JSON, structured-value check | 101 / 112 µs | 88 / 102 µs | 1.0 | 0 |
+
+The AOT DFA is faster than the legacy lowercase-and-`contains` on ARM; the
+remaining cost is the bridge (≈ 1 µs per JNI up-call on this device).
+
+Host (`build/benchmark/host.txt`, JVM + MSVC build) shows the same shape; MSVC
+does not turn the DFA switches into tables as well as clang, so text matching
+is slower there than on device.
+
+## What was optimized, and the effect
+
+| Change | Effect |
+| --- | --- |
+| Value/copy propagation and equality idiom in the optimizer | text program 112 k → 17.5 k IR ops |
+| Byte classes + two-level state dispatch + delegation to root transitions | DFA code size ÷ 5 |
+| Equality runs emitted as C `switch` | host feed item 20 → 12 µs |
+| Child descriptor passed with `CAP_CALL`, batched releases, `MODE_FIELD_NEXT`, visit-and-reset | callbacks per feed item 25 → 14.5 |
+| Cached Pando verdict and flag memo inside descriptors; `CAP_CHILDREN` read-only pass | Pando tree list 24 → 3 callbacks |
+| Bulk buffer copies; identity sets replaced instead of cleared | removed O(capacity) work per request |
+| Pooled engines instead of one global lock | no cross-thread waiting (and no deadlock) |
+
+## Startup
+
+| Step | Time on device |
+| --- | --- |
+| `libthreadsbf` load + core creation + limits/names | < 10 ms (load-package) |
+| Attach → initialization complete (DexKit, 38 + 28 hooks) | ≈ 200 ms, as legacy |
+
+DexKit and broad reflection run only during initialization; steady-state
+filtering uses per-class memos, cached field lists and per-tree verdicts.
+
+## Size
+
+| Artifact | v1.2.1 | v1.3.0 |
+| --- | --- | --- |
+| Release APK (unsigned) | 2 814 944 B | 5 597 644 B |
+| Debug APK | 3 161 638 B | 5 927 009 B |
+| `libthreadsbf.so` arm64 / armv7 / x86 / x86_64 | — | 729 / 533 / 699 / 787 KB |
+| Generated C | — | ≈ 2.0 MB source, 6 programs, 37 k IR ops |
+
+`-Os` was measured and saved under 1 %, so the build uses `-O2` with LTO in
+release. The size is dominated by the DFA state machines of the text program.
+
+## Allocation and crossings in the hot path
+
+- One JNI down-call per hook invocation; one up-call per capability.
+- No JSON or string serialization of feed objects except the Pando JSON the
+  legacy code also produced, and text of individual leaf values.
+- Host allocations per request: handle-table entries (arrays reused), boxed
+  mark indexes, the lowercase copy of streamed text, replacement lists.
+
+## Reproducing
+
+```bash
+./gradlew :app:testDebugUnitTest --tests '*HostBenchmarkTest*'
+./gradlew :app:assembleRelease :app:assembleReleaseAndroidTest -PbenchmarkRelease
+adb install -r app/build/outputs/apk/release/ThreadsHideAds-v1.3.0.apk
+adb install -r app/build/outputs/apk/androidTest/release/app-release-androidTest.apk
+adb shell am instrument -w -e class my.github.MrxSiN.threadshideads.device.DeviceCoreTest io.github.mrxsin.threadshideads.test/androidx.test.runner.AndroidJUnitRunner
+adb logcat -d -s ThreadsBfDevice
+```
+
+`-PbenchmarkRelease` and `-PhotPathStats` sign with the debug key when no
+release key is configured; unset `ANDROID_KEYSTORE_*` to force that. Avoid
+`connectedAndroidTest`: it uninstalls the app afterwards, which clears the
+LSPosed enablement.

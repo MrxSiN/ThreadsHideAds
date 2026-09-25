@@ -65,7 +65,15 @@ On Threads 445.0.0.46.83 the removals occur at:
 BarcelonaFeedCache.A0G(X.0nD, Integer, String, String, List, X.2cx, Function3, boolean)
 ```
 
+On Threads 448.0.0.54.85 the primary boundary resolves to `X.4At.Dyg(Integer, Integer, List)`.
+
 The UI fallback tracks the exact label view that hid each card. This prevents caption, author, timestamp, or engagement updates from accidentally restoring a sponsored card. A card is restored only when that original label view is rebound for a recycled organic item.
+
+### Brainfuck policy core (1.3.0)
+
+Every decision above — scope, retry schedule, install order, discovery candidate rules, advertisement classification, sanitization, recursion limits, Pando filtering, UI fallback and statistics rate limits — is written in Brainfuck-family assembly (`brainfuck/src/*.bfa`). The toolchain in `tools/bftool` turns it into canonical `.bf`, optimizes it and emits C, which the NDK compiles into `libthreadsbf.so`. Java code only performs mechanisms (Xposed hooks, DexKit queries, reflection, collection mutation, logging) when the native core asks for them through a small documented ABI. There is no interpreter in the APK; a reference interpreter is used by the tests only.
+
+See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md), [`docs/BRAINFUCK_ABI.md`](docs/BRAINFUCK_ABI.md), [`docs/PARITY.md`](docs/PARITY.md) and [`docs/PERFORMANCE.md`](docs/PERFORMANCE.md).
 
 ## ✅ Requirements
 
@@ -79,17 +87,25 @@ The UI fallback tracks the exact label view that hid each card. This prevents ca
 
 - Android Studio with JDK 17 or newer, **or** a standalone JDK 17+ setup.
 - Gradle 9.6.1 when building without an existing wrapper.
-- Android SDK Platform 36.
+- Android SDK Platform 36, NDK 28.2.13676358 and CMake 3.22.1 (installed by the Android Gradle plugin on first build).
+- Python 3.10 or newer (Brainfuck toolchain and tests).
+- For JVM unit tests: MSVC Build Tools on Windows, or gcc/clang on Linux/macOS (builds the host copy of the native core).
 - Git or a downloaded copy of the project source.
 
 ## 🛠️ Build
 
-From the project directory, build the release APK with a local Gradle
-installation:
+From the project directory:
 
 ```bash
-gradle :app:assembleRelease
+python tools/bftool/gen.py            # regenerate BF, C and ABI files from brainfuck/src
+python tools/bftool/gen.py --check    # fail if generated files are stale
+python -m unittest discover -s tests/compiler
+./gradlew :app:testDebugUnitTest
+./gradlew :app:assembleRelease
 ```
+
+The generated files are committed; the Gradle build verifies them with
+`checkBrainfuck` and never edits them.
 
 The generated APK will be located under:
 
@@ -155,9 +171,9 @@ has not been re-run by the maintainer, whose testing is done under LSPosed.
 
 ## 🧪 Validation status
 
-The release version is `1.2.1` (`versionCode 5`). Static project checks cover the attach-gated initialization path, retry support, feed sanitization, release signing configuration, APK verification, artifact upload, and GitHub Release publishing. Feed filtering was additionally measured on a Pixel 8 Pro against Threads 445.0.0.46.83: advertisements are removed at the cache boundary, no sponsored label reaches the view hierarchy, and the feed renders normally.
+The release version is `1.3.0` (`versionCode 7`). The Brainfuck core is checked against the frozen 1.2.1 policy by parity suites on the JVM and on an arm64 device (see [`docs/PARITY.md`](docs/PARITY.md)). On a Pixel 8 Pro with Threads 448.0.0.54.85 under LSPosed, initialization completed on every cold start, 10–12 advertisements were removed per session as with 1.2.1, and no sponsored label reached the view hierarchy. Static project checks cover the attach-gated initialization path, generated-file freshness, release signing configuration, APK verification, artifact upload, and GitHub Release publishing.
 
-The included GitHub Actions workflow builds a release APK on every push, pull request, and manual run. Repository pushes and tag builds are signed and uploaded as workflow artifacts when the four signing secrets are configured. Pull-request builds remain unsigned for security. A `v*` tag also creates or updates the GitHub Release and attaches the signed APK.
+The included GitHub Actions workflow verifies the generated Brainfuck files, runs the Python and JVM tests, and builds a release APK on every push, pull request, and manual run. Repository pushes and tag builds are signed and uploaded as workflow artifacts when the four signing secrets are configured. Pull-request builds remain unsigned for security. A `v*` tag also creates or updates the GitHub Release and attaches the signed APK.
 
 ## 🩺 Troubleshooting
 

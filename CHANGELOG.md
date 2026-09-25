@@ -2,6 +2,24 @@
 
 ## Unreleased
 
+## 1.3.0 — 2026-09-26
+
+- Moved all filtering policy into a Brainfuck core (`brainfuck/src/*.bfa`). A
+  Python toolchain (`tools/bftool`) generates canonical `.bf`, optimizes it and
+  emits C that the NDK compiles into `libthreadsbf.so`; there is no interpreter
+  in the APK. Java keeps the mechanisms (hooks, DexKit, reflection, collection
+  mutation, logging) behind a documented ABI (`docs/BRAINFUCK_ABI.md`).
+- Removed the Java `detect` and `model` packages and `ui/AdLabelScanner`; frozen
+  copies serve as the parity oracle in the test sources.
+- Added parity suites against the 1.2.1 policy on the JVM and on device, ABI
+  robustness tests, toolchain tests and benchmarks (`docs/PARITY.md`,
+  `docs/PERFORMANCE.md`).
+- Hooks re-entered from app code run on their own engine, at most two levels
+  deep per thread; statistics never wait more than 50 ms for the core.
+- CI verifies generated files and runs the Python and JVM tests.
+
+Verified on a Pixel 8 Pro with Threads 448.0.0.54.85: same removals as 1.2.1.
+
 ## 1.2.1 — 2026-09-06
 
 - Split model inspection out of `Diagnostics` into a new `ModelProbes` class, so

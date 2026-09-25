@@ -1633,8 +1633,8 @@
    "tape": 1024
   },
   {
-   "bf_commands": 495740,
-   "bf_sha256": "2bbc32bf4fa11bba70fed64f13c4fc57ed39bd0a9ffd3d4c92b49846dffdb42c",
+   "bf_commands": 496894,
+   "bf_sha256": "d4a46200c9b58b96e0e99ef0f33f86b2e33ca9d0ae46d981547d8525eb7249bc",
    "dfa_states": {
     "AD_LABEL": 182,
     "APP_MODEL": 30,
@@ -1653,7 +1653,7 @@
     "UNIT_TYPE": 90
    },
    "id": 1,
-   "ir_ops": 17525,
+   "ir_ops": 17530,
    "name": "text",
    "persist": 0,
    "symbols": [

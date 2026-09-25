@@ -4,7 +4,7 @@
 /* Generated from core.bf by tools/bftool. Do not edit. */
 BF_PROGRAM(core)
 {
-    uint8_t *p = t;
+    uint8_t *restrict p = t;
     p[64] = BF_IN(io);
     p[65] = BF_IN(io);
     p[66] = BF_IN(io);
@@ -7991,7 +7991,7 @@ BF_PROGRAM(core)
 /* Generated from text.bf by tools/bftool. Do not edit. */
 BF_PROGRAM(text)
 {
-    uint8_t *p = t;
+    uint8_t *restrict p = t;
     p[0] = BF_IN(io);
     p[1] = BF_IN(io);
     p[2] = BF_IN(io);
@@ -8020,139 +8020,133 @@ BF_PROGRAM(text)
                     p[24] = p[20];
                     switch (p[24]) {
                     case 1: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 2: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 3: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 4: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 5: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 6: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 7: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 8: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 9: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 10: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 11: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 12: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 13: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 14: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 15: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 16: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 17: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 18: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 19: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 20: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 21: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 22: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 23: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 24: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 25: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 26: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 27: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 28: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 29: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 30: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 31: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 32: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
-                    }
-                    if (p[25]) {
-                        p[21] = 0;
-                        p[25] = 0;
-                    }
-                    switch (p[24]) {
                     case 52: {
                         p[21] = 2;
                         break;
@@ -10515,139 +10509,133 @@ BF_PROGRAM(text)
                     p[26] = p[22];
                     switch (p[26]) {
                     case 1: {
-                        p[27] = 1;
+                        p[23] = 0;
                         break;
                     }
                     case 2: {
-                        p[27] = 1;
+                        p[23] = 0;
                         break;
                     }
                     case 3: {
-                        p[27] = 1;
+                        p[23] = 0;
                         break;
                     }
                     case 4: {
-                        p[27] = 1;
+                        p[23] = 0;
                         break;
                     }
                     case 5: {
-                        p[27] = 1;
+                        p[23] = 0;
                         break;
                     }
                     case 6: {
-                        p[27] = 1;
+                        p[23] = 0;
                         break;
                     }
                     case 7: {
-                        p[27] = 1;
+                        p[23] = 0;
                         break;
                     }
                     case 8: {
-                        p[27] = 1;
+                        p[23] = 0;
                         break;
                     }
                     case 9: {
-                        p[27] = 1;
+                        p[23] = 0;
                         break;
                     }
                     case 10: {
-                        p[27] = 1;
+                        p[23] = 0;
                         break;
                     }
                     case 11: {
-                        p[27] = 1;
+                        p[23] = 0;
                         break;
                     }
                     case 12: {
-                        p[27] = 1;
+                        p[23] = 0;
                         break;
                     }
                     case 13: {
-                        p[27] = 1;
+                        p[23] = 0;
                         break;
                     }
                     case 14: {
-                        p[27] = 1;
+                        p[23] = 0;
                         break;
                     }
                     case 15: {
-                        p[27] = 1;
+                        p[23] = 0;
                         break;
                     }
                     case 16: {
-                        p[27] = 1;
+                        p[23] = 0;
                         break;
                     }
                     case 17: {
-                        p[27] = 1;
+                        p[23] = 0;
                         break;
                     }
                     case 18: {
-                        p[27] = 1;
+                        p[23] = 0;
                         break;
                     }
                     case 19: {
-                        p[27] = 1;
+                        p[23] = 0;
                         break;
                     }
                     case 20: {
-                        p[27] = 1;
+                        p[23] = 0;
                         break;
                     }
                     case 21: {
-                        p[27] = 1;
+                        p[23] = 0;
                         break;
                     }
                     case 22: {
-                        p[27] = 1;
+                        p[23] = 0;
                         break;
                     }
                     case 23: {
-                        p[27] = 1;
+                        p[23] = 0;
                         break;
                     }
                     case 24: {
-                        p[27] = 1;
+                        p[23] = 0;
                         break;
                     }
                     case 25: {
-                        p[27] = 1;
+                        p[23] = 0;
                         break;
                     }
                     case 26: {
-                        p[27] = 1;
+                        p[23] = 0;
                         break;
                     }
                     case 27: {
-                        p[27] = 1;
+                        p[23] = 0;
                         break;
                     }
                     case 28: {
-                        p[27] = 1;
+                        p[23] = 0;
                         break;
                     }
                     case 29: {
-                        p[27] = 1;
+                        p[23] = 0;
                         break;
                     }
                     case 30: {
-                        p[27] = 1;
+                        p[23] = 0;
                         break;
                     }
                     case 31: {
-                        p[27] = 1;
+                        p[23] = 0;
                         break;
                     }
                     case 32: {
-                        p[27] = 1;
+                        p[23] = 0;
                         break;
                     }
-                    }
-                    if (p[27]) {
-                        p[23] = 0;
-                        p[27] = 0;
-                    }
-                    switch (p[26]) {
                     case 52: {
                         p[23] = 2;
                         break;
@@ -17214,23 +17202,17 @@ BF_PROGRAM(text)
                     p[24] = p[20];
                     switch (p[24]) {
                     case 36: {
-                        p[25] = 1;
+                        p[21] = 1;
                         break;
                     }
                     case 45: {
-                        p[25] = 1;
+                        p[21] = 1;
                         break;
                     }
                     case 95: {
-                        p[25] = 1;
+                        p[21] = 1;
                         break;
                     }
-                    }
-                    if (p[25]) {
-                        p[21] = 1;
-                        p[25] = 0;
-                    }
-                    switch (p[24]) {
                     case 97: {
                         p[21] = 2;
                         break;
@@ -19606,139 +19588,133 @@ BF_PROGRAM(text)
                     p[24] = p[20];
                     switch (p[24]) {
                     case 1: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 2: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 3: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 4: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 5: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 6: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 7: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 8: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 9: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 10: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 11: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 12: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 13: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 14: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 15: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 16: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 17: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 18: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 19: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 20: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 21: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 22: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 23: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 24: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 25: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 26: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 27: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 28: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 29: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 30: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 31: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 32: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
-                    }
-                    if (p[25]) {
-                        p[21] = 0;
-                        p[25] = 0;
-                    }
-                    switch (p[24]) {
                     case 48: {
                         p[21] = 2;
                         break;
@@ -23408,167 +23384,149 @@ BF_PROGRAM(text)
                     p[24] = p[20];
                     switch (p[24]) {
                     case 1: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 2: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 3: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 4: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 5: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 6: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 7: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 8: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 14: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 15: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 16: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 17: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 18: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 19: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 20: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 21: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 22: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 23: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 24: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 25: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 26: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
                     case 27: {
-                        p[25] = 1;
+                        p[21] = 0;
                         break;
                     }
-                    }
-                    if (p[25]) {
-                        p[21] = 0;
-                        p[25] = 0;
-                    }
-                    switch (p[24]) {
                     case 9: {
-                        p[25] = 1;
+                        p[21] = 1;
                         break;
                     }
                     case 10: {
-                        p[25] = 1;
+                        p[21] = 1;
                         break;
                     }
                     case 11: {
-                        p[25] = 1;
+                        p[21] = 1;
                         break;
                     }
                     case 12: {
-                        p[25] = 1;
+                        p[21] = 1;
                         break;
                     }
                     case 13: {
-                        p[25] = 1;
+                        p[21] = 1;
                         break;
                     }
                     case 28: {
-                        p[25] = 1;
+                        p[21] = 1;
                         break;
                     }
                     case 29: {
-                        p[25] = 1;
+                        p[21] = 1;
                         break;
                     }
                     case 30: {
-                        p[25] = 1;
+                        p[21] = 1;
                         break;
                     }
                     case 31: {
-                        p[25] = 1;
+                        p[21] = 1;
                         break;
                     }
                     case 32: {
-                        p[25] = 1;
+                        p[21] = 1;
                         break;
                     }
-                    }
-                    if (p[25]) {
-                        p[21] = 1;
-                        p[25] = 0;
-                    }
-                    switch (p[24]) {
                     case 44: {
-                        p[25] = 1;
+                        p[21] = 3;
                         break;
                     }
                     case 45: {
-                        p[25] = 1;
+                        p[21] = 3;
                         break;
                     }
                     case 58: {
-                        p[25] = 1;
+                        p[21] = 3;
                         break;
                     }
                     case 124: {
-                        p[25] = 1;
+                        p[21] = 3;
                         break;
                     }
-                    }
-                    if (p[25]) {
-                        p[21] = 3;
-                        p[25] = 0;
-                    }
-                    switch (p[24]) {
                     case 97: {
                         p[21] = 4;
                         break;
@@ -23666,39 +23624,33 @@ BF_PROGRAM(text)
                         break;
                     }
                     case 130: {
-                        p[25] = 1;
+                        p[21] = 28;
                         break;
                     }
                     case 132: {
-                        p[25] = 1;
+                        p[21] = 28;
                         break;
                     }
                     case 133: {
-                        p[25] = 1;
+                        p[21] = 28;
                         break;
                     }
                     case 134: {
-                        p[25] = 1;
+                        p[21] = 28;
                         break;
                     }
                     case 136: {
-                        p[25] = 1;
+                        p[21] = 28;
                         break;
                     }
                     case 137: {
-                        p[25] = 1;
+                        p[21] = 28;
                         break;
                     }
                     case 168: {
-                        p[25] = 1;
+                        p[21] = 28;
                         break;
                     }
-                    }
-                    if (p[25]) {
-                        p[21] = 28;
-                        p[25] = 0;
-                    }
-                    switch (p[24]) {
                     case 131: {
                         p[21] = 29;
                         break;
@@ -23712,23 +23664,17 @@ BF_PROGRAM(text)
                         break;
                     }
                     case 147: {
-                        p[25] = 1;
+                        p[21] = 32;
                         break;
                     }
                     case 148: {
-                        p[25] = 1;
+                        p[21] = 32;
                         break;
                     }
                     case 162: {
-                        p[25] = 1;
+                        p[21] = 32;
                         break;
                     }
-                    }
-                    if (p[25]) {
-                        p[21] = 32;
-                        p[25] = 0;
-                    }
-                    switch (p[24]) {
                     case 154: {
                         p[21] = 33;
                         break;
@@ -23848,26 +23794,25 @@ BF_PROGRAM(text)
                         case 1: {
                             p[31] = p[21];
                             p[32] = 1;
-                            p[34] = p[31];
-                            p[35] = 1;
-                            if (p[34]) {
-                                p[35] = 0;
-                                p[34] = 0;
-                            }
-                            if (p[35]) {
-                                p[33] = 1;
-                                p[35] = 0;
-                            }
-                            if (p[31] == 1) {
-                                p[33] = 1;
-                            }
+                            p[33] = p[31];
+                            p[34] = 1;
                             if (p[33]) {
+                                p[34] = 0;
+                                p[33] = 0;
+                            }
+                            if (p[34]) {
                                 p[32] = 0;
                                 p[17] = 0;
                                 p[18] = 1;
-                                p[33] = 0;
+                                p[34] = 0;
                             }
                             switch (p[31]) {
+                            case 1: {
+                                p[32] = 0;
+                                p[17] = 0;
+                                p[18] = 1;
+                                break;
+                            }
                             case 3: {
                                 p[32] = 0;
                                 p[17] = 0;
@@ -24326,37 +24271,34 @@ BF_PROGRAM(text)
                         case 3: {
                             p[31] = p[21];
                             if (p[31] == 3) {
-                                p[32] = 1;
-                            }
-                            if (p[31] == 49) {
-                                p[32] = 1;
-                            }
-                            if (p[32]) {
                                 p[17] = 0;
                                 p[18] = 0;
                                 p[24] = 1;
+                            }
+                            if (p[31] == 49) {
+                                p[17] = 0;
+                                p[18] = 0;
+                                p[24] = 1;
+                            }
+                            p[32] = p[31];
+                            p[33] = 1;
+                            if (p[32]) {
+                                p[33] = 0;
                                 p[32] = 0;
                             }
-                            p[33] = p[31];
-                            p[34] = 1;
                             if (p[33]) {
-                                p[34] = 0;
-                                p[33] = 0;
-                            }
-                            if (p[34]) {
-                                p[32] = 1;
-                                p[34] = 0;
-                            }
-                            if (p[31] == 1) {
-                                p[32] = 1;
-                            }
-                            if (p[32]) {
                                 p[17] = 1;
                                 p[18] = 3;
                                 p[24] = 1;
-                                p[32] = 0;
+                                p[33] = 0;
                             }
                             switch (p[31]) {
+                            case 1: {
+                                p[17] = 1;
+                                p[18] = 3;
+                                p[24] = 1;
+                                break;
+                            }
                             case 48: {
                                 p[17] = 1;
                                 p[18] = 4;
@@ -24405,29 +24347,31 @@ BF_PROGRAM(text)
                         case 5: {
                             p[31] = p[21];
                             p[32] = 1;
-                            p[34] = p[31];
-                            p[35] = 1;
-                            if (p[34]) {
-                                p[35] = 0;
-                                p[34] = 0;
-                            }
-                            if (p[35]) {
-                                p[33] = 1;
-                                p[35] = 0;
-                            }
-                            if (p[31] == 1) {
-                                p[33] = 1;
-                            }
-                            if (p[31] == 20) {
-                                p[33] = 1;
-                            }
+                            p[33] = p[31];
+                            p[34] = 1;
                             if (p[33]) {
+                                p[34] = 0;
+                                p[33] = 0;
+                            }
+                            if (p[34]) {
                                 p[32] = 0;
                                 p[17] = 2;
                                 p[18] = 10;
-                                p[33] = 0;
+                                p[34] = 0;
                             }
                             switch (p[31]) {
+                            case 1: {
+                                p[32] = 0;
+                                p[17] = 2;
+                                p[18] = 10;
+                                break;
+                            }
+                            case 20: {
+                                p[32] = 0;
+                                p[17] = 2;
+                                p[18] = 10;
+                                break;
+                            }
                             case 3: {
                                 p[32] = 0;
                                 p[17] = 2;
@@ -24710,39 +24654,47 @@ BF_PROGRAM(text)
                             p[32] = 1;
                             switch (p[31]) {
                             case 26: {
-                                p[33] = 1;
-                                break;
-                            }
-                            case 27: {
-                                p[33] = 1;
-                                break;
-                            }
-                            case 28: {
-                                p[33] = 1;
-                                break;
-                            }
-                            case 29: {
-                                p[33] = 1;
-                                break;
-                            }
-                            case 30: {
-                                p[33] = 1;
-                                break;
-                            }
-                            case 32: {
-                                p[33] = 1;
-                                break;
-                            }
-                            case 37: {
-                                p[33] = 1;
-                                break;
-                            }
-                            }
-                            if (p[33]) {
                                 p[32] = 0;
                                 p[17] = 0;
                                 p[18] = 2;
-                                p[33] = 0;
+                                break;
+                            }
+                            case 27: {
+                                p[32] = 0;
+                                p[17] = 0;
+                                p[18] = 2;
+                                break;
+                            }
+                            case 28: {
+                                p[32] = 0;
+                                p[17] = 0;
+                                p[18] = 2;
+                                break;
+                            }
+                            case 29: {
+                                p[32] = 0;
+                                p[17] = 0;
+                                p[18] = 2;
+                                break;
+                            }
+                            case 30: {
+                                p[32] = 0;
+                                p[17] = 0;
+                                p[18] = 2;
+                                break;
+                            }
+                            case 32: {
+                                p[32] = 0;
+                                p[17] = 0;
+                                p[18] = 2;
+                                break;
+                            }
+                            case 37: {
+                                p[32] = 0;
+                                p[17] = 0;
+                                p[18] = 2;
+                                break;
+                            }
                             }
                             if (p[32]) {
                                 p[17] = 0;
@@ -24897,26 +24849,25 @@ BF_PROGRAM(text)
                         case 10: {
                             p[31] = p[21];
                             p[32] = 1;
-                            p[34] = p[31];
-                            p[35] = 1;
-                            if (p[34]) {
-                                p[35] = 0;
-                                p[34] = 0;
-                            }
-                            if (p[35]) {
-                                p[33] = 1;
-                                p[35] = 0;
-                            }
-                            if (p[31] == 1) {
-                                p[33] = 1;
-                            }
+                            p[33] = p[31];
+                            p[34] = 1;
                             if (p[33]) {
+                                p[34] = 0;
+                                p[33] = 0;
+                            }
+                            if (p[34]) {
                                 p[32] = 0;
                                 p[17] = 2;
                                 p[18] = 10;
-                                p[33] = 0;
+                                p[34] = 0;
                             }
                             switch (p[31]) {
+                            case 1: {
+                                p[32] = 0;
+                                p[17] = 2;
+                                p[18] = 10;
+                                break;
+                            }
                             case 3: {
                                 p[32] = 0;
                                 p[17] = 2;
@@ -24966,22 +24917,25 @@ BF_PROGRAM(text)
                         case 11: {
                             p[31] = p[21];
                             p[32] = 1;
-                            if (p[31] == 1) {
-                                p[33] = 1;
-                            }
-                            if (p[31] == 3) {
-                                p[33] = 1;
-                            }
-                            if (p[33]) {
+                            switch (p[31]) {
+                            case 1: {
                                 p[32] = 0;
                                 p[17] = 2;
                                 p[18] = 11;
-                                p[33] = 0;
+                                break;
                             }
-                            if (p[31] == 49) {
+                            case 3: {
+                                p[32] = 0;
+                                p[17] = 2;
+                                p[18] = 11;
+                                break;
+                            }
+                            case 49: {
                                 p[32] = 0;
                                 p[17] = 2;
                                 p[18] = 14;
+                                break;
+                            }
                             }
                             p[33] = p[31];
                             p[34] = 1;
@@ -25462,35 +25416,41 @@ BF_PROGRAM(text)
                             p[32] = 1;
                             switch (p[31]) {
                             case 26: {
-                                p[33] = 1;
-                                break;
-                            }
-                            case 27: {
-                                p[33] = 1;
-                                break;
-                            }
-                            case 28: {
-                                p[33] = 1;
-                                break;
-                            }
-                            case 29: {
-                                p[33] = 1;
-                                break;
-                            }
-                            case 30: {
-                                p[33] = 1;
-                                break;
-                            }
-                            case 37: {
-                                p[33] = 1;
-                                break;
-                            }
-                            }
-                            if (p[33]) {
                                 p[32] = 0;
                                 p[17] = 1;
                                 p[18] = 3;
-                                p[33] = 0;
+                                break;
+                            }
+                            case 27: {
+                                p[32] = 0;
+                                p[17] = 1;
+                                p[18] = 3;
+                                break;
+                            }
+                            case 28: {
+                                p[32] = 0;
+                                p[17] = 1;
+                                p[18] = 3;
+                                break;
+                            }
+                            case 29: {
+                                p[32] = 0;
+                                p[17] = 1;
+                                p[18] = 3;
+                                break;
+                            }
+                            case 30: {
+                                p[32] = 0;
+                                p[17] = 1;
+                                p[18] = 3;
+                                break;
+                            }
+                            case 37: {
+                                p[32] = 0;
+                                p[17] = 1;
+                                p[18] = 3;
+                                break;
+                            }
                             }
                             if (p[32]) {
                                 p[17] = 0;
@@ -25521,24 +25481,22 @@ BF_PROGRAM(text)
                         case 5: {
                             p[31] = p[21];
                             p[32] = 1;
-                            p[34] = p[31];
-                            p[35] = 1;
-                            if (p[34]) {
-                                p[35] = 0;
-                                p[34] = 0;
-                            }
-                            if (p[35]) {
-                                p[33] = 1;
-                                p[35] = 0;
-                            }
-                            if (p[31] == 1) {
-                                p[33] = 1;
-                            }
+                            p[33] = p[31];
+                            p[34] = 1;
                             if (p[33]) {
+                                p[34] = 0;
+                                p[33] = 0;
+                            }
+                            if (p[34]) {
                                 p[32] = 0;
                                 p[17] = 4;
                                 p[18] = 5;
-                                p[33] = 0;
+                                p[34] = 0;
+                            }
+                            if (p[31] == 1) {
+                                p[32] = 0;
+                                p[17] = 4;
+                                p[18] = 5;
                             }
                             if (p[31] == 48) {
                                 p[32] = 0;
@@ -25649,40 +25607,47 @@ BF_PROGRAM(text)
                             p[32] = 1;
                             switch (p[31]) {
                             case 26: {
-                                p[33] = 1;
-                                break;
-                            }
-                            case 27: {
-                                p[33] = 1;
-                                break;
-                            }
-                            case 28: {
-                                p[33] = 1;
-                                break;
-                            }
-                            case 29: {
-                                p[33] = 1;
-                                break;
-                            }
-                            case 30: {
-                                p[33] = 1;
-                                break;
-                            }
-                            case 37: {
-                                p[33] = 1;
-                                break;
-                            }
-                            }
-                            if (p[33]) {
                                 p[32] = 0;
                                 p[17] = 2;
                                 p[18] = 10;
-                                p[33] = 0;
+                                break;
                             }
-                            if (p[31] == 32) {
+                            case 27: {
+                                p[32] = 0;
+                                p[17] = 2;
+                                p[18] = 10;
+                                break;
+                            }
+                            case 28: {
+                                p[32] = 0;
+                                p[17] = 2;
+                                p[18] = 10;
+                                break;
+                            }
+                            case 29: {
+                                p[32] = 0;
+                                p[17] = 2;
+                                p[18] = 10;
+                                break;
+                            }
+                            case 30: {
+                                p[32] = 0;
+                                p[17] = 2;
+                                p[18] = 10;
+                                break;
+                            }
+                            case 37: {
+                                p[32] = 0;
+                                p[17] = 2;
+                                p[18] = 10;
+                                break;
+                            }
+                            case 32: {
                                 p[32] = 0;
                                 p[17] = 2;
                                 p[18] = 11;
+                                break;
+                            }
                             }
                             if (p[32]) {
                                 p[17] = 0;
@@ -26055,39 +26020,47 @@ BF_PROGRAM(text)
                             p[32] = 1;
                             switch (p[31]) {
                             case 26: {
-                                p[33] = 1;
-                                break;
-                            }
-                            case 27: {
-                                p[33] = 1;
-                                break;
-                            }
-                            case 28: {
-                                p[33] = 1;
-                                break;
-                            }
-                            case 29: {
-                                p[33] = 1;
-                                break;
-                            }
-                            case 30: {
-                                p[33] = 1;
-                                break;
-                            }
-                            case 32: {
-                                p[33] = 1;
-                                break;
-                            }
-                            case 37: {
-                                p[33] = 1;
-                                break;
-                            }
-                            }
-                            if (p[33]) {
                                 p[32] = 0;
                                 p[17] = 2;
                                 p[18] = 11;
-                                p[33] = 0;
+                                break;
+                            }
+                            case 27: {
+                                p[32] = 0;
+                                p[17] = 2;
+                                p[18] = 11;
+                                break;
+                            }
+                            case 28: {
+                                p[32] = 0;
+                                p[17] = 2;
+                                p[18] = 11;
+                                break;
+                            }
+                            case 29: {
+                                p[32] = 0;
+                                p[17] = 2;
+                                p[18] = 11;
+                                break;
+                            }
+                            case 30: {
+                                p[32] = 0;
+                                p[17] = 2;
+                                p[18] = 11;
+                                break;
+                            }
+                            case 32: {
+                                p[32] = 0;
+                                p[17] = 2;
+                                p[18] = 11;
+                                break;
+                            }
+                            case 37: {
+                                p[32] = 0;
+                                p[17] = 2;
+                                p[18] = 11;
+                                break;
+                            }
                             }
                             if (p[32]) {
                                 p[17] = 0;
@@ -26560,29 +26533,31 @@ BF_PROGRAM(text)
                         case 7: {
                             p[31] = p[21];
                             p[32] = 1;
-                            p[34] = p[31];
-                            p[35] = 1;
-                            if (p[34]) {
-                                p[35] = 0;
-                                p[34] = 0;
-                            }
-                            if (p[35]) {
-                                p[33] = 1;
-                                p[35] = 0;
-                            }
-                            if (p[31] == 1) {
-                                p[33] = 1;
-                            }
-                            if (p[31] == 8) {
-                                p[33] = 1;
-                            }
+                            p[33] = p[31];
+                            p[34] = 1;
                             if (p[33]) {
+                                p[34] = 0;
+                                p[33] = 0;
+                            }
+                            if (p[34]) {
                                 p[32] = 0;
                                 p[17] = 2;
                                 p[18] = 10;
-                                p[33] = 0;
+                                p[34] = 0;
                             }
                             switch (p[31]) {
+                            case 1: {
+                                p[32] = 0;
+                                p[17] = 2;
+                                p[18] = 10;
+                                break;
+                            }
+                            case 8: {
+                                p[32] = 0;
+                                p[17] = 2;
+                                p[18] = 10;
+                                break;
+                            }
                             case 3: {
                                 p[32] = 0;
                                 p[17] = 2;
@@ -26736,35 +26711,41 @@ BF_PROGRAM(text)
                             p[32] = 1;
                             switch (p[31]) {
                             case 26: {
-                                p[33] = 1;
-                                break;
-                            }
-                            case 27: {
-                                p[33] = 1;
-                                break;
-                            }
-                            case 28: {
-                                p[33] = 1;
-                                break;
-                            }
-                            case 29: {
-                                p[33] = 1;
-                                break;
-                            }
-                            case 30: {
-                                p[33] = 1;
-                                break;
-                            }
-                            case 37: {
-                                p[33] = 1;
-                                break;
-                            }
-                            }
-                            if (p[33]) {
                                 p[32] = 0;
                                 p[17] = 6;
                                 p[18] = 9;
-                                p[33] = 0;
+                                break;
+                            }
+                            case 27: {
+                                p[32] = 0;
+                                p[17] = 6;
+                                p[18] = 9;
+                                break;
+                            }
+                            case 28: {
+                                p[32] = 0;
+                                p[17] = 6;
+                                p[18] = 9;
+                                break;
+                            }
+                            case 29: {
+                                p[32] = 0;
+                                p[17] = 6;
+                                p[18] = 9;
+                                break;
+                            }
+                            case 30: {
+                                p[32] = 0;
+                                p[17] = 6;
+                                p[18] = 9;
+                                break;
+                            }
+                            case 37: {
+                                p[32] = 0;
+                                p[17] = 6;
+                                p[18] = 9;
+                                break;
+                            }
                             }
                             if (p[32]) {
                                 p[17] = 0;
@@ -27540,16 +27521,14 @@ BF_PROGRAM(text)
                             p[31] = p[21];
                             p[32] = 1;
                             if (p[31] == 4) {
-                                p[33] = 1;
-                            }
-                            if (p[31] == 17) {
-                                p[33] = 1;
-                            }
-                            if (p[33]) {
                                 p[32] = 0;
                                 p[17] = 2;
                                 p[18] = 10;
-                                p[33] = 0;
+                            }
+                            if (p[31] == 17) {
+                                p[32] = 0;
+                                p[17] = 2;
+                                p[18] = 10;
                             }
                             if (p[32]) {
                                 p[17] = 0;
@@ -27832,26 +27811,25 @@ BF_PROGRAM(text)
                     if (p[26]) {
                         p[27] = p[21];
                         p[28] = 1;
-                        p[30] = p[27];
-                        p[31] = 1;
-                        if (p[30]) {
-                            p[31] = 0;
-                            p[30] = 0;
-                        }
-                        if (p[31]) {
-                            p[29] = 1;
-                            p[31] = 0;
-                        }
-                        if (p[27] == 1) {
-                            p[29] = 1;
-                        }
+                        p[29] = p[27];
+                        p[30] = 1;
                         if (p[29]) {
+                            p[30] = 0;
+                            p[29] = 0;
+                        }
+                        if (p[30]) {
                             p[28] = 0;
                             p[17] = 0;
                             p[18] = 1;
-                            p[29] = 0;
+                            p[30] = 0;
                         }
                         switch (p[27]) {
+                        case 1: {
+                            p[28] = 0;
+                            p[17] = 0;
+                            p[18] = 1;
+                            break;
+                        }
                         case 3: {
                             p[28] = 0;
                             p[17] = 0;
@@ -29241,16 +29219,14 @@ BF_PROGRAM(text)
                         if (p[30]) {
                             p[31] = p[21];
                             if (p[31] == 18) {
-                                p[32] = 1;
-                            }
-                            if (p[31] == 22) {
-                                p[32] = 1;
-                            }
-                            if (p[32]) {
                                 p[17] = 0;
                                 p[18] = 15;
                                 p[24] = 1;
-                                p[32] = 0;
+                            }
+                            if (p[31] == 22) {
+                                p[17] = 0;
+                                p[18] = 15;
+                                p[24] = 1;
                             }
                             p[31] = 0;
                             p[30] = 0;
@@ -33646,7 +33622,7 @@ BF_PROGRAM(text)
 /* Generated from detect.bf by tools/bftool. Do not edit. */
 BF_PROGRAM(detect)
 {
-    uint8_t *p = t;
+    uint8_t *restrict p = t;
     p[0] = BF_IN(io);
     p[1] = BF_IN(io);
     p[2] = BF_IN(io);
@@ -39425,7 +39401,7 @@ BF_PROGRAM(detect)
 /* Generated from sanitize.bf by tools/bftool. Do not edit. */
 BF_PROGRAM(sanitize)
 {
-    uint8_t *p = t;
+    uint8_t *restrict p = t;
     p[0] = BF_IN(io);
     p[1] = BF_IN(io);
     p[2] = BF_IN(io);
@@ -41366,7 +41342,7 @@ BF_PROGRAM(sanitize)
 /* Generated from nested.bf by tools/bftool. Do not edit. */
 BF_PROGRAM(nested)
 {
-    uint8_t *p = t;
+    uint8_t *restrict p = t;
     p[0] = BF_IN(io);
     p[1] = BF_IN(io);
     p[2] = BF_IN(io);
@@ -48477,7 +48453,7 @@ BF_PROGRAM(nested)
 /* Generated from pando.bf by tools/bftool. Do not edit. */
 BF_PROGRAM(pando)
 {
-    uint8_t *p = t;
+    uint8_t *restrict p = t;
     p[0] = BF_IN(io);
     p[1] = BF_IN(io);
     p[2] = BF_IN(io);

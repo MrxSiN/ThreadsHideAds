@@ -603,7 +603,7 @@ class Assembler:
         byte_class, members, default_class = classes
         self.setc(cls, default_class)
         self.switch(c, [(members[k], lambda k=k: self.setc(cls, k))
-                        for k in range(len(members)) if k != default_class], None)
+                        for k in range(len(members)) if k != default_class], None, duplicate=True)
         sink = dfa.accept_sink()
 
         def row(state):
@@ -651,7 +651,7 @@ class Assembler:
         cases = [(ks, lambda t=t: (self._set_state(hi, lo, t), self.setc(handled, 1)))
                  for t, ks in sorted(differs.items())]
         if cases:
-            self.switch(cls, cases, None)
+            self.switch(cls, cases, None, duplicate=True)
 
     def _class_transitions(self, hi, lo, cls, targets):
         # The target reached by the most classes becomes the default.
@@ -659,14 +659,19 @@ class Assembler:
         cases = [(ks, lambda t=t: self._set_state(hi, lo, t))
                  for t, ks in sorted(targets.items()) if t != default]
         if cases:
-            self.switch(cls, cases, lambda: self._set_state(hi, lo, default))
+            self.switch(cls, cases, lambda: self._set_state(hi, lo, default), duplicate=True)
         else:
             self._set_state(hi, lo, default)
 
     # --- switch -----------------------------------------------------------
 
-    def switch(self, subject, cases, default):
-        """Exclusive multi-way branch on a snapshot of `subject`."""
+    def switch(self, subject, cases, default, duplicate=False):
+        """Exclusive multi-way branch on a snapshot of `subject`.
+
+        A case with several values normally sets a hit flag per value and runs
+        its body once. With `duplicate`, short bodies are repeated per value
+        instead, so the optimizer sees one equality test per value and the C
+        backend can emit a switch (a jump or lookup table)."""
         with self.scope():
             snap = self.temp(subject.size)
             self.copy(subject, snap)
@@ -681,8 +686,9 @@ class Assembler:
                     if d is not None:
                         self.clear(d)
                     body()
-                if len(values) == 1:
-                    self.if_eq(snap, values[0], run)
+                if len(values) == 1 or duplicate:
+                    for v in values:
+                        self.if_eq(snap, v, run)
                     continue
                 with self.scope():
                     hit = self.temp()

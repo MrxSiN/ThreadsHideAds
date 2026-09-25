@@ -63,7 +63,7 @@ static inline uint8_t bf_refill(bf_io *io)
         }                                                    \
     } while (0)
 
-#define BF_PROGRAM(name) int bf_prog_##name(uint8_t *t, bf_io *io)
+#define BF_PROGRAM(name) int bf_prog_##name(uint8_t *restrict t, bf_io *restrict io)
 
 typedef int (*bf_program_fn)(uint8_t *tape, bf_io *io);
 

@@ -94,6 +94,16 @@ public final class HotPathBenchmark {
         out.append(measure("label: BF AD_LABEL matcher", batches, rounds,
                 v -> policy.textMatch(my.github.MrxSiN.threadshideads.bridge.BfAbi.MT_AD_LABEL,
                         my.github.MrxSiN.threadshideads.bridge.BfAbi.TX_LOWER_ROOT, "Sponsored ·"), policy));
+        StringBuilder json = new StringBuilder("{\"fields\":{");
+        while (json.length() < 3000) {
+            json.append("\"text\":\"organic post body with some words\",\"id\":12345,");
+        }
+        final String organicJson = json.append("\"end\":1}}").toString();
+        out.append(measure("json 3KB: legacy structured check", batches, rounds,
+                v -> my.github.MrxSiN.threadshideads.legacy.AdFieldSignals.isStructuredAdValue(organicJson), null));
+        out.append(measure("json 3KB: BF structured matcher", batches, rounds,
+                v -> policy.textMatch(my.github.MrxSiN.threadshideads.bridge.BfAbi.MT_STRUCTURED_VALUE,
+                        my.github.MrxSiN.threadshideads.bridge.BfAbi.TX_LOWER_ROOT, organicJson), policy));
         out.append(measure("text: BF unit-type matcher", batches, rounds,
                 v -> policy.textMatch(my.github.MrxSiN.threadshideads.bridge.BfAbi.MT_UNIT_TYPE,
                         my.github.MrxSiN.threadshideads.bridge.BfAbi.TX_LOWER_ROOT, "INTENT_AWARE_AD_PIVOT"), policy));

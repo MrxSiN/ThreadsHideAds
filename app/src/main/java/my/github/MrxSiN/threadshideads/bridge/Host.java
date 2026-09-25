@@ -12,8 +12,6 @@ import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.WeakHashMap;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Serves the capability frames Brainfuck programs issue (docs/BRAINFUCK_ABI.md,
@@ -21,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * mutation and text streams. Every method here performs an operation it was
  * asked for; the decision to ask lives in brainfuck/src.
  *
- * Not thread-safe: NativeCore serializes requests.
+ * One Host per engine; an engine serves one request at a time.
  */
 final class Host {
 
@@ -33,7 +31,7 @@ final class Host {
     static boolean DEBUG_ERRORS = Boolean.getBoolean("threadsbf.debugErrors");
 
     final HandleTable handles = new HandleTable();
-    final Reflector reflector = new Reflector();
+    final Reflector reflector;
 
     /** Hooked call of the current boundary request, if any. */
     CallFrame frame;
@@ -43,10 +41,9 @@ final class Host {
 
     ViewAccess views;
 
-    private final Map<Class<?>, byte[]> classMemo = new ConcurrentHashMap<>();
-    private final Map<Class<?>, byte[]> fieldMemo = new ConcurrentHashMap<>();
-    private final Map<Object, Boolean> treeVerdicts =
-            Collections.synchronizedMap(new WeakHashMap<Object, Boolean>());
+    private final Map<Class<?>, byte[]> classMemo;
+    private final Map<Class<?>, byte[]> fieldMemo;
+    private final Map<Object, Boolean> treeVerdicts;
 
     @SuppressWarnings("unchecked")
     private final Map<Object, Boolean>[] visited = new Map[]{
@@ -66,6 +63,13 @@ final class Host {
     private final byte[] encodeScratch = new byte[NativeCore.LEVEL_IN_CAP];
     private final int[] written = new int[1];
     private final byte[] payload = new byte[NativeCore.LEVEL_IN_CAP - BfAbi.HEADER_SIZE];
+
+    Host(SharedFacts shared) {
+        reflector = shared.reflector;
+        classMemo = shared.classMemo;
+        fieldMemo = shared.fieldMemo;
+        treeVerdicts = shared.treeVerdicts;
+    }
 
     // ------------------------------------------------------------ lifecycle
 
@@ -727,9 +731,9 @@ final class Host {
             streamEnded[level] = true;
             streams[level] = null;
         }
-        for (int i = 0; i < n; i++) {
-            dst.put(offset + i, encodeScratch[i]);
-        }
+        ByteBuffer view = dst.duplicate();
+        view.position(offset);
+        view.put(encodeScratch, 0, n);
         return streamEnded[level] ? n : n | MORE;
     }
 

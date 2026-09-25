@@ -541,7 +541,7 @@ def emit_c(ops, name, tape_size):
         "/* Generated from %s.bf by tools/bftool. Do not edit. */" % name,
         "BF_PROGRAM(%s)" % name,
         "{",
-        "    uint8_t *p = t;",
+        "    uint8_t *restrict p = t;",
     ]
     _emit_block(ops, lines, 1, static, tape_size)
     lines += ["    return BF_OK;", "}", ""]

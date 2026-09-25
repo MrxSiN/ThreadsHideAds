@@ -15,7 +15,8 @@ import java.util.Iterator;
  */
 final class HandleTable {
 
-    static final int CAPACITY = 1 << 16;
+    /** Per engine; a request that needs more fails open (0 = null). */
+    static final int CAPACITY = 1 << 14;
 
     static final int SLOT_NONE = 0;
     static final int SLOT_LIST = 1;

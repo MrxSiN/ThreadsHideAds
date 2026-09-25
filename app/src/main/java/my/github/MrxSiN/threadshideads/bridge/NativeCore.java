@@ -21,6 +21,8 @@ public final class NativeCore {
 
     private final long engine;
     private final Host host;
+    private final ViewAccess views;
+    private final SharedFacts shared;
     private final ByteBuffer request;
     private final ByteBuffer response;
     private final ByteBuffer[] inputs = new ByteBuffer[LEVELS];
@@ -29,8 +31,11 @@ public final class NativeCore {
     private int responseLength;
     private int nextRequestId = 1;
 
-    private NativeCore(Host host) {
-        this.host = host;
+    private NativeCore(ViewAccess views, SharedFacts shared) {
+        this.views = views;
+        this.shared = shared;
+        this.host = new Host(shared);
+        host.views = views;
         this.engine = nativeCreate(this);
         if (engine == 0) {
             throw new IllegalStateException("libthreadsbf could not create an engine");
@@ -51,9 +56,12 @@ public final class NativeCore {
 
     /** For host-side tests: the library was loaded with System.load. */
     public static NativeCore create(ViewAccess views) {
-        Host host = new Host();
-        host.views = views;
-        return new NativeCore(host);
+        return new NativeCore(views, new SharedFacts());
+    }
+
+    /** Another engine sharing this one's caches. */
+    NativeCore spawn() {
+        return new NativeCore(views, shared);
     }
 
     Host host() {

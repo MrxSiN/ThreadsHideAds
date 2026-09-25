@@ -21,7 +21,7 @@ public class AbiRobustnessTest {
     private static NativeCore core() {
         Policy policy = TestCore.policy();
         try {
-            java.lang.reflect.Field field = Policy.class.getDeclaredField("core");
+            java.lang.reflect.Field field = Policy.class.getDeclaredField("coreEngine");
             field.setAccessible(true);
             return (NativeCore) field.get(policy);
         } catch (ReflectiveOperationException e) {
@@ -123,24 +123,52 @@ public class AbiRobustnessTest {
     }
 
     @Test
-    public void reentrantRequestsFailOpen() {
+    public void nestedRequestsRunOnTheirOwnEngine() {
         final Policy policy = TestCore.policy();
         final boolean[] inner = new boolean[1];
+        final int[] depth = new int[1];
         final AdModel ad = new AdModel();
         ad.isSponsored = true;
-        // Reading the argument runs app code that fires another hook.
+        // Reading the argument runs app code that fires another hook, which
+        // itself fires a third one: two nested levels run, deeper fails open.
         FixedFrame frame = new FixedFrame(new ArrayList<Object>(Arrays.asList(ad, "organic"))) {
             @Override
             public Object argument(int index) {
-                inner[0] = policy.looksLikeAd(ad);
+                inner[0] = policy.looksLikeAd(new com.instagram.model.Computed(() -> {
+                    depth[0]++;
+                    return policy.looksLikeAd(ad) ? "{\"is_sponsored\":true}" : "organic";
+                }));
                 return super.argument(index);
             }
         };
         List<Policy.Report> reports = policy.boundaryBefore(frame);
-        assertFalse("re-entered request must fail open", inner[0]);
+        // Level 2 (looksLikeAd from argument()) ran and called toString; level 3
+        // (from inside toString) exceeded MAX_NESTING and failed open.
+        assertEquals("the second level ran", 1, depth[0]);
+        assertFalse("the third level fails open", inner[0]);
         assertEquals(1, reports.size());
         assertEquals(1, ((List<?>) frame.value).size());
         assertTrue(policy.looksLikeAd(ad));
+    }
+
+    @Test
+    public void concurrentRequestsDoNotBlockEachOther() throws Exception {
+        final Policy policy = TestCore.policy();
+        final AdModel ad = new AdModel();
+        ad.isSponsored = true;
+        final java.util.concurrent.CountDownLatch inside = new java.util.concurrent.CountDownLatch(1);
+        final java.util.concurrent.CountDownLatch done = new java.util.concurrent.CountDownLatch(1);
+        // Thread A sits inside a capability (app code) until thread B finishes.
+        Thread a = new Thread(() -> policy.looksLikeAd(new com.instagram.model.Computed(() -> {
+            inside.countDown();
+            done.await(5, java.util.concurrent.TimeUnit.SECONDS);
+            return "organic";
+        })));
+        a.start();
+        assertTrue(inside.await(5, java.util.concurrent.TimeUnit.SECONDS));
+        assertTrue("B must not wait for A", policy.looksLikeAd(ad));
+        done.countDown();
+        a.join(5000);
     }
 
     @Test

@@ -1,1 +1,0 @@
-D:\Android\AndroidStudioProjects\ThreadsHideAds\app\build\intermediates\cxx\RelWithDebInfo\27544535\obj\x86

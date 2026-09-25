@@ -10,31 +10,27 @@ import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XposedBridge;
 
+import my.github.MrxSiN.threadshideads.bridge.BfAbi;
+import my.github.MrxSiN.threadshideads.bridge.Policy;
 import my.github.MrxSiN.threadshideads.core.Diagnostics;
 import my.github.MrxSiN.threadshideads.core.ModuleLog;
 import my.github.MrxSiN.threadshideads.core.ModuleStats;
-import my.github.MrxSiN.threadshideads.model.ListSanitizer;
-import my.github.MrxSiN.threadshideads.model.NestedCollectionSanitizer;
-import my.github.MrxSiN.threadshideads.model.SanitizedList;
 
 /**
- * Installs the model-level hooks: list sanitizers on feed boundaries and
- * constant-false replacements on positive ad predicates.
+ * Installs model-level hooks. A feed boundary's callbacks hand the call to the
+ * Brainfuck core (OP_BOUNDARY_BEFORE / OP_BOUNDARY_AFTER), which reads the
+ * arguments and result through capabilities, decides what to remove and has
+ * the host apply it. This class only registers hooks and words the log.
  */
 public final class FeedModelHooks {
 
     private static final Set<String> HOOKED_METHODS =
             Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
 
-    private final ListSanitizer listSanitizer;
-    private final NestedCollectionSanitizer nestedSanitizer;
+    private final Policy policy;
 
-    public FeedModelHooks(
-            ListSanitizer listSanitizer,
-            NestedCollectionSanitizer nestedSanitizer
-    ) {
-        this.listSanitizer = listSanitizer;
-        this.nestedSanitizer = nestedSanitizer;
+    public FeedModelHooks(Policy policy) {
+        this.policy = policy;
     }
 
     public static int installedHookCount() {
@@ -49,30 +45,27 @@ public final class FeedModelHooks {
         if (!HOOKED_METHODS.add(method.toGenericString() + "#list")) {
             return false;
         }
-
         final Class<?>[] parameterTypes = method.getParameterTypes();
+        final Class<?> returnType = method.getReturnType();
 
         XposedBridge.hookMethod(method, new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) {
-                sanitizeArguments(method, param, parameterTypes);
+                long start = HotPathStats.ENABLED ? System.nanoTime() : 0;
+                log(method, policy.boundaryBefore(new XposedCallFrame(param, parameterTypes, returnType)));
+                if (HotPathStats.ENABLED) {
+                    HotPathStats.BOUNDARY.record(System.nanoTime() - start);
+                }
             }
 
             @Override
             protected void afterHookedMethod(MethodHookParam param) {
-                if (param.hasThrowable()) {
-                    return;
+                if (!param.hasThrowable()) {
+                    Diagnostics.traceBoundaryCall(method.getDeclaringClass().getSimpleName()
+                            + "." + method.getName(), param.args, param.getResult());
                 }
-
-                Diagnostics.traceBoundaryCall(
-                        method.getDeclaringClass().getSimpleName()
-                                + "." + method.getName(),
-                        param.args,
-                        param.getResult()
-                );
-
-                sanitizeArgumentsAfterCall(method, param);
-                sanitizeResult(method, param);
+                log(method, policy.boundaryAfter(new XposedCallFrame(param, parameterTypes, returnType),
+                        param.hasThrowable()));
             }
         });
 
@@ -80,28 +73,18 @@ public final class FeedModelHooks {
         return true;
     }
 
-    /**
-     * Neutralizes the client-side ad injector: the call is traced and then
-     * reported as "nothing injected".
-     */
+    /** Neutralizes the client-side ad injector: it reports "nothing injected". */
     public boolean hookAdInjectionPredicate(final Method method) {
         if (!HOOKED_METHODS.add(method.toGenericString() + "#injector")) {
             return false;
         }
-
         XposedBridge.hookMethod(method, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) {
-                Diagnostics.traceBoundaryCall(
-                        "injector " + method.getName(),
-                        param.args,
-                        param.getResult()
-                );
-
+                Diagnostics.traceBoundaryCall("injector " + method.getName(), param.args, param.getResult());
                 param.setResult(Boolean.FALSE);
             }
         });
-
         ModuleLog.log("Neutralized ad injector: " + method);
         return true;
     }
@@ -110,110 +93,34 @@ public final class FeedModelHooks {
         if (!HOOKED_METHODS.add(method.toGenericString() + "#boolean")) {
             return false;
         }
-
-        XposedBridge.hookMethod(
-                method,
-                XC_MethodReplacement.returnConstant(false)
-        );
-
+        XposedBridge.hookMethod(method, XC_MethodReplacement.returnConstant(false));
         ModuleLog.log("Disabled positive ad predicate: " + method);
         return true;
     }
 
-    private void sanitizeArguments(
-            Method method,
-            XC_MethodHook.MethodHookParam param,
-            Class<?>[] parameterTypes
-    ) {
-        for (int i = 0; i < param.args.length; i++) {
-            Object argument = param.args[i];
-
-            if (!(argument instanceof List<?>)) {
-                continue;
+    private static void log(Method method, List<Policy.Report> reports) {
+        for (Policy.Report report : reports) {
+            switch (report.site) {
+                case BfAbi.SITE_ARG:
+                    ModuleStats.recordModelRemoval(report.count, "argument " + report.index + " of " + method);
+                    break;
+                case BfAbi.SITE_LATE_ARG:
+                    ModuleStats.recordModelRemoval(report.count, "late argument " + report.index + " of " + method);
+                    break;
+                case BfAbi.SITE_RESULT:
+                    ModuleStats.recordModelRemoval(report.count, "result of " + method);
+                    break;
+                case BfAbi.SITE_NESTED:
+                    ModuleStats.recordModelRemoval(report.count, "nested result collections of " + method);
+                    break;
+                case BfAbi.SITE_REPLACEMENT_FAILURE:
+                    for (int i = 0; i < report.count; i++) {
+                        ModuleStats.recordReplacementFailure();
+                    }
+                    break;
+                default:
+                    break;
             }
-
-            SanitizedList sanitized =
-                    listSanitizer.sanitize(
-                            argument, parameterTypes[i], true, true);
-
-            if (!sanitized.changed) {
-                Diagnostics.traceUnfilteredList(
-                        method.getDeclaringClass().getSimpleName()
-                                + "." + method.getName() + " arg" + i,
-                        (List<?>) argument
-                );
-                continue;
-            }
-
-            if (sanitized.value != argument) {
-                param.args[i] = sanitized.value;
-            }
-
-            ModuleStats.recordModelRemoval(
-                    sanitized.removed,
-                    "argument " + i + " of " + method
-            );
-        }
-    }
-
-    /*
-     * Some Threads builds append or wrap sponsored entries inside the boundary
-     * method. Re-sanitize argument lists after the call, then inspect
-     * collection fields in the returned wrapper.
-     */
-    private void sanitizeArgumentsAfterCall(
-            Method method,
-            XC_MethodHook.MethodHookParam param
-    ) {
-        for (int i = 0; i < param.args.length; i++) {
-            Object argument = param.args[i];
-            if (!(argument instanceof List<?>)) {
-                continue;
-            }
-
-            SanitizedList postCall =
-                    listSanitizer.sanitize(
-                            argument, argument.getClass(), false, true);
-
-            if (postCall.changed) {
-                ModuleStats.recordModelRemoval(
-                        postCall.removed,
-                        "late argument " + i + " of " + method
-                );
-            }
-        }
-    }
-
-    private void sanitizeResult(
-            Method method,
-            XC_MethodHook.MethodHookParam param
-    ) {
-        Object result = param.getResult();
-
-        if (result instanceof List<?>) {
-            SanitizedList sanitized =
-                    listSanitizer.sanitize(
-                            result, method.getReturnType(), true, true);
-
-            if (sanitized.changed) {
-                if (sanitized.value != result) {
-                    param.setResult(sanitized.value);
-                    result = sanitized.value;
-                }
-
-                ModuleStats.recordModelRemoval(
-                        sanitized.removed,
-                        "result of " + method
-                );
-            }
-        }
-
-        int nestedRemoved = nestedSanitizer.sanitize(result);
-        if (nestedRemoved > 0) {
-            ModuleStats.recordModelRemoval(
-                    nestedRemoved,
-                    "nested result collections of " + method
-            );
         }
     }
 }

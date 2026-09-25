@@ -1,0 +1,27 @@
+{
+  "buildFiles": [
+    "D:\\Android\\AndroidStudioProjects\\ThreadsHideAds\\app\\src\\main\\cpp\\CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "C:\\Users\\SiN\\AppData\\Local\\Android\\Sdk\\cmake\\3.22.1\\bin\\ninja.exe",
+      "-C",
+      "D:\\Android\\AndroidStudioProjects\\ThreadsHideAds\\app\\.cxx\\RelWithDebInfo\\27544535\\x86",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "C:\\Users\\SiN\\AppData\\Local\\Android\\Sdk\\cmake\\3.22.1\\bin\\ninja.exe",
+    "-C",
+    "D:\\Android\\AndroidStudioProjects\\ThreadsHideAds\\app\\.cxx\\RelWithDebInfo\\27544535\\x86",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {
+    "threadsbf::@6890427a1f51a3e7e1df": {
+      "artifactName": "threadsbf",
+      "abi": "x86",
+      "output": "D:\\Android\\AndroidStudioProjects\\ThreadsHideAds\\app\\build\\intermediates\\cxx\\RelWithDebInfo\\27544535\\obj\\x86\\libthreadsbf.so",
+      "runtimeFiles": []
+    }
+  }
+}

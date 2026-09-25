@@ -541,9 +541,41 @@ def emit_c(ops, name, tape_size):
     return "\n".join(lines)
 
 
+def _switch_run(ops, i):
+    """Length of the run of `if (p[c] == v)` tests starting at i that can be
+    one C switch: same cell, distinct values, no else, bodies leave c alone."""
+    first = ops[i]
+    if first[0] != "ifeq" or first[4]:
+        return 0
+    cell = first[1]
+    seen = set()
+    j = i
+    while j < len(ops):
+        op = ops[j]
+        if op[0] != "ifeq" or op[1] != cell or op[4] or op[2] in seen or _writes(op[3], cell):
+            break
+        seen.add(op[2])
+        j += 1
+    return j - i
+
+
 def _emit_block(ops, lines, depth, static, tape_size):
     pad = "    " * depth
-    for op in ops:
+    i = 0
+    while i < len(ops):
+        run = _switch_run(ops, i)
+        if run >= 3:
+            lines.append("%sswitch (p[%d]) {" % (pad, ops[i][1]))
+            for op in ops[i:i + run]:
+                lines.append("%scase %d: {" % (pad, op[2]))
+                _emit_block(op[3], lines, depth + 1, static, tape_size)
+                lines.append("%s    break;" % pad)
+                lines.append(pad + "}")
+            lines.append(pad + "}")
+            i += run
+            continue
+        op = ops[i]
+        i += 1
         k = op[0]
         if k == "add":
             lines.append("%sp[%d] += %d;" % (pad, op[1], op[2]))

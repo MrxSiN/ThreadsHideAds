@@ -50,7 +50,7 @@ public final class HiddenViewRegistry {
     public static boolean hasHiddenAncestor(View child) {
         View current = child;
 
-        for (int depth = 0; depth < ViewTrees.MAX_ANCESTOR_DEPTH; depth++) {
+        for (int depth = 0; depth < ViewTrees.maxAncestorDepth; depth++) {
             synchronized (HIDDEN_VIEWS) {
                 if (HIDDEN_VIEWS.containsKey(current)) {
                     return true;

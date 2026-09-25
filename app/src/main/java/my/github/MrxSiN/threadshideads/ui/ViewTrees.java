@@ -3,91 +3,50 @@ package my.github.MrxSiN.threadshideads.ui;
 import android.view.View;
 import android.view.ViewParent;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import my.github.MrxSiN.threadshideads.bridge.Policy;
 
 /**
- * Bounded view-hierarchy queries: list containers, card ancestors, and depth.
+ * View-hierarchy mechanics. Walk bounds come from the Brainfuck core
+ * (OP_LIMITS); which classes count as list containers or decor views is its
+ * decision too (OP_UI_VIEW_CLASS, memoized per class).
  */
-public final class ViewTrees {
+final class ViewTrees {
 
-    /**
-     * Depth limit for every upward walk. A feed card is only a handful of
-     * levels below its list container.
-     */
-    public static final int MAX_ANCESTOR_DEPTH = 14;
+    /** Upward walk bound; a feed card sits a handful of levels below its list. */
+    static volatile int maxAncestorDepth = 14;
 
-    private static final Map<Class<?>, Boolean> LIST_CONTAINER_CLASS_CACHE =
-            new ConcurrentHashMap<>();
+    /** Views checked for a list container above an added view: itself plus ancestors. */
+    static volatile int listContainerWalk = 9;
 
     private ViewTrees() {
     }
 
-    public static boolean isListContainer(View view) {
-        Class<?> type = view.getClass();
-        Boolean cached = LIST_CONTAINER_CLASS_CACHE.get(type);
-        if (cached != null) {
-            return cached;
-        }
-
-        Class<?> cursor = type;
-        boolean result = false;
-
-        while (cursor != null) {
-            String name = cursor.getName();
-
-            if (name.contains("RecyclerView")
-                    || name.contains("ListView")
-                    || name.contains("AbsListView")) {
-                result = true;
-                break;
-            }
-
-            cursor = cursor.getSuperclass();
-        }
-
-        Boolean existing = LIST_CONTAINER_CLASS_CACHE.putIfAbsent(type, result);
-        return existing == null ? result : existing;
+    static void configure(Policy policy) {
+        int[] limits = policy.limits();
+        maxAncestorDepth = limits[1];
+        listContainerWalk = limits[2];
     }
 
-    public static boolean isDecorView(View view) {
-        Class<?> cursor = view.getClass();
-
-        while (cursor != null) {
-            if (cursor.getName().contains("DecorView")) {
-                return true;
-            }
-
-            cursor = cursor.getSuperclass();
-        }
-
-        return false;
-    }
-
-    public static boolean isWithinListContainer(View view, int maxDepth) {
-        View current = view;
-
-        for (int depth = 0; depth <= maxDepth; depth++) {
-            if (isListContainer(current)) {
-                return true;
-            }
-
-            View parent = parentOf(current);
-            if (parent == null) {
-                return false;
-            }
-            current = parent;
-        }
-
-        return false;
-    }
-
-    public static View parentOf(View view) {
+    static View parentOf(View view) {
         ViewParent parent = view.getParent();
         return parent instanceof View ? (View) parent : null;
     }
 
-    public static boolean isAttached(View view) {
+    static boolean isAttached(View view) {
         return view.getWindowToken() != null;
+    }
+
+    /** List-container flags for the view and its ancestors, nearest first. */
+    static boolean[] listContainerChain(Policy policy, View view) {
+        boolean[] chain = new boolean[listContainerWalk];
+        int count = 0;
+        View current = view;
+        while (current != null && count < chain.length) {
+            chain[count++] = policy.uiViewClass(current)[0];
+            current = parentOf(current);
+        }
+        boolean[] result = new boolean[count];
+        System.arraycopy(chain, 0, result, 0, count);
+        return result;
     }
 }

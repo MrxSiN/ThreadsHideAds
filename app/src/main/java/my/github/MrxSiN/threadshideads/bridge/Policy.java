@@ -194,6 +194,7 @@ public final class Policy {
             out.putInt(handle(value));
             out.put((byte) 0);
             out.putShort((short) 0);
+            out.put((byte) 0);
             return core.send() == BfAbi.ST_OK && core.payload().get(0) != 0;
         } finally {
             core.end();
@@ -305,6 +306,8 @@ public final class Policy {
         try {
             ByteBuffer out = core.begin(BfAbi.OP_PANDO_VERDICT);
             out.putInt(handle(tree));
+            out.put((byte) 0);
+            out.put((byte) 0);
             return core.send() == BfAbi.ST_OK && core.payload().get(0) != 0;
         } finally {
             core.end();

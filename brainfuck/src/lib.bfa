@@ -11,20 +11,21 @@ var zero16[2]
 
 # ---- object descriptors (CAP_NODE, CAP_CHILD)
 # kind flags, class facts memo, size (container length or text length),
-# value (Number.longValue(), or 1/0 for Boolean)
+# value (Number.longValue(), or 1/0 for Boolean), cached Pando verdict
+# (0 unknown, 1 not sponsored, 2 sponsored; only for known Pando classes)
 
 var n_charseq, n_enum, n_number, n_boolean, n_character, n_class
-var n_map, n_collection, n_list, n_array, n_facts, n_size[4], n_value[8]
+var n_map, n_collection, n_list, n_array, n_facts, n_size[4], n_value[8], n_tree
 
 var c_h[4], c_charseq, c_enum, c_number, c_boolean, c_character, c_class
-var c_map, c_collection, c_list, c_array, c_facts, c_size[4], c_value[8]
+var c_map, c_collection, c_list, c_array, c_facts, c_size[4], c_value[8], c_tree
 var c_decl_object, c_decl_interface, c_decl_arraylist, c_field_fact, c_key[4]
 
 macro node(h) {
   cap CAP_NODE, h
   read_reply r_status
   in n_charseq, n_enum, n_number, n_boolean, n_character, n_class
-  in n_map, n_collection, n_list, n_array, n_facts, n_size, n_value
+  in n_map, n_collection, n_list, n_array, n_facts, n_size, n_value, n_tree
 }
 
 # child(h, index[4], mode): the index-th element, entry value or field.
@@ -32,13 +33,20 @@ macro child(h, index, mode) {
   cap CAP_CHILD, h, index, mode
   read_reply r_status
   in c_h, c_charseq, c_enum, c_number, c_boolean, c_character, c_class
-  in c_map, c_collection, c_list, c_array, c_facts, c_size, c_value
+  in c_map, c_collection, c_list, c_array, c_facts, c_size, c_value, c_tree
   in c_decl_object, c_decl_interface, c_decl_arraylist, c_field_fact, c_key
 }
 
 # visit(set, h, fresh): fresh := h was not yet in identity set `set`.
 macro visit(set, h, fresh) {
   cap CAP_VISIT, set, VISIT_ADD, h
+  read_reply r_status
+  in fresh
+}
+
+# visit_first(set, h, fresh): starts a traversal: clears the set, adds h.
+macro visit_first(set, h, fresh) {
+  cap CAP_VISIT, set, VISIT_RESET_ADD, h
   read_reply r_status
   in fresh
 }
@@ -92,7 +100,16 @@ macro text(matcher, h, source, transform, verdict) {
 # detect(h, depth, budget[2], found): one ReflectiveAdDetector.inspect step
 # in PROG_DETECT; budget is shared across the whole traversal.
 macro detect(h, depth, budget, found) {
-  call PROG_DETECT, OP_DETECT, h, depth, budget
+  call PROG_DETECT, OP_DETECT, h, depth, budget, 0
+  read_reply r_status
+  in found
+  in budget
+}
+
+# detect_child(depth, budget, found): detect on the current child, handing
+# over the descriptor CAP_CHILD already returned.
+macro detect_child(depth, budget, found) {
+  call PROG_DETECT, OP_DETECT, c_h, depth, budget, 1, c_charseq, c_enum, c_number, c_boolean, c_character, c_class, c_map, c_collection, c_list, c_array, c_facts, c_size, c_value, c_tree
   read_reply r_status
   in found
   in budget
@@ -105,9 +122,11 @@ macro class_facts(h, facts) {
   in facts
 }
 
-# pando_verdict(h, sponsored): PandoAdSignals.isSponsoredTree in PROG_PANDO.
-macro pando_verdict(h, sponsored) {
-  call PROG_PANDO, OP_PANDO_VERDICT, h
+# pando_verdict(h, facts, tree, sponsored): PandoAdSignals.isSponsoredTree
+# in PROG_PANDO, handing over the class facts and cached verdict already known
+# (0 when not).
+macro pando_verdict(h, facts, tree, sponsored) {
+  call PROG_PANDO, OP_PANDO_VERDICT, h, facts, tree
   read_reply r_status
   in sponsored
 }

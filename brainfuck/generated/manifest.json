@@ -1,8 +1,8 @@
 {
  "programs": [
   {
-   "bf_commands": 218327,
-   "bf_sha256": "54182d9a2eeda95e57810e95cce2af543bbaa77208f7d81ec8b6d75e81f6e2a7",
+   "bf_commands": 220409,
+   "bf_sha256": "8b1c969c0cf42cf050b1227acabb02e70b8317a7a428266e8dffbddbc49c2609",
    "dfa_states": {},
    "id": 0,
    "ir_ops": 7342,
@@ -137,144 +137,156 @@
     },
     {
      "addr": 98,
+     "name": "n_tree",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 99,
      "name": "c_h",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 102,
+     "addr": 103,
      "name": "c_charseq",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 103,
+     "addr": 104,
      "name": "c_enum",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 104,
+     "addr": 105,
      "name": "c_number",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 105,
+     "addr": 106,
      "name": "c_boolean",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 106,
+     "addr": 107,
      "name": "c_character",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 107,
+     "addr": 108,
      "name": "c_class",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 108,
+     "addr": 109,
      "name": "c_map",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 109,
+     "addr": 110,
      "name": "c_collection",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 110,
+     "addr": 111,
      "name": "c_list",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 111,
+     "addr": 112,
      "name": "c_array",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 112,
+     "addr": 113,
      "name": "c_facts",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 113,
+     "addr": 114,
      "name": "c_size",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 117,
+     "addr": 118,
      "name": "c_value",
      "region": "var",
      "size": 8
     },
     {
-     "addr": 125,
-     "name": "c_decl_object",
-     "region": "var",
-     "size": 1
-    },
-    {
      "addr": 126,
-     "name": "c_decl_interface",
+     "name": "c_tree",
      "region": "var",
      "size": 1
     },
     {
      "addr": 127,
-     "name": "c_decl_arraylist",
+     "name": "c_decl_object",
      "region": "var",
      "size": 1
     },
     {
      "addr": 128,
-     "name": "c_field_fact",
+     "name": "c_decl_interface",
      "region": "var",
      "size": 1
     },
     {
      "addr": 129,
+     "name": "c_decl_arraylist",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 130,
+     "name": "c_field_fact",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 131,
      "name": "c_key",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 133,
+     "addr": 135,
      "name": "f_known",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 134,
+     "addr": 136,
      "name": "f_app_model",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 135,
+     "addr": 137,
      "name": "f_strong_token",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 136,
+     "addr": 138,
      "name": "f_pando",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 137,
+     "addr": 139,
      "name": "f_structured",
      "region": "var",
      "size": 1
@@ -364,80 +376,74 @@
      "size": 1
     },
     {
-     "addr": 138,
+     "addr": 140,
      "name": "flag",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 139,
+     "addr": 141,
      "name": "go",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 140,
+     "addr": 142,
      "name": "value",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 141,
+     "addr": 143,
      "name": "index",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 142,
+     "addr": 144,
      "name": "count",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 145,
+     "addr": 147,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 149,
+     "addr": 151,
      "name": "package_h",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 153,
+     "addr": 155,
      "name": "process_h",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 157,
+     "addr": 159,
      "name": "in_scope",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 158,
+     "addr": 160,
      "name": "main_process",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 159,
+     "addr": 161,
      "name": "install_ui",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 160,
+     "addr": 162,
      "name": "install_attach",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 161,
-     "name": "skip",
      "region": "var",
      "size": 1
     },
@@ -448,158 +454,38 @@
      "size": 1
     },
     {
-     "addr": 161,
+     "addr": 165,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 163,
      "name": "op",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 149,
-     "name": "op",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 149,
-     "name": "loader",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 150,
-     "name": "retry_index",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 153,
-     "name": "op",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 157,
-     "name": "op",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 157,
-     "name": "op",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 155,
-     "name": "ahead",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 158,
-     "name": "op",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 160,
-     "name": "op",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 160,
-     "name": "op",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 149,
-     "name": "success",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 150,
-     "name": "retry_index",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 153,
-     "name": "op",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 153,
-     "name": "ahead",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 156,
-     "name": "op",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 158,
-     "name": "op",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 158,
-     "name": "op",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 149,
-     "name": "step",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 150,
-     "name": "ok",
      "region": "var",
      "size": 1
     },
     {
      "addr": 151,
-     "name": "aux",
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 151,
+     "name": "loader",
      "region": "var",
      "size": 1
     },
     {
      "addr": 152,
-     "name": "feed",
-     "region": "var",
-     "size": 2
-    },
-    {
-     "addr": 154,
-     "name": "pando",
-     "region": "var",
-     "size": 2
-    },
-    {
-     "addr": 156,
-     "name": "next",
+     "name": "retry_index",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 157,
-     "name": "success",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 158,
-     "name": "detail",
+     "addr": 155,
+     "name": "op",
      "region": "var",
      "size": 1
     },
@@ -610,56 +496,56 @@
      "size": 1
     },
     {
-     "addr": 149,
-     "name": "is_static",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 150,
-     "name": "is_abstract",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 151,
-     "name": "interface",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 152,
-     "name": "params",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 153,
-     "name": "p0",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 154,
-     "name": "p1",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 155,
-     "name": "p2",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 156,
-     "name": "returns_void",
+     "addr": 159,
+     "name": "op",
      "region": "var",
      "size": 1
     },
     {
      "addr": 157,
-     "name": "accept",
+     "name": "ahead",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 160,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 162,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 162,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 151,
+     "name": "success",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 152,
+     "name": "retry_index",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 155,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 155,
+     "name": "ahead",
      "region": "var",
      "size": 1
     },
@@ -670,68 +556,188 @@
      "size": 1
     },
     {
-     "addr": 149,
-     "name": "decision",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 150,
+     "addr": 160,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 149,
-     "name": "list_boundary",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 150,
-     "name": "returns_boolean",
+     "addr": 160,
+     "name": "op",
      "region": "var",
      "size": 1
     },
     {
      "addr": 151,
+     "name": "step",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 152,
+     "name": "ok",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 153,
+     "name": "aux",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 154,
+     "name": "feed",
+     "region": "var",
+     "size": 2
+    },
+    {
+     "addr": 156,
+     "name": "pando",
+     "region": "var",
+     "size": 2
+    },
+    {
+     "addr": 158,
+     "name": "next",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 159,
+     "name": "success",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 160,
+     "name": "detail",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 161,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 151,
+     "name": "is_static",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 152,
+     "name": "is_abstract",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 153,
+     "name": "interface",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 154,
+     "name": "params",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 155,
+     "name": "p0",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 156,
+     "name": "p1",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 157,
+     "name": "p2",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "returns_void",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 159,
+     "name": "accept",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 160,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 151,
+     "name": "decision",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 152,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 151,
+     "name": "list_boundary",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 152,
+     "name": "returns_boolean",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 153,
      "name": "method",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 155,
+     "addr": 157,
      "name": "m",
      "region": "var",
      "size": 13
     },
     {
-     "addr": 168,
+     "addr": 170,
      "name": "any",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 169,
+     "addr": 171,
      "name": "strong",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 170,
+     "addr": 172,
      "name": "blocked",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 171,
-     "name": "action",
-     "region": "var",
-     "size": 1
-    },
-    {
      "addr": 173,
-     "name": "skip",
+     "name": "action",
      "region": "var",
      "size": 1
     },
@@ -748,373 +754,391 @@
      "size": 1
     },
     {
-     "addr": 172,
+     "addr": 179,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 174,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 149,
+     "addr": 151,
      "name": "is_abstract",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 150,
+     "addr": 152,
      "name": "returns_list",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 151,
+     "addr": 153,
      "name": "takes_list",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 152,
+     "addr": 154,
      "name": "hook",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 153,
+     "addr": 155,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 149,
+     "addr": 151,
      "name": "is_abstract",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 150,
+     "addr": 152,
      "name": "returns_boolean",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 151,
+     "addr": 153,
      "name": "params",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 152,
+     "addr": 154,
      "name": "p0_primitive",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 153,
+     "addr": 155,
      "name": "p1_int",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 154,
+     "addr": 156,
      "name": "shape",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 155,
+     "addr": 157,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 149,
+     "addr": 151,
      "name": "decision",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 150,
+     "addr": 152,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 149,
+     "addr": 151,
      "name": "is_abstract",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 150,
+     "addr": 152,
      "name": "is_native",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 151,
+     "addr": 153,
      "name": "returns_list",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 152,
+     "addr": 154,
      "name": "hook",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 153,
+     "addr": 155,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 149,
+     "addr": 151,
      "name": "table",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 158,
+     "addr": 160,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 158,
+     "addr": 160,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 158,
+     "addr": 160,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 158,
+     "addr": 160,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 158,
+     "addr": 160,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 158,
+     "addr": 160,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 158,
+     "addr": 160,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 158,
+     "addr": 160,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 158,
+     "addr": 160,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 158,
+     "addr": 160,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 158,
+     "addr": 160,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 158,
+     "addr": 160,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 158,
+     "addr": 160,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 158,
+     "addr": 160,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 158,
+     "addr": 160,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 158,
+     "addr": 160,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 158,
+     "addr": 160,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 158,
+     "addr": 160,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 158,
+     "addr": 160,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 158,
+     "addr": 160,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 158,
+     "addr": 160,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 158,
+     "addr": 160,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 158,
+     "addr": 160,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 158,
+     "addr": 160,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 158,
+     "addr": 160,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 158,
+     "addr": 160,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 158,
+     "addr": 160,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 158,
+     "addr": 160,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 158,
+     "addr": 160,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 158,
+     "addr": 160,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 158,
+     "addr": 160,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 158,
+     "addr": 160,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 158,
+     "addr": 160,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 158,
+     "addr": 160,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 158,
+     "addr": 160,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 152,
+     "addr": 154,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 149,
+     "addr": 151,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 149,
+     "addr": 151,
      "name": "kind",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 150,
+     "addr": 152,
      "name": "amount",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 154,
+     "addr": 156,
      "name": "log",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 159,
+     "addr": 161,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 161,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 161,
      "name": "op",
      "region": "var",
      "size": 1
@@ -1126,314 +1150,386 @@
      "size": 1
     },
     {
-     "addr": 159,
-     "name": "op",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 157,
-     "name": "op",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 149,
+     "addr": 151,
      "name": "source",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 150,
+     "addr": 152,
      "name": "view",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 154,
+     "addr": 156,
      "name": "label",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 155,
+     "addr": 157,
      "name": "action",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 158,
+     "addr": 160,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 160,
      "name": "skip",
      "region": "var",
      "size": 1
     },
     {
      "addr": 158,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 156,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 149,
+     "addr": 151,
      "name": "view",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 153,
+     "addr": 155,
      "name": "text_view",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 154,
+     "addr": 156,
      "name": "marker",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 156,
+     "addr": 158,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 159,
      "name": "skip",
      "region": "var",
      "size": 1
     },
     {
      "addr": 157,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 155,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 149,
+     "addr": 151,
      "name": "sw",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 153,
+     "addr": 155,
      "name": "sh",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 157,
+     "addr": 159,
      "name": "density",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 161,
+     "addr": 163,
      "name": "minimum",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 165,
+     "addr": 167,
      "name": "product",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 169,
+     "addr": 171,
      "name": "result",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 170,
+     "addr": 172,
      "name": "current",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 171,
+     "addr": 173,
      "name": "depth",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 172,
+     "addr": 174,
      "name": "walking",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 173,
+     "addr": 175,
      "name": "list_container",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 174,
+     "addr": 176,
      "name": "root",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 175,
+     "addr": 177,
      "name": "w",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 179,
+     "addr": 181,
      "name": "h",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 183,
+     "addr": 185,
      "name": "lhs",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 187,
+     "addr": 189,
      "name": "rhs",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 191,
+     "addr": 193,
      "name": "ok",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 192,
+     "addr": 194,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 149,
+     "addr": 151,
      "name": "marker",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 150,
+     "addr": 152,
      "name": "card",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 151,
+     "addr": 153,
      "name": "attempt",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 152,
+     "addr": 154,
      "name": "arm_failed",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 153,
+     "addr": 155,
      "name": "action",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 154,
+     "addr": 156,
      "name": "next",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 155,
+     "addr": 157,
      "name": "op",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 149,
-     "name": "same",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 150,
-     "name": "labelled",
      "region": "var",
      "size": 1
     },
     {
      "addr": 151,
-     "name": "restore",
+     "name": "same",
      "region": "var",
      "size": 1
     },
     {
      "addr": 152,
-     "name": "op",
+     "name": "labelled",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 149,
-     "name": "root",
-     "region": "var",
-     "size": 4
-    },
-    {
      "addr": 153,
-     "name": "rescan",
+     "name": "restore",
      "region": "var",
      "size": 1
     },
     {
      "addr": 154,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 151,
+     "name": "root",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 155,
+     "name": "rescan",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 156,
      "name": "limit",
      "region": "var",
      "size": 2
     },
     {
-     "addr": 156,
+     "addr": 158,
      "name": "seen",
      "region": "var",
      "size": 2
     },
     {
-     "addr": 158,
+     "addr": 160,
      "name": "view",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 162,
+     "addr": 164,
      "name": "text_view",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 163,
+     "addr": 165,
      "name": "marker",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 164,
+     "addr": 166,
      "name": "found",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 168,
+     "addr": 170,
      "name": "reset",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 173,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 176,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 177,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 171,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 151,
+     "name": "view",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 155,
+     "name": "memo",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 156,
+     "name": "list_container",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 157,
+     "name": "decor",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "k",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 159,
+     "name": "super",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 163,
+     "name": "first",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 167,
+     "name": "walking",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 168,
+     "name": "hit",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 169,
+     "name": "skip",
      "region": "var",
      "size": 1
     },
@@ -1444,7 +1540,7 @@
      "size": 1
     },
     {
-     "addr": 174,
+     "addr": 175,
      "name": "skip",
      "region": "var",
      "size": 1
@@ -1456,151 +1552,67 @@
      "size": 1
     },
     {
-     "addr": 169,
-     "name": "op",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 149,
-     "name": "view",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 153,
-     "name": "memo",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 154,
-     "name": "list_container",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 155,
-     "name": "decor",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 156,
-     "name": "k",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 157,
-     "name": "super",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 161,
-     "name": "first",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 165,
-     "name": "walking",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 166,
-     "name": "hit",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 167,
+     "addr": 171,
      "name": "skip",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 169,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 173,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 173,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 169,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 169,
+     "addr": 171,
      "name": "ignored",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 170,
+     "addr": 172,
      "name": "skip",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 167,
+     "addr": 169,
      "name": "op",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 149,
-     "name": "within",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 150,
-     "name": "entry",
      "region": "var",
      "size": 1
     },
     {
      "addr": 151,
-     "name": "scanned",
+     "name": "within",
      "region": "var",
      "size": 1
     },
     {
      "addr": 152,
+     "name": "entry",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 153,
+     "name": "scanned",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 154,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 151,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 151,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
      "addr": 149,
-     "name": "op",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 149,
-     "name": "op",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 147,
      "name": "op",
      "region": "var",
      "size": 1
@@ -1709,11 +1721,11 @@
    "tape": 256
   },
   {
-   "bf_commands": 155871,
-   "bf_sha256": "500eaa6e0b58f92ddb1718829c45d5bed5262c00cf9b103dd45c0f6ab74600b1",
+   "bf_commands": 182630,
+   "bf_sha256": "fe01eca65d92a9df8b76f2c1907086518051ef7078c81cd13b4dbfe394504322",
    "dfa_states": {},
    "id": 2,
-   "ir_ops": 4837,
+   "ir_ops": 5133,
    "name": "detect",
    "persist": 0,
    "symbols": [
@@ -1845,468 +1857,438 @@
     },
     {
      "addr": 34,
+     "name": "n_tree",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 35,
      "name": "c_h",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 38,
+     "addr": 39,
      "name": "c_charseq",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 39,
+     "addr": 40,
      "name": "c_enum",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 40,
+     "addr": 41,
      "name": "c_number",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 41,
+     "addr": 42,
      "name": "c_boolean",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 42,
+     "addr": 43,
      "name": "c_character",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 43,
+     "addr": 44,
      "name": "c_class",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 44,
+     "addr": 45,
      "name": "c_map",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 45,
+     "addr": 46,
      "name": "c_collection",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 46,
+     "addr": 47,
      "name": "c_list",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 47,
+     "addr": 48,
      "name": "c_array",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 48,
+     "addr": 49,
      "name": "c_facts",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 49,
+     "addr": 50,
      "name": "c_size",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 53,
+     "addr": 54,
      "name": "c_value",
      "region": "var",
      "size": 8
     },
     {
-     "addr": 61,
-     "name": "c_decl_object",
-     "region": "var",
-     "size": 1
-    },
-    {
      "addr": 62,
-     "name": "c_decl_interface",
+     "name": "c_tree",
      "region": "var",
      "size": 1
     },
     {
      "addr": 63,
-     "name": "c_decl_arraylist",
+     "name": "c_decl_object",
      "region": "var",
      "size": 1
     },
     {
      "addr": 64,
-     "name": "c_field_fact",
+     "name": "c_decl_interface",
      "region": "var",
      "size": 1
     },
     {
      "addr": 65,
+     "name": "c_decl_arraylist",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 66,
+     "name": "c_field_fact",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 67,
      "name": "c_key",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 69,
+     "addr": 71,
      "name": "f_known",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 70,
+     "addr": 72,
      "name": "f_app_model",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 71,
+     "addr": 73,
      "name": "f_strong_token",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 72,
+     "addr": 74,
      "name": "f_pando",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 73,
+     "addr": 75,
      "name": "f_structured",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 74,
+     "addr": 76,
      "name": "h",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 78,
+     "addr": 80,
      "name": "depth",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 79,
+     "addr": 81,
      "name": "budget",
      "region": "var",
      "size": 2
     },
     {
-     "addr": 81,
+     "addr": 83,
      "name": "found",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 82,
+     "addr": 84,
      "name": "facts",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 83,
+     "addr": 85,
      "name": "go",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 84,
+     "addr": 86,
      "name": "flag",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 85,
+     "addr": 87,
      "name": "fresh",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 86,
+     "addr": 88,
      "name": "d1",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 87,
+     "addr": 89,
      "name": "strong",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 88,
+     "addr": 90,
      "name": "value",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 89,
+     "addr": 91,
      "name": "i",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 93,
+     "addr": 95,
      "name": "limit",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 97,
+     "addr": 99,
      "name": "looping",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 98,
+     "addr": 100,
      "name": "fi",
      "region": "var",
      "size": 2
     },
     {
      "addr": 102,
+     "name": "known",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 103,
+     "name": "first",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 109,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 108,
-     "name": "ignored",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 109,
-     "name": "none",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 113,
+     "addr": 116,
      "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 107,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 108,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 108,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 107,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 109,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 111,
-     "name": "app",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 112,
-     "name": "token",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 113,
-     "name": "tree",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 114,
-     "name": "accessor",
      "region": "var",
      "size": 1
     },
     {
      "addr": 115,
-     "name": "overrides",
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 115,
+     "name": "skip",
      "region": "var",
      "size": 1
     },
     {
      "addr": 116,
-     "name": "pando",
+     "name": "skip",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 117,
-     "name": "structured",
+     "addr": 116,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 116,
+     "name": "skip",
      "region": "var",
      "size": 1
     },
     {
      "addr": 118,
-     "name": "one",
+     "name": "app",
      "region": "var",
      "size": 1
     },
     {
      "addr": 119,
-     "name": "k",
+     "name": "token",
      "region": "var",
      "size": 1
     },
     {
      "addr": 120,
-     "name": "super",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 124,
-     "name": "first",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 128,
-     "name": "walking",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 129,
-     "name": "hit",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 130,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 130,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 130,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 132,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 130,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 131,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 133,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 131,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 130,
-     "name": "ignored",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 131,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 108,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 108,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 111,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 113,
-     "name": "skip",
+     "name": "tree",
      "region": "var",
      "size": 1
     },
     {
      "addr": 121,
-     "name": "stop",
+     "name": "accessor",
      "region": "var",
      "size": 1
     },
     {
      "addr": 122,
-     "name": "skip",
+     "name": "overrides",
      "region": "var",
      "size": 1
     },
     {
      "addr": 123,
+     "name": "pando",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 124,
+     "name": "structured",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 125,
+     "name": "one",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 126,
+     "name": "k",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 127,
+     "name": "super",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 131,
+     "name": "first",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 135,
+     "name": "walking",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 136,
+     "name": "hit",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 137,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 137,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 137,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 139,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 137,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 138,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 140,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 138,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 137,
+     "name": "ignored",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 138,
      "name": "skip",
      "region": "var",
      "size": 1
@@ -2319,384 +2301,30 @@
     },
     {
      "addr": 115,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 116,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 113,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 115,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 116,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 115,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 117,
      "name": "skip",
      "region": "var",
      "size": 1
     },
     {
      "addr": 118,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 115,
      "name": "skip",
      "region": "var",
      "size": 1
     },
     {
      "addr": 120,
-     "name": "put",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 121,
      "name": "skip",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 121,
-     "name": "ignored",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 122,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 126,
+     "addr": 128,
      "name": "stop",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 127,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 128,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 126,
-     "name": "child_facts",
-     "region": "var",
-     "size": 1
-    },
-    {
      "addr": 129,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 131,
-     "name": "app",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 132,
-     "name": "token",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 133,
-     "name": "tree",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 134,
-     "name": "accessor",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 135,
-     "name": "overrides",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 136,
-     "name": "pando",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 137,
-     "name": "structured",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 138,
-     "name": "one",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 139,
-     "name": "k",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 140,
-     "name": "super",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 144,
-     "name": "first",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 148,
-     "name": "walking",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 149,
-     "name": "hit",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 150,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 150,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 150,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 152,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 150,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 151,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 153,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 151,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 150,
-     "name": "ignored",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 151,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 122,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 118,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 106,
-     "name": "op",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 106,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 108,
-     "name": "app",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 109,
-     "name": "token",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 110,
-     "name": "tree",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 111,
-     "name": "accessor",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 112,
-     "name": "overrides",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 113,
-     "name": "pando",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 114,
-     "name": "structured",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 115,
-     "name": "one",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 116,
-     "name": "k",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 117,
-     "name": "super",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 121,
-     "name": "first",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 125,
-     "name": "walking",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 126,
-     "name": "hit",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 127,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 127,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 127,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 129,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 127,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 128,
      "name": "skip",
      "region": "var",
      "size": 1
@@ -2708,14 +2336,62 @@
      "size": 1
     },
     {
-     "addr": 128,
+     "addr": 122,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 116,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 120,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 122,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 118,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 122,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 124,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 120,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 122,
      "name": "skip",
      "region": "var",
      "size": 1
     },
     {
      "addr": 127,
-     "name": "ignored",
+     "name": "put",
      "region": "var",
      "size": 1
     },
@@ -2726,13 +2402,355 @@
      "size": 1
     },
     {
-     "addr": 106,
+     "addr": 128,
+     "name": "ignored",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 129,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 133,
+     "name": "stop",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 134,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 135,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 133,
+     "name": "child_facts",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 136,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 138,
+     "name": "app",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 139,
+     "name": "token",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 140,
+     "name": "tree",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 141,
+     "name": "accessor",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 142,
+     "name": "overrides",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 143,
+     "name": "pando",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 144,
+     "name": "structured",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 145,
+     "name": "one",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 146,
+     "name": "k",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 147,
+     "name": "super",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 151,
+     "name": "first",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 155,
+     "name": "walking",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 156,
+     "name": "hit",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 157,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 157,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 157,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 159,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 157,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 160,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 157,
+     "name": "ignored",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 129,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 120,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 113,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 104,
+     "addr": 113,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 115,
+     "name": "app",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 116,
+     "name": "token",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 117,
+     "name": "tree",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 118,
+     "name": "accessor",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 119,
+     "name": "overrides",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 120,
+     "name": "pando",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 121,
+     "name": "structured",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 122,
+     "name": "one",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 123,
+     "name": "k",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 124,
+     "name": "super",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 128,
+     "name": "first",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 132,
+     "name": "walking",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 133,
+     "name": "hit",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 134,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 134,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 134,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 136,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 134,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 135,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 137,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 135,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 134,
+     "name": "ignored",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 135,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 113,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 111,
      "name": "op",
      "region": "var",
      "size": 1
@@ -2741,11 +2759,11 @@
    "tape": 512
   },
   {
-   "bf_commands": 60960,
-   "bf_sha256": "116d2c0be1d46df2ff3d4f1052c47cf8fc253fa1edc02d63a5fdc0b054d9b907",
+   "bf_commands": 61566,
+   "bf_sha256": "f2c5790e8b436bc73c33ec0cfaab60ab5678df5cf1bd934d8f2fa42f1aa920be",
    "dfa_states": {},
    "id": 3,
-   "ir_ops": 1727,
+   "ir_ops": 1756,
    "name": "sanitize",
    "persist": 0,
    "symbols": [
@@ -2877,363 +2895,381 @@
     },
     {
      "addr": 34,
+     "name": "n_tree",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 35,
      "name": "c_h",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 38,
+     "addr": 39,
      "name": "c_charseq",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 39,
+     "addr": 40,
      "name": "c_enum",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 40,
+     "addr": 41,
      "name": "c_number",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 41,
+     "addr": 42,
      "name": "c_boolean",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 42,
+     "addr": 43,
      "name": "c_character",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 43,
+     "addr": 44,
      "name": "c_class",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 44,
+     "addr": 45,
      "name": "c_map",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 45,
+     "addr": 46,
      "name": "c_collection",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 46,
+     "addr": 47,
      "name": "c_list",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 47,
+     "addr": 48,
      "name": "c_array",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 48,
+     "addr": 49,
      "name": "c_facts",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 49,
+     "addr": 50,
      "name": "c_size",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 53,
+     "addr": 54,
      "name": "c_value",
      "region": "var",
      "size": 8
     },
     {
-     "addr": 61,
-     "name": "c_decl_object",
-     "region": "var",
-     "size": 1
-    },
-    {
      "addr": 62,
-     "name": "c_decl_interface",
+     "name": "c_tree",
      "region": "var",
      "size": 1
     },
     {
      "addr": 63,
-     "name": "c_decl_arraylist",
+     "name": "c_decl_object",
      "region": "var",
      "size": 1
     },
     {
      "addr": 64,
-     "name": "c_field_fact",
+     "name": "c_decl_interface",
      "region": "var",
      "size": 1
     },
     {
      "addr": 65,
+     "name": "c_decl_arraylist",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 66,
+     "name": "c_field_fact",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 67,
      "name": "c_key",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 69,
+     "addr": 71,
      "name": "f_known",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 70,
+     "addr": 72,
      "name": "f_app_model",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 71,
+     "addr": 73,
      "name": "f_strong_token",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 72,
+     "addr": 74,
      "name": "f_pando",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 73,
+     "addr": 75,
      "name": "f_structured",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 74,
+     "addr": 76,
      "name": "h",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 78,
+     "addr": 80,
      "name": "d_object",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 79,
+     "addr": 81,
      "name": "d_interface",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 80,
+     "addr": 82,
      "name": "d_arraylist",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 81,
+     "addr": 83,
      "name": "allow_replacement",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 82,
+     "addr": 84,
      "name": "allow_emptying",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 83,
+     "addr": 85,
      "name": "changed",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 84,
+     "addr": 86,
      "name": "h_out",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 88,
+     "addr": 90,
      "name": "removed",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 92,
+     "addr": 94,
      "name": "blocked",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 93,
+     "addr": 95,
      "name": "argc",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 94,
+     "addr": 96,
      "name": "threw",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 95,
+     "addr": 97,
      "name": "index",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 96,
+     "addr": 98,
      "name": "looping",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 97,
+     "addr": 99,
      "name": "flag",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 98,
+     "addr": 100,
      "name": "a_h",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 102,
+     "addr": 104,
      "name": "a_list",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 103,
+     "addr": 105,
      "name": "p_object",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 104,
+     "addr": 106,
      "name": "p_interface",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 105,
+     "addr": 107,
      "name": "p_arraylist",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 106,
+     "addr": 108,
      "name": "r_object",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 107,
+     "addr": 109,
      "name": "r_interface",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 108,
+     "addr": 110,
      "name": "r_arraylist",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 111,
+     "addr": 113,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 115,
+     "addr": 117,
      "name": "ads",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 119,
+     "addr": 121,
      "name": "kept",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 123,
+     "addr": 125,
      "name": "i",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 127,
+     "addr": 129,
      "name": "walking",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 128,
+     "addr": 130,
      "name": "failed",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 129,
+     "addr": 131,
      "name": "ad",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 130,
+     "addr": 132,
      "name": "root_depth",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 131,
+     "addr": 133,
      "name": "root_budget",
      "region": "var",
      "size": 2
     },
     {
-     "addr": 133,
+     "addr": 135,
      "name": "moved",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 137,
+     "addr": 139,
      "name": "can_replace",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 138,
+     "addr": 140,
      "name": "skip",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 139,
+     "addr": 141,
      "name": "all",
      "region": "var",
      "size": 4
+    },
+    {
+     "addr": 145,
+     "name": "skip",
+     "region": "var",
+     "size": 1
     },
     {
      "addr": 143,
@@ -3242,92 +3278,38 @@
      "size": 1
     },
     {
-     "addr": 141,
+     "addr": 147,
      "name": "skip",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 145,
+     "addr": 147,
      "name": "skip",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 145,
+     "addr": 146,
      "name": "skip",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 144,
+     "addr": 146,
      "name": "skip",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 144,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 148,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 115,
-     "name": "op",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 115,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 116,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 118,
+     "addr": 150,
      "name": "skip",
      "region": "var",
      "size": 1
     },
     {
      "addr": 117,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 115,
      "name": "op",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 117,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 118,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 119,
-     "name": "skip",
      "region": "var",
      "size": 1
     },
@@ -3356,32 +3338,86 @@
      "size": 1
     },
     {
-     "addr": 118,
+     "addr": 117,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 119,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 120,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 121,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 119,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 120,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 122,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 121,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 120,
      "name": "nested_removed",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 122,
+     "addr": 124,
      "name": "failures",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 126,
+     "addr": 128,
      "name": "skip",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 127,
+     "addr": 129,
      "name": "skip",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 127,
+     "addr": 129,
      "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 117,
+     "name": "op",
      "region": "var",
      "size": 1
     },
@@ -3390,22 +3426,16 @@
      "name": "op",
      "region": "var",
      "size": 1
-    },
-    {
-     "addr": 113,
-     "name": "op",
-     "region": "var",
-     "size": 1
     }
    ],
    "tape": 512
   },
   {
-   "bf_commands": 214063,
-   "bf_sha256": "02312df4edc6ce101f083fbf387bcc8524815bf191a0f54b0aa418910b64b979",
+   "bf_commands": 218079,
+   "bf_sha256": "99e51035377bd17574d8700ab5fadb1f995e73acf2d778163b357ddd2dd10015",
    "dfa_states": {},
    "id": 4,
-   "ir_ops": 6119,
+   "ir_ops": 6147,
    "name": "nested",
    "persist": 0,
    "symbols": [
@@ -3537,823 +3567,235 @@
     },
     {
      "addr": 34,
+     "name": "n_tree",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 35,
      "name": "c_h",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 38,
+     "addr": 39,
      "name": "c_charseq",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 39,
+     "addr": 40,
      "name": "c_enum",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 40,
+     "addr": 41,
      "name": "c_number",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 41,
+     "addr": 42,
      "name": "c_boolean",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 42,
+     "addr": 43,
      "name": "c_character",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 43,
+     "addr": 44,
      "name": "c_class",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 44,
+     "addr": 45,
      "name": "c_map",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 45,
+     "addr": 46,
      "name": "c_collection",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 46,
+     "addr": 47,
      "name": "c_list",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 47,
+     "addr": 48,
      "name": "c_array",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 48,
+     "addr": 49,
      "name": "c_facts",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 49,
+     "addr": 50,
      "name": "c_size",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 53,
+     "addr": 54,
      "name": "c_value",
      "region": "var",
      "size": 8
     },
     {
-     "addr": 61,
-     "name": "c_decl_object",
-     "region": "var",
-     "size": 1
-    },
-    {
      "addr": 62,
-     "name": "c_decl_interface",
+     "name": "c_tree",
      "region": "var",
      "size": 1
     },
     {
      "addr": 63,
-     "name": "c_decl_arraylist",
+     "name": "c_decl_object",
      "region": "var",
      "size": 1
     },
     {
      "addr": 64,
-     "name": "c_field_fact",
+     "name": "c_decl_interface",
      "region": "var",
      "size": 1
     },
     {
      "addr": 65,
+     "name": "c_decl_arraylist",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 66,
+     "name": "c_field_fact",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 67,
      "name": "c_key",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 69,
+     "addr": 71,
      "name": "f_known",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 70,
+     "addr": 72,
      "name": "f_app_model",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 71,
+     "addr": 73,
      "name": "f_strong_token",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 72,
+     "addr": 74,
      "name": "f_pando",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 73,
+     "addr": 75,
      "name": "f_structured",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 74,
+     "addr": 76,
      "name": "h",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 78,
+     "addr": 80,
      "name": "depth",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 79,
+     "addr": 81,
      "name": "budget",
      "region": "var",
      "size": 2
     },
     {
-     "addr": 81,
+     "addr": 83,
      "name": "has_replacer",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 82,
+     "addr": 84,
      "name": "s_object",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 83,
+     "addr": 85,
      "name": "s_interface",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 84,
+     "addr": 86,
      "name": "s_arraylist",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 85,
+     "addr": 87,
      "name": "removed",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 89,
+     "addr": 91,
      "name": "failures",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 93,
+     "addr": 95,
      "name": "go",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 94,
+     "addr": 96,
      "name": "flag",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 95,
+     "addr": 97,
      "name": "fresh",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 96,
+     "addr": 98,
      "name": "d1",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 99,
-     "name": "op",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 103,
-     "name": "ignored",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 104,
-     "name": "none",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 108,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 104,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 104,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 106,
-     "name": "changed",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 107,
-     "name": "h_out",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 111,
-     "name": "count",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 115,
-     "name": "blocked",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 116,
-     "name": "current",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 120,
-     "name": "diff",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 124,
-     "name": "ok",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 125,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 129,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 130,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 125,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 125,
-     "name": "i",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 129,
-     "name": "limit",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 133,
-     "name": "walking",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 136,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 139,
-     "name": "r",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 143,
-     "name": "f",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 147,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 139,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 108,
-     "name": "i",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 112,
-     "name": "limit",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 116,
-     "name": "walking",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 119,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 122,
-     "name": "r",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 126,
-     "name": "f",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 130,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 122,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 110,
-     "name": "i",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 114,
-     "name": "limit",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 118,
-     "name": "walking",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 121,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 124,
-     "name": "r",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 128,
-     "name": "f",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 132,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 124,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 110,
-     "name": "inspect",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 111,
-     "name": "facts",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 112,
-     "name": "i",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 116,
-     "name": "walking",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 121,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 120,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 123,
-     "name": "r",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 127,
-     "name": "f",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 131,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 123,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 103,
-     "name": "op",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 104,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 104,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 106,
-     "name": "changed",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 107,
-     "name": "h_out",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 111,
-     "name": "count",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 115,
-     "name": "blocked",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 116,
-     "name": "current",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 120,
-     "name": "diff",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 124,
-     "name": "ok",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 125,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 129,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 130,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 125,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 125,
-     "name": "i",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 129,
-     "name": "limit",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 133,
-     "name": "walking",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 136,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 139,
-     "name": "r",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 143,
-     "name": "f",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 147,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 139,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 108,
-     "name": "i",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 112,
-     "name": "limit",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 116,
-     "name": "walking",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 119,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 122,
-     "name": "r",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 126,
-     "name": "f",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 130,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 122,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 110,
-     "name": "i",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 114,
-     "name": "limit",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 118,
-     "name": "walking",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 121,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 124,
-     "name": "r",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 128,
-     "name": "f",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 132,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 124,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 110,
-     "name": "inspect",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 111,
-     "name": "facts",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 112,
-     "name": "i",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 116,
-     "name": "walking",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 121,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 120,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 123,
-     "name": "r",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 127,
-     "name": "f",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 131,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 123,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 103,
-     "name": "op",
      "region": "var",
      "size": 1
     },
@@ -4362,16 +3804,616 @@
      "name": "op",
      "region": "var",
      "size": 1
+    },
+    {
+     "addr": 105,
+     "name": "ignored",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 106,
+     "name": "none",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 110,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 106,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 106,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 108,
+     "name": "changed",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 109,
+     "name": "h_out",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 113,
+     "name": "count",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 117,
+     "name": "blocked",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 118,
+     "name": "current",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 122,
+     "name": "diff",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 126,
+     "name": "ok",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 127,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 131,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 132,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 127,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 127,
+     "name": "i",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 131,
+     "name": "limit",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 135,
+     "name": "walking",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 138,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 141,
+     "name": "r",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 145,
+     "name": "f",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 149,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 141,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 110,
+     "name": "i",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 114,
+     "name": "limit",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 118,
+     "name": "walking",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 121,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 124,
+     "name": "r",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 128,
+     "name": "f",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 132,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 124,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 112,
+     "name": "i",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 116,
+     "name": "limit",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 120,
+     "name": "walking",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 123,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 126,
+     "name": "r",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 130,
+     "name": "f",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 134,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 126,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 112,
+     "name": "inspect",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 113,
+     "name": "facts",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 114,
+     "name": "i",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 118,
+     "name": "walking",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 123,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 122,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 125,
+     "name": "r",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 129,
+     "name": "f",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 133,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 125,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 105,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 106,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 106,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 108,
+     "name": "changed",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 109,
+     "name": "h_out",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 113,
+     "name": "count",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 117,
+     "name": "blocked",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 118,
+     "name": "current",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 122,
+     "name": "diff",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 126,
+     "name": "ok",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 127,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 131,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 132,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 127,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 127,
+     "name": "i",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 131,
+     "name": "limit",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 135,
+     "name": "walking",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 138,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 141,
+     "name": "r",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 145,
+     "name": "f",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 149,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 141,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 110,
+     "name": "i",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 114,
+     "name": "limit",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 118,
+     "name": "walking",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 121,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 124,
+     "name": "r",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 128,
+     "name": "f",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 132,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 124,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 112,
+     "name": "i",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 116,
+     "name": "limit",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 120,
+     "name": "walking",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 123,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 126,
+     "name": "r",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 130,
+     "name": "f",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 134,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 126,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 112,
+     "name": "inspect",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 113,
+     "name": "facts",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 114,
+     "name": "i",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 118,
+     "name": "walking",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 123,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 122,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 125,
+     "name": "r",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 129,
+     "name": "f",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 133,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 125,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 105,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 103,
+     "name": "op",
+     "region": "var",
+     "size": 1
     }
    ],
    "tape": 512
   },
   {
-   "bf_commands": 73090,
-   "bf_sha256": "6c0e3b760c6d36aea35ce2320c9b4ce0ee70efce25465838614d95832f7a5cac",
+   "bf_commands": 71919,
+   "bf_sha256": "7909dba839f3376fb5a3a9d7e51835e1ec722852375ace8d628b94043c89a6a6",
    "dfa_states": {},
    "id": 5,
-   "ir_ops": 2241,
+   "ir_ops": 2158,
    "name": "pando",
    "persist": 0,
    "symbols": [
@@ -4503,293 +4545,293 @@
     },
     {
      "addr": 34,
+     "name": "n_tree",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 35,
      "name": "c_h",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 38,
+     "addr": 39,
      "name": "c_charseq",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 39,
+     "addr": 40,
      "name": "c_enum",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 40,
+     "addr": 41,
      "name": "c_number",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 41,
+     "addr": 42,
      "name": "c_boolean",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 42,
+     "addr": 43,
      "name": "c_character",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 43,
+     "addr": 44,
      "name": "c_class",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 44,
+     "addr": 45,
      "name": "c_map",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 45,
+     "addr": 46,
      "name": "c_collection",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 46,
+     "addr": 47,
      "name": "c_list",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 47,
+     "addr": 48,
      "name": "c_array",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 48,
+     "addr": 49,
      "name": "c_facts",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 49,
+     "addr": 50,
      "name": "c_size",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 53,
+     "addr": 54,
      "name": "c_value",
      "region": "var",
      "size": 8
     },
     {
-     "addr": 61,
-     "name": "c_decl_object",
-     "region": "var",
-     "size": 1
-    },
-    {
      "addr": 62,
-     "name": "c_decl_interface",
+     "name": "c_tree",
      "region": "var",
      "size": 1
     },
     {
      "addr": 63,
-     "name": "c_decl_arraylist",
+     "name": "c_decl_object",
      "region": "var",
      "size": 1
     },
     {
      "addr": 64,
-     "name": "c_field_fact",
+     "name": "c_decl_interface",
      "region": "var",
      "size": 1
     },
     {
      "addr": 65,
+     "name": "c_decl_arraylist",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 66,
+     "name": "c_field_fact",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 67,
      "name": "c_key",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 69,
+     "addr": 71,
      "name": "f_known",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 70,
+     "addr": 72,
      "name": "f_app_model",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 71,
+     "addr": 73,
      "name": "f_strong_token",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 72,
+     "addr": 74,
      "name": "f_pando",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 73,
+     "addr": 75,
      "name": "f_structured",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 74,
+     "addr": 76,
      "name": "h",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 78,
+     "addr": 80,
      "name": "d_object",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 79,
+     "addr": 81,
      "name": "d_interface",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 80,
+     "addr": 82,
      "name": "d_arraylist",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 81,
+     "addr": 83,
      "name": "h_declared",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 85,
+     "addr": 87,
      "name": "sponsored",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 86,
+     "addr": 88,
      "name": "action",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 87,
+     "addr": 89,
      "name": "h_out",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 91,
+     "addr": 93,
      "name": "removed",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 95,
+     "addr": 97,
      "name": "flag",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 96,
+     "addr": 98,
      "name": "facts",
      "region": "var",
      "size": 1
     },
     {
      "addr": 99,
+     "name": "tree",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 102,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 103,
+     "addr": 106,
      "name": "memo",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 104,
+     "addr": 107,
      "name": "flags",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 105,
+     "addr": 108,
      "name": "length",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 109,
+     "addr": 112,
      "name": "best",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 113,
+     "addr": 116,
      "name": "have",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 114,
+     "addr": 117,
      "name": "probe",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 115,
+     "addr": 118,
      "name": "candidate",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 119,
+     "addr": 122,
      "name": "better",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 120,
+     "addr": 123,
      "name": "transform",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 121,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 122,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 124,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
      "addr": 126,
      "name": "skip",
      "region": "var",
@@ -4802,110 +4844,92 @@
      "size": 1
     },
     {
-     "addr": 126,
+     "addr": 127,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 129,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 130,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 129,
      "name": "ignored",
      "region": "var",
      "size": 1
     },
     {
+     "addr": 130,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 131,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
      "addr": 127,
      "name": "skip",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 128,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 124,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 103,
+     "addr": 106,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 103,
+     "addr": 106,
      "name": "size_ok",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 104,
+     "addr": 107,
      "name": "first_ok",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 105,
+     "addr": 108,
      "name": "i",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 109,
+     "addr": 112,
      "name": "walking",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 110,
+     "addr": 113,
      "name": "kept",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 114,
+     "addr": 117,
      "name": "item",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 115,
-     "name": "declared_ok",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 116,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 117,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 120,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
      "addr": 118,
-     "name": "skip",
-     "region": "var",
-     "size": 1
-    },
-    {
-     "addr": 117,
-     "name": "all",
-     "region": "var",
-     "size": 4
-    },
-    {
-     "addr": 121,
-     "name": "skip",
+     "name": "declared_ok",
      "region": "var",
      "size": 1
     },
@@ -4916,7 +4940,7 @@
      "size": 1
     },
     {
-     "addr": 122,
+     "addr": 120,
      "name": "skip",
      "region": "var",
      "size": 1
@@ -4934,43 +4958,55 @@
      "size": 1
     },
     {
-     "addr": 120,
+     "addr": 127,
      "name": "skip",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 122,
+     "addr": 126,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 123,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 125,
      "name": "kept_h",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 126,
+     "addr": 129,
      "name": "copied",
      "region": "var",
      "size": 4
     },
     {
-     "addr": 130,
+     "addr": 133,
      "name": "skip",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 132,
+     "addr": 135,
      "name": "skip",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 103,
+     "addr": 106,
      "name": "op",
      "region": "var",
      "size": 1
     },
     {
-     "addr": 101,
+     "addr": 104,
      "name": "op",
      "region": "var",
      "size": 1

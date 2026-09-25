@@ -10,15 +10,16 @@
 #include <stdint.h>
 
 #include "bf_runtime.h"
+#include "generated/bf_abi.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#define BF_MAX_LEVELS 16
-#define BF_TAPE_MAX 4096
-#define BF_LEVEL_IN_CAP 65536
-#define BF_LEVEL_OUT_CAP 8192
+#define BF_MAX_LEVELS BF_RUNTIME_LEVELS
+#define BF_TAPE_MAX BF_RUNTIME_TAPE_MAX
+#define BF_LEVEL_IN_CAP BF_RUNTIME_LEVEL_IN_CAP
+#define BF_LEVEL_OUT_CAP BF_RUNTIME_LEVEL_OUT_CAP
 
 typedef struct bf_engine bf_engine;
 

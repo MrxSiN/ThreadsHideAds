@@ -169,3 +169,9 @@ const PANDO_REPLACE_FAILED = 3
 
 # JSON length answered for a null or failed serialization.
 const JSON_NULL = 0xFFFFFFFF
+
+# ---- runtime dimensions (app/src/main/cpp/bf_engine.h uses these)
+const RUNTIME_LEVELS = 24
+const RUNTIME_TAPE_MAX = 4096
+const RUNTIME_LEVEL_IN_CAP = 16384
+const RUNTIME_LEVEL_OUT_CAP = 8192

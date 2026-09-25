@@ -1,3 +1,0 @@
-D:/Android/AndroidStudioProjects/ThreadsHideAds/app/.cxx/RelWithDebInfo/27544535/armeabi-v7a/CMakeFiles/threadsbf.dir
-D:/Android/AndroidStudioProjects/ThreadsHideAds/app/.cxx/RelWithDebInfo/27544535/armeabi-v7a/CMakeFiles/edit_cache.dir
-D:/Android/AndroidStudioProjects/ThreadsHideAds/app/.cxx/RelWithDebInfo/27544535/armeabi-v7a/CMakeFiles/rebuild_cache.dir

@@ -1,9 +1,0 @@
-# ninja log v5
-5	90	8120434291976040	CMakeFiles/threadsbf.dir/bf_engine.c.o	9c56775a0db7c392
-2	100	8120434292075429	CMakeFiles/threadsbf.dir/bf_jni.c.o	3421fa57810683b
-7	10251	8120434393528143	CMakeFiles/threadsbf.dir/generated/bf_programs.generated.c.o	70ca002366e2cd1e
-10251	26379	8120434554701220	D:/Android/AndroidStudioProjects/ThreadsHideAds/app/build/intermediates/cxx/RelWithDebInfo/27544535/obj/armeabi-v7a/libthreadsbf.so	ec2c2478f3b7ba90
-7	84	8120439505230778	CMakeFiles/threadsbf.dir/bf_jni.c.o	9b9c4fba493302dd
-5	89	8120439505275052	CMakeFiles/threadsbf.dir/bf_engine.c.o	28e218d228c4d45d
-3	10052	8120439604838876	CMakeFiles/threadsbf.dir/generated/bf_programs.generated.c.o	8142340dba8a573d
-10052	26439	8120439768601352	D:/Android/AndroidStudioProjects/ThreadsHideAds/app/build/intermediates/cxx/RelWithDebInfo/27544535/obj/armeabi-v7a/libthreadsbf.so	ec2c2478f3b7ba90

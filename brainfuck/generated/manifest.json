@@ -1,17 +1,1607 @@
 {
  "programs": [
   {
-   "bf_commands": 0,
-   "bf_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bf_commands": 218327,
+   "bf_sha256": "54182d9a2eeda95e57810e95cce2af543bbaa77208f7d81ec8b6d75e81f6e2a7",
    "dfa_states": {},
    "id": 0,
-   "ir_ops": 0,
+   "ir_ops": 7342,
    "name": "core",
    "persist": 64,
    "symbols": [
     {
+     "addr": 64,
+     "name": "rq_major",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 65,
+     "name": "rq_minor",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 66,
+     "name": "rq_op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 67,
+     "name": "rq_flags",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 68,
+     "name": "rq_len",
+     "region": "var",
+     "size": 2
+    },
+    {
+     "addr": 70,
+     "name": "rq_id",
+     "region": "var",
+     "size": 2
+    },
+    {
+     "addr": 72,
+     "name": "r_status",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 73,
+     "name": "zero16",
+     "region": "var",
+     "size": 2
+    },
+    {
+     "addr": 75,
+     "name": "n_charseq",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 76,
+     "name": "n_enum",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 77,
+     "name": "n_number",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 78,
+     "name": "n_boolean",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 79,
+     "name": "n_character",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 80,
+     "name": "n_class",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 81,
+     "name": "n_map",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 82,
+     "name": "n_collection",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 83,
+     "name": "n_list",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 84,
+     "name": "n_array",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 85,
+     "name": "n_facts",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 86,
+     "name": "n_size",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 90,
+     "name": "n_value",
+     "region": "var",
+     "size": 8
+    },
+    {
+     "addr": 98,
+     "name": "c_h",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 102,
+     "name": "c_charseq",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 103,
+     "name": "c_enum",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 104,
+     "name": "c_number",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 105,
+     "name": "c_boolean",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 106,
+     "name": "c_character",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 107,
+     "name": "c_class",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 108,
+     "name": "c_map",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 109,
+     "name": "c_collection",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 110,
+     "name": "c_list",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 111,
+     "name": "c_array",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 112,
+     "name": "c_facts",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 113,
+     "name": "c_size",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 117,
+     "name": "c_value",
+     "region": "var",
+     "size": 8
+    },
+    {
+     "addr": 125,
+     "name": "c_decl_object",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 126,
+     "name": "c_decl_interface",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 127,
+     "name": "c_decl_arraylist",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 128,
+     "name": "c_field_fact",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 129,
+     "name": "c_key",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 133,
+     "name": "f_known",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 134,
+     "name": "f_app_model",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 135,
+     "name": "f_strong_token",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 136,
+     "name": "f_pando",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 137,
+     "name": "f_structured",
+     "region": "var",
+     "size": 1
+    },
+    {
      "addr": 0,
-     "name": "x",
+     "name": "ui_installed",
+     "region": "persist",
+     "size": 1
+    },
+    {
+     "addr": 1,
+     "name": "attach_requested",
+     "region": "persist",
+     "size": 1
+    },
+    {
+     "addr": 2,
+     "name": "initialized",
+     "region": "persist",
+     "size": 1
+    },
+    {
+     "addr": 3,
+     "name": "initializing",
+     "region": "persist",
+     "size": 1
+    },
+    {
+     "addr": 4,
+     "name": "attempts",
+     "region": "persist",
+     "size": 4
+    },
+    {
+     "addr": 8,
+     "name": "primary_count",
+     "region": "persist",
+     "size": 2
+    },
+    {
+     "addr": 10,
+     "name": "injector_count",
+     "region": "persist",
+     "size": 1
+    },
+    {
+     "addr": 11,
+     "name": "removal_total",
+     "region": "persist",
+     "size": 4
+    },
+    {
+     "addr": 15,
+     "name": "removal_events",
+     "region": "persist",
+     "size": 4
+    },
+    {
+     "addr": 19,
+     "name": "removal_cycle",
+     "region": "persist",
+     "size": 1
+    },
+    {
+     "addr": 20,
+     "name": "ui_total",
+     "region": "persist",
+     "size": 4
+    },
+    {
+     "addr": 24,
+     "name": "ui_cycle",
+     "region": "persist",
+     "size": 1
+    },
+    {
+     "addr": 25,
+     "name": "replace_failures",
+     "region": "persist",
+     "size": 4
+    },
+    {
+     "addr": 29,
+     "name": "replace_cycle",
+     "region": "persist",
+     "size": 1
+    },
+    {
+     "addr": 138,
+     "name": "flag",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 139,
+     "name": "go",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 140,
+     "name": "value",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 141,
+     "name": "index",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 142,
+     "name": "count",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 145,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 149,
+     "name": "package_h",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 153,
+     "name": "process_h",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 157,
+     "name": "in_scope",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "main_process",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 159,
+     "name": "install_ui",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 160,
+     "name": "install_attach",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 161,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 163,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 161,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 149,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 149,
+     "name": "loader",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 150,
+     "name": "retry_index",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 153,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 157,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 157,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 155,
+     "name": "ahead",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 160,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 160,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 149,
+     "name": "success",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 150,
+     "name": "retry_index",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 153,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 153,
+     "name": "ahead",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 156,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 149,
+     "name": "step",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 150,
+     "name": "ok",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 151,
+     "name": "aux",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 152,
+     "name": "feed",
+     "region": "var",
+     "size": 2
+    },
+    {
+     "addr": 154,
+     "name": "pando",
+     "region": "var",
+     "size": 2
+    },
+    {
+     "addr": 156,
+     "name": "next",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 157,
+     "name": "success",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "detail",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 159,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 149,
+     "name": "is_static",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 150,
+     "name": "is_abstract",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 151,
+     "name": "interface",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 152,
+     "name": "params",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 153,
+     "name": "p0",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 154,
+     "name": "p1",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 155,
+     "name": "p2",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 156,
+     "name": "returns_void",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 157,
+     "name": "accept",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 149,
+     "name": "decision",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 150,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 149,
+     "name": "list_boundary",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 150,
+     "name": "returns_boolean",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 151,
+     "name": "method",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 155,
+     "name": "m",
+     "region": "var",
+     "size": 13
+    },
+    {
+     "addr": 168,
+     "name": "any",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 169,
+     "name": "strong",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 170,
+     "name": "blocked",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 171,
+     "name": "action",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 173,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 175,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 177,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 172,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 149,
+     "name": "is_abstract",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 150,
+     "name": "returns_list",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 151,
+     "name": "takes_list",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 152,
+     "name": "hook",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 153,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 149,
+     "name": "is_abstract",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 150,
+     "name": "returns_boolean",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 151,
+     "name": "params",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 152,
+     "name": "p0_primitive",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 153,
+     "name": "p1_int",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 154,
+     "name": "shape",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 155,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 149,
+     "name": "decision",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 150,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 149,
+     "name": "is_abstract",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 150,
+     "name": "is_native",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 151,
+     "name": "returns_list",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 152,
+     "name": "hook",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 153,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 149,
+     "name": "table",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 152,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 149,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 149,
+     "name": "kind",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 150,
+     "name": "amount",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 154,
+     "name": "log",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 159,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 159,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 159,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 157,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 149,
+     "name": "source",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 150,
+     "name": "view",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 154,
+     "name": "label",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 155,
+     "name": "action",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 158,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 156,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 149,
+     "name": "view",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 153,
+     "name": "text_view",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 154,
+     "name": "marker",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 156,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 157,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 155,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 149,
+     "name": "sw",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 153,
+     "name": "sh",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 157,
+     "name": "density",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 161,
+     "name": "minimum",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 165,
+     "name": "product",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 169,
+     "name": "result",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 170,
+     "name": "current",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 171,
+     "name": "depth",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 172,
+     "name": "walking",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 173,
+     "name": "list_container",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 174,
+     "name": "root",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 175,
+     "name": "w",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 179,
+     "name": "h",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 183,
+     "name": "lhs",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 187,
+     "name": "rhs",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 191,
+     "name": "ok",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 192,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 149,
+     "name": "marker",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 150,
+     "name": "card",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 151,
+     "name": "attempt",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 152,
+     "name": "arm_failed",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 153,
+     "name": "action",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 154,
+     "name": "next",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 155,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 149,
+     "name": "same",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 150,
+     "name": "labelled",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 151,
+     "name": "restore",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 152,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 149,
+     "name": "root",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 153,
+     "name": "rescan",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 154,
+     "name": "limit",
+     "region": "var",
+     "size": 2
+    },
+    {
+     "addr": 156,
+     "name": "seen",
+     "region": "var",
+     "size": 2
+    },
+    {
+     "addr": 158,
+     "name": "view",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 162,
+     "name": "text_view",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 163,
+     "name": "marker",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 164,
+     "name": "found",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 168,
+     "name": "reset",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 171,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 174,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 175,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 169,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 149,
+     "name": "view",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 153,
+     "name": "memo",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 154,
+     "name": "list_container",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 155,
+     "name": "decor",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 156,
+     "name": "k",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 157,
+     "name": "super",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 161,
+     "name": "first",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 165,
+     "name": "walking",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 166,
+     "name": "hit",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 167,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 169,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 173,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 173,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 169,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 169,
+     "name": "ignored",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 170,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 167,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 149,
+     "name": "within",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 150,
+     "name": "entry",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 151,
+     "name": "scanned",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 152,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 149,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 149,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 147,
+     "name": "op",
      "region": "var",
      "size": 1
     }
@@ -117,6 +1707,3240 @@
     }
    ],
    "tape": 256
+  },
+  {
+   "bf_commands": 155842,
+   "bf_sha256": "854bf891549c5aff0c4c06919afc975656c14a47bfbbb66d3c92fe532539ea71",
+   "dfa_states": {},
+   "id": 2,
+   "ir_ops": 4837,
+   "name": "detect",
+   "persist": 0,
+   "symbols": [
+    {
+     "addr": 0,
+     "name": "rq_major",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 1,
+     "name": "rq_minor",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 2,
+     "name": "rq_op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 3,
+     "name": "rq_flags",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 4,
+     "name": "rq_len",
+     "region": "var",
+     "size": 2
+    },
+    {
+     "addr": 6,
+     "name": "rq_id",
+     "region": "var",
+     "size": 2
+    },
+    {
+     "addr": 8,
+     "name": "r_status",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 9,
+     "name": "zero16",
+     "region": "var",
+     "size": 2
+    },
+    {
+     "addr": 11,
+     "name": "n_charseq",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 12,
+     "name": "n_enum",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 13,
+     "name": "n_number",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 14,
+     "name": "n_boolean",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 15,
+     "name": "n_character",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 16,
+     "name": "n_class",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 17,
+     "name": "n_map",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 18,
+     "name": "n_collection",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 19,
+     "name": "n_list",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 20,
+     "name": "n_array",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 21,
+     "name": "n_facts",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 22,
+     "name": "n_size",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 26,
+     "name": "n_value",
+     "region": "var",
+     "size": 8
+    },
+    {
+     "addr": 34,
+     "name": "c_h",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 38,
+     "name": "c_charseq",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 39,
+     "name": "c_enum",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 40,
+     "name": "c_number",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 41,
+     "name": "c_boolean",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 42,
+     "name": "c_character",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 43,
+     "name": "c_class",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 44,
+     "name": "c_map",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 45,
+     "name": "c_collection",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 46,
+     "name": "c_list",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 47,
+     "name": "c_array",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 48,
+     "name": "c_facts",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 49,
+     "name": "c_size",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 53,
+     "name": "c_value",
+     "region": "var",
+     "size": 8
+    },
+    {
+     "addr": 61,
+     "name": "c_decl_object",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 62,
+     "name": "c_decl_interface",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 63,
+     "name": "c_decl_arraylist",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 64,
+     "name": "c_field_fact",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 65,
+     "name": "c_key",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 69,
+     "name": "f_known",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 70,
+     "name": "f_app_model",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 71,
+     "name": "f_strong_token",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 72,
+     "name": "f_pando",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 73,
+     "name": "f_structured",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 74,
+     "name": "h",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 78,
+     "name": "depth",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 79,
+     "name": "budget",
+     "region": "var",
+     "size": 2
+    },
+    {
+     "addr": 81,
+     "name": "found",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 82,
+     "name": "facts",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 83,
+     "name": "go",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 84,
+     "name": "flag",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 85,
+     "name": "fresh",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 86,
+     "name": "d1",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 87,
+     "name": "strong",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 88,
+     "name": "value",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 89,
+     "name": "i",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 93,
+     "name": "limit",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 97,
+     "name": "looping",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 98,
+     "name": "fi",
+     "region": "var",
+     "size": 2
+    },
+    {
+     "addr": 102,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 108,
+     "name": "ignored",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 109,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 107,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 108,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 108,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 107,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 109,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 111,
+     "name": "app",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 112,
+     "name": "token",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 113,
+     "name": "tree",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 114,
+     "name": "accessor",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 115,
+     "name": "overrides",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 116,
+     "name": "pando",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 117,
+     "name": "structured",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 118,
+     "name": "one",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 119,
+     "name": "k",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 120,
+     "name": "super",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 124,
+     "name": "first",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 128,
+     "name": "walking",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 129,
+     "name": "hit",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 130,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 130,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 130,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 132,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 130,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 131,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 133,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 131,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 130,
+     "name": "ignored",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 131,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 108,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 108,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 111,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 113,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 121,
+     "name": "stop",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 122,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 123,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 115,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 115,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 116,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 113,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 115,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 116,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 115,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 117,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 118,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 115,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 120,
+     "name": "put",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 121,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 121,
+     "name": "ignored",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 122,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 126,
+     "name": "stop",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 127,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 128,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 126,
+     "name": "child_facts",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 129,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 131,
+     "name": "app",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 132,
+     "name": "token",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 133,
+     "name": "tree",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 134,
+     "name": "accessor",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 135,
+     "name": "overrides",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 136,
+     "name": "pando",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 137,
+     "name": "structured",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 138,
+     "name": "one",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 139,
+     "name": "k",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 140,
+     "name": "super",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 144,
+     "name": "first",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 148,
+     "name": "walking",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 149,
+     "name": "hit",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 150,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 150,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 150,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 152,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 150,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 151,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 153,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 151,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 150,
+     "name": "ignored",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 151,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 122,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 118,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 106,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 106,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 108,
+     "name": "app",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 109,
+     "name": "token",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 110,
+     "name": "tree",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 111,
+     "name": "accessor",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 112,
+     "name": "overrides",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 113,
+     "name": "pando",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 114,
+     "name": "structured",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 115,
+     "name": "one",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 116,
+     "name": "k",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 117,
+     "name": "super",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 121,
+     "name": "first",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 125,
+     "name": "walking",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 126,
+     "name": "hit",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 127,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 127,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 127,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 129,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 127,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 128,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 130,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 128,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 127,
+     "name": "ignored",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 128,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 106,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 104,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    }
+   ],
+   "tape": 512
+  },
+  {
+   "bf_commands": 60356,
+   "bf_sha256": "dafbcc4ee1563610c35ca3b6804692fe9d764cd8944343326604bb899e81aba6",
+   "dfa_states": {},
+   "id": 3,
+   "ir_ops": 1688,
+   "name": "sanitize",
+   "persist": 0,
+   "symbols": [
+    {
+     "addr": 0,
+     "name": "rq_major",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 1,
+     "name": "rq_minor",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 2,
+     "name": "rq_op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 3,
+     "name": "rq_flags",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 4,
+     "name": "rq_len",
+     "region": "var",
+     "size": 2
+    },
+    {
+     "addr": 6,
+     "name": "rq_id",
+     "region": "var",
+     "size": 2
+    },
+    {
+     "addr": 8,
+     "name": "r_status",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 9,
+     "name": "zero16",
+     "region": "var",
+     "size": 2
+    },
+    {
+     "addr": 11,
+     "name": "n_charseq",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 12,
+     "name": "n_enum",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 13,
+     "name": "n_number",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 14,
+     "name": "n_boolean",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 15,
+     "name": "n_character",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 16,
+     "name": "n_class",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 17,
+     "name": "n_map",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 18,
+     "name": "n_collection",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 19,
+     "name": "n_list",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 20,
+     "name": "n_array",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 21,
+     "name": "n_facts",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 22,
+     "name": "n_size",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 26,
+     "name": "n_value",
+     "region": "var",
+     "size": 8
+    },
+    {
+     "addr": 34,
+     "name": "c_h",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 38,
+     "name": "c_charseq",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 39,
+     "name": "c_enum",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 40,
+     "name": "c_number",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 41,
+     "name": "c_boolean",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 42,
+     "name": "c_character",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 43,
+     "name": "c_class",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 44,
+     "name": "c_map",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 45,
+     "name": "c_collection",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 46,
+     "name": "c_list",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 47,
+     "name": "c_array",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 48,
+     "name": "c_facts",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 49,
+     "name": "c_size",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 53,
+     "name": "c_value",
+     "region": "var",
+     "size": 8
+    },
+    {
+     "addr": 61,
+     "name": "c_decl_object",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 62,
+     "name": "c_decl_interface",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 63,
+     "name": "c_decl_arraylist",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 64,
+     "name": "c_field_fact",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 65,
+     "name": "c_key",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 69,
+     "name": "f_known",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 70,
+     "name": "f_app_model",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 71,
+     "name": "f_strong_token",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 72,
+     "name": "f_pando",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 73,
+     "name": "f_structured",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 74,
+     "name": "h",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 78,
+     "name": "d_object",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 79,
+     "name": "d_interface",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 80,
+     "name": "d_arraylist",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 81,
+     "name": "allow_replacement",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 82,
+     "name": "allow_emptying",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 83,
+     "name": "changed",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 84,
+     "name": "h_out",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 88,
+     "name": "removed",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 92,
+     "name": "blocked",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 93,
+     "name": "argc",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 94,
+     "name": "threw",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 95,
+     "name": "index",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 96,
+     "name": "looping",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 97,
+     "name": "flag",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 98,
+     "name": "a_h",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 102,
+     "name": "a_list",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 103,
+     "name": "p_object",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 104,
+     "name": "p_interface",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 105,
+     "name": "p_arraylist",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 106,
+     "name": "r_object",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 107,
+     "name": "r_interface",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 108,
+     "name": "r_arraylist",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 111,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 115,
+     "name": "ads",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 119,
+     "name": "kept",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 123,
+     "name": "i",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 127,
+     "name": "walking",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 128,
+     "name": "failed",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 129,
+     "name": "ad",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 130,
+     "name": "root_depth",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 131,
+     "name": "root_budget",
+     "region": "var",
+     "size": 2
+    },
+    {
+     "addr": 133,
+     "name": "moved",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 137,
+     "name": "can_replace",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 138,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 141,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 145,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 145,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 144,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 144,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 148,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 115,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 115,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 116,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 118,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 117,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 115,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 117,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 118,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 119,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 117,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 118,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 120,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 119,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 118,
+     "name": "nested_removed",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 122,
+     "name": "failures",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 126,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 127,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 127,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 115,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 113,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    }
+   ],
+   "tape": 512
+  },
+  {
+   "bf_commands": 214066,
+   "bf_sha256": "039640bf503e7f60045ab49d01354506fb768b22b65116db18944080155e9831",
+   "dfa_states": {},
+   "id": 4,
+   "ir_ops": 6119,
+   "name": "nested",
+   "persist": 0,
+   "symbols": [
+    {
+     "addr": 0,
+     "name": "rq_major",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 1,
+     "name": "rq_minor",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 2,
+     "name": "rq_op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 3,
+     "name": "rq_flags",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 4,
+     "name": "rq_len",
+     "region": "var",
+     "size": 2
+    },
+    {
+     "addr": 6,
+     "name": "rq_id",
+     "region": "var",
+     "size": 2
+    },
+    {
+     "addr": 8,
+     "name": "r_status",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 9,
+     "name": "zero16",
+     "region": "var",
+     "size": 2
+    },
+    {
+     "addr": 11,
+     "name": "n_charseq",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 12,
+     "name": "n_enum",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 13,
+     "name": "n_number",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 14,
+     "name": "n_boolean",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 15,
+     "name": "n_character",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 16,
+     "name": "n_class",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 17,
+     "name": "n_map",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 18,
+     "name": "n_collection",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 19,
+     "name": "n_list",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 20,
+     "name": "n_array",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 21,
+     "name": "n_facts",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 22,
+     "name": "n_size",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 26,
+     "name": "n_value",
+     "region": "var",
+     "size": 8
+    },
+    {
+     "addr": 34,
+     "name": "c_h",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 38,
+     "name": "c_charseq",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 39,
+     "name": "c_enum",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 40,
+     "name": "c_number",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 41,
+     "name": "c_boolean",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 42,
+     "name": "c_character",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 43,
+     "name": "c_class",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 44,
+     "name": "c_map",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 45,
+     "name": "c_collection",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 46,
+     "name": "c_list",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 47,
+     "name": "c_array",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 48,
+     "name": "c_facts",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 49,
+     "name": "c_size",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 53,
+     "name": "c_value",
+     "region": "var",
+     "size": 8
+    },
+    {
+     "addr": 61,
+     "name": "c_decl_object",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 62,
+     "name": "c_decl_interface",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 63,
+     "name": "c_decl_arraylist",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 64,
+     "name": "c_field_fact",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 65,
+     "name": "c_key",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 69,
+     "name": "f_known",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 70,
+     "name": "f_app_model",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 71,
+     "name": "f_strong_token",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 72,
+     "name": "f_pando",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 73,
+     "name": "f_structured",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 74,
+     "name": "h",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 78,
+     "name": "depth",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 79,
+     "name": "budget",
+     "region": "var",
+     "size": 2
+    },
+    {
+     "addr": 81,
+     "name": "has_replacer",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 82,
+     "name": "s_object",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 83,
+     "name": "s_interface",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 84,
+     "name": "s_arraylist",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 85,
+     "name": "removed",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 89,
+     "name": "failures",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 93,
+     "name": "go",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 94,
+     "name": "flag",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 95,
+     "name": "fresh",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 96,
+     "name": "d1",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 99,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 103,
+     "name": "ignored",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 104,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 104,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 104,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 106,
+     "name": "changed",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 107,
+     "name": "h_out",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 111,
+     "name": "count",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 115,
+     "name": "blocked",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 116,
+     "name": "current",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 120,
+     "name": "diff",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 124,
+     "name": "ok",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 125,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 129,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 130,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 125,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 125,
+     "name": "i",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 129,
+     "name": "limit",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 133,
+     "name": "walking",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 136,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 139,
+     "name": "r",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 143,
+     "name": "f",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 147,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 139,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 108,
+     "name": "i",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 112,
+     "name": "limit",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 116,
+     "name": "walking",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 119,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 122,
+     "name": "r",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 126,
+     "name": "f",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 130,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 122,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 110,
+     "name": "i",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 114,
+     "name": "limit",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 118,
+     "name": "walking",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 121,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 124,
+     "name": "r",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 128,
+     "name": "f",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 132,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 124,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 110,
+     "name": "inspect",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 111,
+     "name": "facts",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 112,
+     "name": "i",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 116,
+     "name": "walking",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 121,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 120,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 123,
+     "name": "r",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 127,
+     "name": "f",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 131,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 123,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 103,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 104,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 104,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 106,
+     "name": "changed",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 107,
+     "name": "h_out",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 111,
+     "name": "count",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 115,
+     "name": "blocked",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 116,
+     "name": "current",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 120,
+     "name": "diff",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 124,
+     "name": "ok",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 125,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 129,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 130,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 125,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 125,
+     "name": "i",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 129,
+     "name": "limit",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 133,
+     "name": "walking",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 136,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 139,
+     "name": "r",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 143,
+     "name": "f",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 147,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 139,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 108,
+     "name": "i",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 112,
+     "name": "limit",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 116,
+     "name": "walking",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 119,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 122,
+     "name": "r",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 126,
+     "name": "f",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 130,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 122,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 110,
+     "name": "i",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 114,
+     "name": "limit",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 118,
+     "name": "walking",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 121,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 124,
+     "name": "r",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 128,
+     "name": "f",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 132,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 124,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 110,
+     "name": "inspect",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 111,
+     "name": "facts",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 112,
+     "name": "i",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 116,
+     "name": "walking",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 121,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 120,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 123,
+     "name": "r",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 127,
+     "name": "f",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 131,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 123,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 103,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 101,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    }
+   ],
+   "tape": 512
+  },
+  {
+   "bf_commands": 72574,
+   "bf_sha256": "b17db54e88b33d58872f10f613c7905b1c48a3a91489b198d5a2dec3cdcb643d",
+   "dfa_states": {},
+   "id": 5,
+   "ir_ops": 2202,
+   "name": "pando",
+   "persist": 0,
+   "symbols": [
+    {
+     "addr": 0,
+     "name": "rq_major",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 1,
+     "name": "rq_minor",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 2,
+     "name": "rq_op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 3,
+     "name": "rq_flags",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 4,
+     "name": "rq_len",
+     "region": "var",
+     "size": 2
+    },
+    {
+     "addr": 6,
+     "name": "rq_id",
+     "region": "var",
+     "size": 2
+    },
+    {
+     "addr": 8,
+     "name": "r_status",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 9,
+     "name": "zero16",
+     "region": "var",
+     "size": 2
+    },
+    {
+     "addr": 11,
+     "name": "n_charseq",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 12,
+     "name": "n_enum",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 13,
+     "name": "n_number",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 14,
+     "name": "n_boolean",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 15,
+     "name": "n_character",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 16,
+     "name": "n_class",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 17,
+     "name": "n_map",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 18,
+     "name": "n_collection",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 19,
+     "name": "n_list",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 20,
+     "name": "n_array",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 21,
+     "name": "n_facts",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 22,
+     "name": "n_size",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 26,
+     "name": "n_value",
+     "region": "var",
+     "size": 8
+    },
+    {
+     "addr": 34,
+     "name": "c_h",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 38,
+     "name": "c_charseq",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 39,
+     "name": "c_enum",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 40,
+     "name": "c_number",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 41,
+     "name": "c_boolean",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 42,
+     "name": "c_character",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 43,
+     "name": "c_class",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 44,
+     "name": "c_map",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 45,
+     "name": "c_collection",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 46,
+     "name": "c_list",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 47,
+     "name": "c_array",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 48,
+     "name": "c_facts",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 49,
+     "name": "c_size",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 53,
+     "name": "c_value",
+     "region": "var",
+     "size": 8
+    },
+    {
+     "addr": 61,
+     "name": "c_decl_object",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 62,
+     "name": "c_decl_interface",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 63,
+     "name": "c_decl_arraylist",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 64,
+     "name": "c_field_fact",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 65,
+     "name": "c_key",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 69,
+     "name": "f_known",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 70,
+     "name": "f_app_model",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 71,
+     "name": "f_strong_token",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 72,
+     "name": "f_pando",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 73,
+     "name": "f_structured",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 74,
+     "name": "h",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 78,
+     "name": "d_object",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 79,
+     "name": "d_interface",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 80,
+     "name": "d_arraylist",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 81,
+     "name": "h_declared",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 85,
+     "name": "sponsored",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 86,
+     "name": "action",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 87,
+     "name": "h_out",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 91,
+     "name": "removed",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 95,
+     "name": "flag",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 96,
+     "name": "facts",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 99,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 103,
+     "name": "memo",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 104,
+     "name": "flags",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 105,
+     "name": "length",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 109,
+     "name": "best",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 113,
+     "name": "have",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 114,
+     "name": "probe",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 115,
+     "name": "candidate",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 119,
+     "name": "better",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 120,
+     "name": "transform",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 121,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 122,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 124,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 126,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 127,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 126,
+     "name": "ignored",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 127,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 128,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 124,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 103,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 103,
+     "name": "size_ok",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 104,
+     "name": "first_ok",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 105,
+     "name": "i",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 109,
+     "name": "walking",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 110,
+     "name": "kept",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 114,
+     "name": "item",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 115,
+     "name": "declared_ok",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 116,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 117,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 120,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 118,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 119,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 122,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 123,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 122,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 120,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 122,
+     "name": "kept_h",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 126,
+     "name": "copied",
+     "region": "var",
+     "size": 4
+    },
+    {
+     "addr": 130,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 132,
+     "name": "skip",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 103,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    },
+    {
+     "addr": 101,
+     "name": "op",
+     "region": "var",
+     "size": 1
+    }
+   ],
+   "tape": 512
   }
  ]
 }

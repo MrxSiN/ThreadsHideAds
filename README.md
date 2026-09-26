@@ -109,7 +109,7 @@ adding a row.
 |---|---|---|---|---|---|---|---|
 | Pixel 8 Pro | 17 | Vector 2.2 (API 102) | 448.0.0.54.85 | 2.0.0 | 38 model + 28 Pando hooks, 12 ads removed in 35 scrolls, no labels | @MrxSiN | 2026-09 |
 | Pixel 8 Pro | 16 | LSPosed | 448.0.0.54.85 | 1.3.0 | 10–12 ads removed per session | @MrxSiN | 2026-09 |
-| — | — | LSPatch (embedded and local) | — | 1.x | reported working in [issue #1](https://github.com/MrxSiN/ThreadsHideAds/issues/1) | community | 2026 |
+| — | — | LSPatch (embedded and local) | — | 1.x | reported working in [issue #1](https://github.com/MrxSiN/ThreadsHideAds/issues/1) | @qradov | 2026-8 |
 
 ### Known limits
 

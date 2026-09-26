@@ -37,4 +37,21 @@ public final class Core {
             return policy;
         }
     }
+
+    /**
+     * Retires the core before a hot reload hands the process to new code:
+     * later requests from this generation fail open, and its native engines
+     * are freed.
+     */
+    public static void shutdown() {
+        Policy retired;
+        synchronized (Core.class) {
+            retired = policy;
+            policy = null;
+            failed = true;
+        }
+        if (retired != null) {
+            retired.close();
+        }
+    }
 }

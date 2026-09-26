@@ -1,205 +1,318 @@
 <div align="center">
 
-# <img src="branding/threads-hide-ads-icon.png" width="36" height="36"> Threads Hide Ads
+<img src="docs/icon.svg" width="120" alt="Threads Hide Ads">
 
-### A focused Xposed module for removing sponsored feed items from Threads, for LSPosed or LSPatch
+# Threads Hide Ads
 
-[![Android](https://img.shields.io/badge/Android-LSPosed-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://github.com/LSPosed/LSPosed)
-[![Target](https://img.shields.io/badge/Target-Threads-000000?style=for-the-badge&logo=threads&logoColor=white)](https://www.threads.net/)
-[![DexKit](https://img.shields.io/badge/Powered%20by-DexKit-6A5ACD?style=for-the-badge)](https://github.com/LuckyPray/DexKit)
-[![JDK](https://img.shields.io/badge/JDK-17%2B-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)](https://openjdk.org/)
+**An Xposed module that removes sponsored posts from Threads, with its ad policy written in Brainfuck. Yes, really.**
+
+Ads are taken out of the feed before Threads draws them, not hidden after.
+
+<br>
+
+[![Release](https://img.shields.io/github/v/release/MrxSiN/ThreadsHideAds?include_prereleases&color=5B3DF5&label=release&style=for-the-badge)](https://github.com/MrxSiN/ThreadsHideAds/releases)
+[![Downloads](https://img.shields.io/github/downloads/MrxSiN/ThreadsHideAds/total?color=3DDC84&logo=android&logoColor=fff&style=for-the-badge)](https://github.com/MrxSiN/ThreadsHideAds/releases)
+[![Android](https://img.shields.io/badge/Android-8.0%2B-3DDC84?logo=android&logoColor=fff&style=for-the-badge)](#requirements)
+[![libxposed](https://img.shields.io/badge/libxposed-API%20102-E8A33D?style=for-the-badge)](https://github.com/libxposed/api)
 
 </div>
 
-<p align="center"><img src="branding/threads-hide-ads-icon.png" width="160" alt="Threads Hide Ads app icon"></p>
+---
 
-## ✨ Features
+> [!NOTE]
+> Threads renames its obfuscated classes with almost every update. The module finds its targets
+> again by shape at each start, and when it cannot be sure it installs nothing rather than guess.
+> See the [compatibility](#compatibility) table for what has actually been tested.
 
-- Removes sponsored feed insertions from Threads.
-- Waits for `Application.attach()` so Threads’ final app class loader is ready before model discovery.
-- Uses DexKit to locate obfuscated methods across app updates.
-- Retries transient initialization failures without requiring the user to reopen Threads.
-- Includes a conservative fallback for renamed methods.
-- Retains compatibility logic for older Threads versions.
-- Writes useful match, ambiguity, and failure information to the LSPosed log.
-- Limits its scope to the official Threads Android package.
+## Why Brainfuck?
 
-## 🎯 Scope
+Surely nobody would write the decision logic of an ad blocker in Brainfuck.
 
-The module hooks only:
+Brainfuck was selected for its rich ecosystem, mature package manager, excellent Android SDK
+bindings, comprehensive type system, first-class coroutine support, and famously pleasant
+debugging experience.
 
-```text
-com.instagram.barcelona
-```
+Just joking.
 
-Do not enable additional applications in the module scope.
+The real idea is much less cursed than it sounds: **keep every decision about Threads out of the
+Android code.** Which list is the feed, what counts as an advertisement, how deep to look into a
+model object, when to retry, when to give up, which fallback to trust — that is the part that has
+to change when Threads changes, and it is the part that tends to leak into hook callbacks,
+reflection helpers and view listeners until nobody can say where the policy lives.
 
-## 🔍 How it works
+Brainfuck is very good at enforcing that boundary, because it literally cannot call Android,
+Xposed, DexKit or JNI. It can read bytes and write bytes. Anything that touches a Java object has
+to go through a small, documented bridge — "read this field", "remove the items I marked",
+"stream me this class name" — and the Java side only ever does what it is asked. The two layers
+cannot quietly melt together, because one of them has no way to reach the other.
 
-The current module uses several independent layers because Threads frequently changes obfuscated class and method names:
+It is not slow either. The six programs are written by hand in plain eight-command Brainfuck,
+compiled ahead of time to C and then to native code with the NDK. There is no interpreter in the
+APK.
 
-1. The LSPosed entry point installs a lightweight `Application.attach()` guard instead of running DexKit immediately from `handleLoadPackage()`.
-2. After Threads supplies its real application context and final class loader, DexKit searches for the confirmed feed-boundary shape using the `Sponsored` marker and `(Integer/int, Integer/int, List) -> non-void` signature.
-3. A class-loader scan is preferred; the base APK path is used as a fallback when the loader cannot be opened by DexKit.
-4. When exactly one primary boundary is found, it is installed and the expensive broad discovery pass is skipped. Broad marker discovery remains as an app-update fallback.
-5. Failed or zero-hook initialization attempts are retried after 250 ms, 1 second, and 3 seconds. The initialized state is committed only after at least one model hook is actually installed.
-6. Feed lists are sanitized in place when mutable; replacements are used only where the caller, result, field, map entry, list slot, or array slot can actually be updated.
-7. Mutable arguments are sanitized again after execution to catch late insertion, without falsely reporting immutable lists as changed.
-8. Collection fields inside returned feed-wrapper objects are sanitized with bounded recursion.
-9. A UI fallback collapses a feed card when a localized sponsored label is rendered, after revalidating the marker at callback execution time.
+|  | |
+|---|---|
+| 🧹 **Removed, not hidden** | Sponsored items are taken out of the feed lists before Threads renders them, so there are no blank gaps and no flashes of an ad. |
+| 🔎 **Survives renames** | DexKit finds the feed boundary by shape at each start. An ambiguous match installs nothing broad. |
+| 🧠 **Policy in Brainfuck, compiled** | Every decision is hand-written Brainfuck, compiled ahead of time to native code. The APK contains no interpreter. |
+| 🛟 **Fails open** | Anything the module cannot classify is left alone. A failed request keeps the list as it was. |
+| 🔁 **No restart to update** | Vector hot reloads a new build into a running Threads process. |
+| 🧩 **Layered** | Model hooks, a Pando response filter and a rendered-label fallback each work on their own; losing one does not lose the others. |
 
-An advertisement is recognized by its feed unit type. Threads tags every feed item with a unit-type enum whose constants keep readable names even in an obfuscated build, and its advertisement values are matched whole:
+---
+
+## What it removes
+
+An advertisement is recognized by its **feed unit type**. Threads tags every feed item with a
+unit-type enum whose constants keep readable names even in an obfuscated build, and the
+advertisement values are matched whole:
 
 ```text
 AD, AD4AD, INTENT_AWARE_AD_PIVOT, STAND_ALONE_MULTI_AD_PIVOT,
 ADS_FEEDBACK_INTERFACE and its two variants
 ```
 
-Recommendation units, such as the `NETEGO` and `SUGGESTED` families, are deliberately left in place.
+Recommendation units, such as the `NETEGO` and `SUGGESTED` families, are deliberately left in
+place.
 
-A Pando layer additionally filters the list accessors on `com.facebook.pando.TreeJNI`, selected by shape. Their names come from the native binding rather than from the obfuscator, so that layer needs neither DexKit nor its native library and stays installed when either fails.
+<details open>
+<summary><b>🧱 The three layers</b></summary>
+<br>
 
-On Threads 445.0.0.46.83 the removals occur at:
+| Layer | Where | What it does |
+|---|---|---|
+| **Feed boundary** | the method that hands a batch of feed items to the cache, found by DexKit | Removes ad items from the list argument before the call and again after it (late insertion), then cleans lists nested inside the returned wrapper, with bounded recursion. |
+| **Pando responses** | list accessors on `com.facebook.pando.TreeJNI`, selected by shape | Filters sponsored trees out of GraphQL response lists. The names come from the native binding, not the obfuscator, so this layer needs no DexKit and stays installed when discovery fails. |
+| **Rendered label** | framework `TextView` updates | If a localized "Sponsored" label still reaches the screen, collapses its card. The card is restored only when that same label view is rebound to an organic item. |
+
+Lists are sanitized in place when they are mutable. A replacement list is used only where the
+caller, result, field, map entry, list slot or array slot can actually take it. A feed batch that
+would become empty is left alone; the item that owns it is dropped one level up instead.
+
+</details>
+
+---
+
+## Status
+
+**v2.0.0.** Moved to the modern Xposed API (libxposed 102) with hot reload, and every policy
+program rewritten by hand in plain Brainfuck. Each rewritten program was run side by side with
+the one it replaces over thousands of randomized requests, with identical answers and identical
+traffic to the host ([`docs/PARITY.md`](docs/PARITY.md)).
+
+### Compatibility
+
+Each row is one setup somebody has actually run. If you try another, please open a pull request
+adding a row.
+
+| Device | Android | Framework | Threads | Module | Result | Tester | Date |
+|---|---|---|---|---|---|---|---|
+| Pixel 8 Pro | 17 | Vector 2.2 (API 102) | 448.0.0.54.85 | 2.0.0 | 38 model + 28 Pando hooks, 12 ads removed in 35 scrolls, no labels | @MrxSiN | 2026-09 |
+| Pixel 8 Pro | 16 | LSPosed | 448.0.0.54.85 | 1.3.0 | 10–12 ads removed per session | @MrxSiN | 2026-09 |
+| — | — | LSPatch (embedded and local) | — | 1.x | reported working in [issue #1](https://github.com/MrxSiN/ThreadsHideAds/issues/1) | community | 2026 |
+
+### Known limits
+
+- **LSPatch** needs a build that loads libxposed API 102 modules. The reports above are for 1.x;
+  2.0.0 has not been tried under LSPatch.
+- 32-bit and x86 devices ship the native library but have not been run.
+- A Threads update can move the feed boundary. When it does, the Pando and label layers keep
+  working and the log says what discovery found.
+
+## Requirements
+
+| | |
+|---|---|
+| **Android** | 8.0 (API 26) or newer |
+| **App** | Threads (`com.instagram.barcelona`) |
+| **Framework** | [Vector](https://github.com/JingMatrix/Vector) or LSPosed with libxposed API 102, or LSPatch (see [Known limits](#known-limits)) |
+| **Root** | Required by Vector/LSPosed; the module itself asks for none |
+
+Built against the modern [libxposed API](https://github.com/libxposed/api)
+(`io.github.libxposed:api`), not the legacy `de.robv.android.xposed` bridge.
+
+## Install
+
+```
+1. Install the APK from Releases
+2. Enable Threads Hide Ads in Vector or LSPosed
+3. Force-stop Threads once, then open it
+```
+
+The module declares a **static scope** — Threads only — so there is nothing to pick. Later updates
+are hot reloaded into a running Threads process. Vector reloads a module only when its
+`versionCode` changes; force-stop Threads if a reload is not offered.
+
+The framework log shows what happened, in lines beginning with `ThreadsHideAds:`:
 
 ```text
-BarcelonaFeedCache.A0G(X.0nD, Integer, String, String, List, X.2cx, Function3, boolean)
+Application.attach observed; starting hook resolution
+Hook initialization complete; installedHooks=38, pandoHooks=28
+Removed 1 ad item(s) from argument 4 of ... [modelTotal=1, event=1]
 ```
 
-On Threads 448.0.0.54.85 the primary boundary resolves to `X.4At.Dyg(Integer, Integer, List)`.
+<details>
+<summary><b>Without root: LSPatch</b></summary>
+<br>
 
-The UI fallback tracks the exact label view that hid each card. This prevents caption, author, timestamp, or engagement updates from accidentally restoring a sponsored card. A card is restored only when that original label view is rebound for a recycled organic item.
-
-### Brainfuck policy core (1.3.0)
-
-Every decision above — scope, retry schedule, install order, discovery candidate rules, advertisement classification, sanitization, recursion limits, Pando filtering, UI fallback and statistics rate limits — is written in Brainfuck-family assembly (`brainfuck/src/*.bfa`). The toolchain in `tools/bftool` turns it into canonical `.bf`, optimizes it and emits C, which the NDK compiles into `libthreadsbf.so`. Java code only performs mechanisms (Xposed hooks, DexKit queries, reflection, collection mutation, logging) when the native core asks for them through a small documented ABI. There is no interpreter in the APK; a reference interpreter is used by the tests only.
-
-See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md), [`docs/BRAINFUCK_ABI.md`](docs/BRAINFUCK_ABI.md), [`docs/PARITY.md`](docs/PARITY.md) and [`docs/PERFORMANCE.md`](docs/PERFORMANCE.md).
-
-## ✅ Requirements
-
-### Runtime
-
-- A rooted Android device with LSPosed, **or** a non-rooted device using LSPatch (see below).
-- The official Threads application (`com.instagram.barcelona`).
-- The **Threads Hide Ads** APK installed and enabled in LSPosed, or embedded into Threads with LSPatch.
-
-### Build environment
-
-- Android Studio with JDK 17 or newer, **or** a standalone JDK 17+ setup.
-- Gradle 9.6.1 when building without an existing wrapper.
-- Android SDK Platform 36, NDK 28.2.13676358 and CMake 3.22.1 (installed by the Android Gradle plugin on first build).
-- Python 3.10 or newer (Brainfuck toolchain and tests).
-- For JVM unit tests: MSVC Build Tools on Windows, or gcc/clang on Linux/macOS (builds the host copy of the native core).
-- Git or a downloaded copy of the project source.
-
-## 🛠️ Build
-
-From the project directory:
-
-```bash
-python tools/bftool/gen.py            # regenerate BF, C and ABI files from brainfuck/src
-python tools/bftool/gen.py --check    # fail if generated files are stale
-python -m unittest discover -s tests/compiler
-./gradlew :app:testDebugUnitTest
-./gradlew :app:assembleRelease
-```
-
-The generated files are committed; the Gradle build verifies them with
-`checkBrainfuck` and never edits them.
-
-The generated APK will be located under:
-
-```text
-app/build/outputs/apk/release/
-```
-
-### Create and use the Gradle wrapper
-
-A helper script is included to create a standard Gradle wrapper when a local
-Gradle installation is available.
-
-#### Linux / macOS
-
-```bash
-./scripts/create-wrapper.sh
-./gradlew :app:assembleRelease
-```
-
-#### Windows PowerShell
-
-```powershell
-.\scripts\create-wrapper.ps1
-.\gradlew.bat :app:assembleRelease
-```
-
-## 📦 Installation
-
-1. Build and install the release APK.
-2. Open the LSPosed manager.
-3. Enable **Threads Hide Ads**.
-4. Select **Threads** as the module's only scope.
-5. Force-stop Threads once after installing or updating the module, then reopen it.
-6. Review LSPosed logs for entries beginning with:
-
-```text
-ThreadsHideAds:
-```
-
-### Non-rooted devices (LSPatch)
-
-Root is not strictly required. The module is an ordinary Xposed module with no
-root-only calls, so LSPatch can embed it directly into Threads:
+The module has no root-only calls, so LSPatch can embed it into Threads:
 
 1. Install the LSPatch manager, or use the LSPatch command-line jar.
-2. Patch Threads with **Threads Hide Ads** selected as an embedded module. Patch
-   the base APK together with all of its split APKs.
-3. Uninstall the store copy of Threads, then install the patched APKs as a set.
-   The patched build is signed with LSPatch's key, so it cannot be installed
-   over the store copy.
+2. Patch Threads with **Threads Hide Ads** as an embedded module. Patch the base APK together with
+   all of its split APKs.
+3. Uninstall the store copy of Threads, then install the patched APKs as a set. The patched build
+   is signed with LSPatch's key, so it cannot be installed over the store copy.
 
-Both LSPatch modes are usable:
+**Embedded** mode needs no manager afterwards; **local** mode keeps the module managed by LSPatch
+and works alongside Shizuku. See [Known limits](#known-limits) for 2.0.0.
 
-- **Embedded (portable) mode** injects the module into the APK, so no manager or
-  background service is needed afterwards.
-- **Local mode** keeps the module managed by LSPatch and works alongside Shizuku.
+</details>
 
-Verification status: patching was confirmed here with LSPatch v1.2, which embeds
-the module and its DexKit native library into the APK and re-signs every split
-without error. Running the patched build was reported working by the author of
-[issue #1](https://github.com/MrxSiN/ThreadsHideAds/issues/1) in both modes; it
-has not been re-run by the maintainer, whose testing is done under LSPosed.
+---
 
-## 🧪 Validation status
+## How it works
 
-The release version is `1.3.0` (`versionCode 7`). The Brainfuck core is checked against the frozen 1.2.1 policy by parity suites on the JVM and on an arm64 device (see [`docs/PARITY.md`](docs/PARITY.md)). On a Pixel 8 Pro with Threads 448.0.0.54.85 under LSPosed, initialization completed on every cold start, 10–12 advertisements were removed per session as with 1.2.1, and no sponsored label reached the view hierarchy. Static project checks cover the attach-gated initialization path, generated-file freshness, release signing configuration, APK verification, artifact upload, and GitHub Release publishing.
+```
+Threads process
+  ModuleMain ─────────────► Policy (bridge) ──JNI──► libthreadsbf.so
+  ModelHookInstaller          typed requests          runtime + six AOT programs
+  FeedBoundaryFinder             ▲                        │
+  FeedModelHooks                 │  capability frames     │
+  PandoResponseHooks          Host (bridge) ◄────────────┘
+  RenderedLabelHooks          reflection, text streams, list mutation, view reads
+```
 
-The included GitHub Actions workflow verifies the generated Brainfuck files, runs the Python and JVM tests, and builds a release APK on every push, pull request, and manual run. Repository pushes and tag builds are signed and uploaded as workflow artifacts when the four signing secrets are configured. Pull-request builds remain unsigned for security. A `v*` tag also creates or updates the GitHub Release and attaches the signed APK.
+One rule decides where code goes: **if it needs Android, Java, Xposed, DexKit or JNI, Java does
+it; if it decides what to do with what Java read, Brainfuck decides.**
 
-## 🩺 Troubleshooting
+<details>
+<summary><b>Starting at the right moment</b></summary>
+<br>
 
-| Problem | Suggested action |
-| --- | --- |
-| Sponsored posts still appear | Confirm that only Threads is selected in the LSPosed scope and inspect whether the log reports `Hook initialization complete`. |
-| Initialization attempt failed | Keep Threads open for several seconds while the automatic retries run, then export the `ThreadsHideAds:` log if all retries are exhausted. |
-| No module log entries | Verify that the module is enabled, force-stop Threads once, and inspect the LSPosed framework status. |
-| Ambiguous method warning | The installed Threads build may contain multiple possible targets. Avoid forcing a broad hook and report the relevant log output. |
-| Hook failure after an update | Threads may have changed its internal classes or method signature. Capture the `ThreadsHideAds:` log entries for analysis. |
+- Loading into Threads installs only a small `Application.attach()` guard and the label fallback.
+  Discovery waits until Threads has its real application context and final class loader.
+- DexKit opens Threads' class loader, with the base APK path as a fallback, and looks for the
+  feed boundary: the `Sponsored` marker and an `(Integer/int, Integer/int, List) -> non-void`
+  signature. One to eight matches are installed; zero or more than eight install nothing broad.
+- A failed or empty attempt is retried after 250 ms, 1 s and 3 s. The module counts itself
+  initialized only once a hook is actually in place.
+- The retry schedule, the one-to-eight rule and the install order are all decisions of the
+  `core` program.
 
-## 🙏 Credits
+</details>
 
-This project depends on and benefits from the following open-source work:
+<details>
+<summary><b>The Brainfuck core</b></summary>
+<br>
+
+| Program | Decides |
+|---|---|
+| `core` | scope, start-up and retry state machine, install order, which discovered methods qualify, names, limits, log rate limits, the rendered-label fallback |
+| `text` | 14 text matchers — unit types, structured values, field names, labels in many languages — as hand-built byte machines |
+| `detect` | whether one model object is an advertisement, walking its fields, maps, lists and arrays with bounded depth and budget |
+| `sanitize` | which list items go, and whether a list is changed in place, replaced or left alone |
+| `nested` | lists nested inside a returned feed wrapper |
+| `pando` | sponsored Pando trees and the response-list filter |
+
+Each program is a `.bf` file in `brainfuck/src/`. Comments may not contain a command character, so
+prose can never turn into code. `%cell` comments name tape cells, `@cell` checkpoints assert where
+the data pointer is, and `~N` asserts the length of a run; `tools/bftool/lint.py` checks all of
+them and never rewrites a source. The optimizer turns the programs into C (clear and transfer
+loops, value propagation, equality tests become `switch`), and the NDK builds `libthreadsbf.so`.
+
+Programs call each other through the runtime on a fresh tape one level deeper, so recursion is
+bounded by the policy limits and by the runtime's 24 levels. Java objects never enter Brainfuck
+memory: they are opaque, validated 32-bit handles. The frame format, opcodes, handles, limits and
+memory layout are in [`docs/BRAINFUCK_ABI.md`](docs/BRAINFUCK_ABI.md) and
+[`docs/BRAINFUCK_MEMORY_MAP.md`](docs/BRAINFUCK_MEMORY_MAP.md).
+
+</details>
+
+<details>
+<summary><b>Staying fast</b></summary>
+<br>
+
+DexKit and broad reflection run only during initialization. While scrolling, the module uses
+per-class memos, cached field lists and per-tree verdicts, and a feed batch costs one call down
+into native code plus one call back up per object it needs to read. On a Pixel 8 Pro the feed
+boundary costs about 2–3 ms per call and the Pando accessors tens of microseconds; the native
+matchers are faster than the Java string code they replaced. Numbers and method are in
+[`docs/PERFORMANCE.md`](docs/PERFORMANCE.md).
+
+</details>
+
+<details>
+<summary><b>Updating without restarting Threads</b></summary>
+<br>
+
+Vector hot reloads the module (`autoHotReload=true` in `META-INF/xposed/module.prop`) when the
+installed `versionCode` differs from the loaded one. The old generation stops its native core and
+hands the cards it has collapsed to the new one, which hooks again at once.
+
+</details>
+
+---
+
+## Build
+
+```bash
+python tools/bftool/gen.py                      # check brainfuck/src, regenerate C, ABI and memory map
+python -m unittest discover -s tests/compiler   # optimizer, AOT and text parity tests
+./gradlew :app:testDebugUnitTest                # JVM parity against the frozen 1.2.1 policy
+./gradlew :app:assembleRelease
+```
+
+The generated files are committed; the Gradle build checks them with `checkBrainfuck` and never
+edits them. `scripts/check-project.sh` runs the static project checks.
+
+You need JDK 17+, Android SDK 36 with NDK 28.2.13676358 and CMake 3.22.1, Python 3.10+, and for the
+JVM tests a host C compiler (MSVC Build Tools on Windows, gcc or clang elsewhere).
+
+CI checks the generated files, runs the Python and JVM tests and builds a release APK on every
+push and pull request. Pushes and tags are signed when the four signing secrets are configured;
+pull-request builds stay unsigned. A `v*` tag publishes a GitHub Release with the signed APK.
+
+## Design
+
+```
+brainfuck/src/      the six hand-written programs: every decision, word list and limit
+brainfuck/          programs.json, constants.txt (ABI numbers), generated memory map
+tools/bftool/       source checker, optimizer, C emitter, reference interpreter (tests only)
+app/src/main/cpp/   runtime, JNI glue and the generated C
+bridge/             Policy (typed requests), NativeCore, Host capabilities, handles, reflection
+ModuleMain          libxposed entry: routes Threads to the layers, hot reload
+hook/               model and Pando hooks, the call-frame adapter
+discovery/          DexKit queries and class lookups the core asks for
+ui/                 rendered-label listeners, view traversal, hide and restore
+core/               module runtime, logging, statistics wording
+```
+
+The layering, the ABI and the migration from the Java policy are in
+[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) and [`docs/MIGRATION.md`](docs/MIGRATION.md);
+Threads-specific findings are in [`HOOK_NOTES.md`](HOOK_NOTES.md).
+
+## Troubleshooting
+
+| Problem | Try |
+|---|---|
+| Sponsored posts still appear | Check the log for `Hook initialization complete`. |
+| An initialization attempt failed | Keep Threads open for a few seconds while the retries run; if all of them fail, export the `ThreadsHideAds:` log lines. |
+| No module log lines | Check that the module is enabled, force-stop Threads once, and check the framework status. |
+| Ambiguous method warning | The Threads build has several possible targets and nothing broad was installed. Report the log lines. |
+| Broken after a Threads update | Threads may have changed its internal classes. Report the `ThreadsHideAds:` log lines with the Threads version. |
+
+## Credits
 
 | Project | Contribution |
-| --- | --- |
-| [DexKit](https://github.com/LuckyPray/DexKit) by LuckyPray | High-performance runtime DEX parsing and discovery of obfuscated classes and methods. Licensed under Apache-2.0. |
-| [LSPosed](https://github.com/LSPosed/LSPosed) | Provides the Android runtime hooking framework used to load and execute this module. Licensed under GPL-3.0. |
-| ReVanced-family Threads patches | Provided the maintained method-signature reference used to update the sponsored-content hook. |
+|---|---|
+| [DexKit](https://github.com/LuckyPray/DexKit) by LuckyPray | Runtime DEX parsing and discovery of obfuscated classes and methods (Apache-2.0). |
+| [libxposed API](https://github.com/libxposed/api), [Vector](https://github.com/JingMatrix/Vector), [LSPosed](https://github.com/LSPosed/LSPosed) | The hooking API and frameworks the module runs on. |
+| ReVanced-family Threads patches | The method-signature reference used to update the sponsored-content hook. |
 
-The module is derived from the GPL-3.0 Threads ad-removal concept and has been
-updated for the newer sponsored-content insertion method.
+The module is derived from the GPL-3.0 Threads ad-removal concept and has been updated for the
+newer sponsored-content insertion method.
 
-## ⚠️ Disclaimer
+## Disclaimer
 
-This project is not affiliated with, endorsed by, or sponsored by Meta or
-Threads. It is provided for educational and personal use. App updates may break
-the hook without notice.
+Not affiliated with, endorsed by or sponsored by Meta or Threads. Provided for educational and
+personal use. Threads updates may break the hooks without notice.

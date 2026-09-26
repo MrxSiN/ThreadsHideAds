@@ -47,8 +47,7 @@ class TextParityTest(unittest.TestCase):
         cls.vectors = load_vectors()
         exe = os.path.join(BUILD, "replay.exe" if os.name == "nt" else "replay")
         cls.binary = replay.build_harness(gen.C_OUT, exe)
-        with open(os.path.join(gen.BF_DIR, "text.bf")) as f:
-            cls.code = f.read()
+        cls.code = gen.program_code("text")
 
     def test_aot_matches_legacy(self):
         cases = [(PROG_TEXT, b"", frame(m, s)) for m, _, s in self.vectors]

@@ -1,9 +1,19 @@
 # Hook notes
 
+## v2.0.0 release scope
+
+Version 2.0.0 moves the entry point to the libxposed API 102
+(`ModuleMain`, `META-INF/xposed/`), adds hot reload (the retiring generation
+closes its core and hands the hidden-view registry to the new one), replaces
+the launcher bitmaps with an adaptive vector icon, and rewrites all six policy
+programs as hand-written Brainfuck (`brainfuck/src/*.bf`); the `.bfa`
+assembler is gone. The hooks below are unchanged in what they do, and
+the policy was differentially tested against the programs it replaced.
+
 ## v1.3.0 release scope
 
 Version 1.3.0 moves every policy decision into a Brainfuck core
-(`brainfuck/src/*.bfa`, compiled ahead of time into `libthreadsbf.so`). The
+(then `brainfuck/src/*.bfa`, compiled ahead of time into `libthreadsbf.so`). The
 hooks, discovery queries and view handling below are unchanged in what they
 do; which of them run, in what order, and what they remove is now decided by
 the core. Behavior is checked against the frozen 1.2.1 code (`docs/PARITY.md`).
@@ -118,9 +128,9 @@ core owns decisions (`docs/ARCHITECTURE.md`).
 | --- | --- |
 | `brainfuck/src` | Policy: scope, retries, install order, discovery rules, classification, sanitization, Pando, UI fallback, statistics |
 | `bridge` | ABI constants (generated), JNI entry points, handle table, host capabilities, typed `Policy` requests |
-| `core` | Logging, rate-limited counter wording, diagnostics (off in release) |
+| `core` | Module runtime (hot reload), logging, rate-limited counter wording |
 | `discovery` | DexKit queries and class lookups requested by the core |
-| `hook` | Installing model-level and Pando hooks |
+| `hook` | Installing model-level and Pando hooks; `ChainCallFrame` adapts a libxposed chain to the core's call frame |
 | `ui` | Rendered-label listeners, view traversal, hide/restore |
 
 ## Threads 445.0.0.46.83 findings
@@ -285,7 +295,9 @@ marker-keyword walk was removed: Pando models expose nothing to it, so it
 reported empty markers on every feed item.
 
 All of it reports names, types, sizes and key names only, never feed content,
-and is gated behind `Diagnostics.ENABLED`, which is `false` for release builds.
+and was gated behind `Diagnostics.ENABLED`, which was `false` for release builds.
+Both classes were removed in 2.0.0; git history has them for the next
+investigation.
 
 ## Threads 448.0.0.54.85 findings
 

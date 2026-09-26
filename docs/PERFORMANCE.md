@@ -40,6 +40,40 @@ Host (`build/benchmark/host.txt`, JVM + MSVC build) shows the same shape; MSVC
 does not turn the DFA switches into tables as well as clang, so text matching
 is slower there than on device.
 
+## 2.0.0: hand-written sources vs assembler output (host)
+
+Same machine, same JVM harness (`HostBenchmarkTest`), the generated C of
+commit `c88f7c4` (assembler) against the C of the hand-written sources,
+alternating builds twice; p50 in µs:
+
+| Case | assembler (run 1 / 2) | hand-written (run 1 / 2) |
+| --- | --- | --- |
+| feed item | 22.9 / 25.0 | 26.8 / 24.5 |
+| random model graph | 5.0 / 5.3 | 5.3 / 5.1 |
+| one-item batch sanitize | 25.7 / 28.1 | 25.8 / 30.0 |
+| Pando string list | 5.7 / 5.7 | 4.5 / 5.7 |
+| Pando tree list (5) | 17.9 / 18.4 | 17.3 / 18.1 |
+| label matcher | 1.3 / 1.4 | 1.3 / 1.2 |
+| 3 KB JSON structured matcher | 77.7 / 78.1 | 73.8 / 80.0 |
+
+The differences are within run-to-run noise (these runs were taken with the
+test JVM rebuilt each time, so all numbers sit above the quieter figures
+earlier on this page). Cost is dominated by JNI crossings, which the rewrite
+did not change. Program size after optimization:
+
+| Program | BF commands, assembler → hand | IR ops, assembler → hand |
+| --- | --- | --- |
+| core | 222 491 → 151 449 | 7 342 → 7 124 |
+| text | 496 894 → 225 546 | 17 530 → 4 124 |
+| detect | 183 975 → 231 216 | 5 144 → 5 338 |
+| sanitize | 61 879 → 69 343 | 1 759 → 1 882 |
+| nested | 219 337 → 296 307 | 6 159 → 5 911 |
+| pando | 85 437 → 113 160 | 2 454 → 2 674 |
+
+`libthreadsbf.so` (arm64) went from 729 KB to 647 KB, mostly from the
+smaller text machines. The on-device A/B above was measured on 1.3.0 and has
+not been repeated for 2.0.0.
+
 ## What was optimized, and the effect
 
 | Change | Effect |
@@ -66,7 +100,7 @@ filtering uses per-class memos, cached field lists and per-tree verdicts.
 
 | Artifact | v1.2.1 | v1.3.0 |
 | --- | --- | --- |
-| Release APK (unsigned) | 2 814 944 B | 5 597 644 B |
+| Release APK (unsigned) | 2 814 944 B | 5 597 644 B (2.0.0: 4 862 549 B) |
 | Debug APK | 3 161 638 B | 5 927 009 B |
 | `libthreadsbf.so` arm64 / armv7 / x86 / x86_64 | — | 729 / 533 / 699 / 787 KB |
 | Generated C | — | ≈ 2.0 MB source, 6 programs, 37 k IR ops |

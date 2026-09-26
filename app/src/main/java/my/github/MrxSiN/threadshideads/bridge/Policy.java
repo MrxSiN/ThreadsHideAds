@@ -24,7 +24,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public final class Policy {
 
-    // Values below mirror brainfuck/src/core.bfa and are part of the ABI.
+    // Values below mirror brainfuck/src/core.bf and are part of the ABI.
     public static final int INIT_IGNORE = 0;
     public static final int INIT_START = 1;
     public static final int INIT_RETRY = 2;
@@ -91,8 +91,29 @@ public final class Policy {
         }
     };
 
+    /** Set by {@link #close}; every later request fails open. */
+    private volatile boolean closed;
+
     public Policy(NativeCore coreEngine) {
         this.coreEngine = coreEngine;
+    }
+
+    /**
+     * Retires this policy (hot reload): frees every native engine once it is
+     * idle, so no JNI global reference keeps this module generation alive.
+     * Requests running now finish; later ones fail open.
+     */
+    public void close() {
+        closed = true;
+        coreLock.lock();
+        try {
+            coreEngine.destroy();
+        } finally {
+            coreLock.unlock();
+        }
+        for (NativeCore engine; (engine = idle.poll()) != null; ) {
+            engine.destroy();
+        }
     }
 
     // ------------------------------------------------------------ value types
@@ -169,7 +190,7 @@ public final class Policy {
      */
     private NativeCore pooled() {
         int[] depth = nesting.get();
-        if (depth[0] >= MAX_NESTING) {
+        if (closed || depth[0] >= MAX_NESTING) {
             return null;
         }
         depth[0]++;
@@ -192,6 +213,10 @@ public final class Policy {
             Thread.currentThread().interrupt();
             return null;
         }
+        if (closed) {
+            coreLock.unlock();
+            return null;
+        }
         return coreEngine;
     }
 
@@ -202,7 +227,9 @@ public final class Policy {
             return;
         }
         nesting.get()[0]--;
-        if (idle.size() < MAX_IDLE) {
+        if (closed || idle.size() >= MAX_IDLE) {
+            engine.destroy();
+        } else {
             idle.offer(engine);
         }
     }
@@ -398,7 +425,7 @@ public final class Policy {
 
     // ------------------------------------------------------------ lifecycle
 
-    /** MainHook: {in scope, install the rendered-label hooks, install the attach guard}. */
+    /** ModuleMain: {in scope, install the rendered-label hooks, install the attach guard}. */
     public boolean[] loadPackage(String packageName, String processName) {
         boolean[] none = new boolean[3];
         final NativeCore core = core(true);

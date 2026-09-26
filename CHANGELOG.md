@@ -2,6 +2,24 @@
 
 ## Unreleased
 
+## 2.0.0 — 2026-09-26
+
+- Moved to the modern Xposed API (libxposed 102): new entry class `ModuleMain`,
+  metadata in `META-INF/xposed/` (`java_init.list`, `module.prop`,
+  `scope.list`), minimum Android 8.0 (API 26). The legacy `xposed_init` and
+  manifest metadata are gone.
+- Hot reload: a module update is applied to a running Threads process. The
+  old generation stops its core (`NativeCore.destroy`) and hands its hidden
+  views to the new one.
+- Adaptive vector launcher icon with a themed (monochrome) layer; the bitmap
+  mipmaps are removed.
+- All six policy programs are now hand-written Brainfuck (`brainfuck/src/*.bf`,
+  checked by `tools/bftool/lint.py`). The `.bfa` assembler, its regex compiler
+  and the generated `.bf` copies are removed; ABI constants live in
+  `brainfuck/constants.txt`. Each program was differentially tested against the
+  program it replaces with identical output and identical capability traffic.
+- versionCode 8 (hot reload is keyed on the version code).
+
 ## 1.3.0 — 2026-09-26
 
 - Moved all filtering policy into a Brainfuck core (`brainfuck/src/*.bfa`). A

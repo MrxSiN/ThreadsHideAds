@@ -19,7 +19,7 @@ public final class NativeCore {
     private static final int REQUEST_CAP = 4096;
     private static final int RESPONSE_CAP = 4096;
 
-    private final long engine;
+    private long engine;
     private final Host host;
     private final ViewAccess views;
     private final SharedFacts shared;
@@ -105,7 +105,7 @@ public final class NativeCore {
         request.putShort(4, (short) (length - BfAbi.HEADER_SIZE));
         int opcode = request.get(2) & 0xFF;
         int program = nativeRoute(opcode);
-        if (program < 0 || busy) {
+        if (program < 0 || busy || engine == 0) {
             return -1;
         }
         busy = true;
@@ -151,6 +151,17 @@ public final class NativeCore {
         nativeReset(engine);
     }
 
+    /**
+     * Frees the native engine. The caller guarantees no request is running;
+     * afterwards every request fails open. Idempotent.
+     */
+    void destroy() {
+        if (engine != 0) {
+            nativeDestroy(engine);
+            engine = 0;
+        }
+    }
+
     // ------------------------------------------------------------ callbacks from libthreadsbf
 
     @SuppressWarnings("unused")
@@ -181,6 +192,8 @@ public final class NativeCore {
     // ------------------------------------------------------------ JNI
 
     private static native long nativeCreate(Object host);
+
+    private static native void nativeDestroy(long engine);
 
     private static native ByteBuffer nativeBuffer(long engine, int level, boolean input);
 

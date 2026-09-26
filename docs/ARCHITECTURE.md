@@ -1,12 +1,13 @@
 # Architecture
 
-Threads Hide Ads is split into **policy**, written in a Brainfuck-family
-language and compiled ahead of time to native code, and **mechanism**, the
-Android/Xposed/DexKit/JNI code that performs what the policy asks for.
+Threads Hide Ads is split into **policy**, written by hand in plain
+eight-command Brainfuck and compiled ahead of time to native code, and
+**mechanism**, the Android/Xposed/DexKit/JNI code that performs what the
+policy asks for.
 
 ```text
-Threads process (LSPosed or LSPatch)
-  MainHook ──────────────► Policy (bridge)  ──JNI──►  libthreadsbf.so
+Threads process (Vector/LSPosed or LSPatch, libxposed API 102)
+  ModuleMain ────────────► Policy (bridge)  ──JNI──►  libthreadsbf.so
   ModelHookInstaller          typed requests           runtime (bf_engine.c)
   FeedBoundaryFinder          frames in/out            AOT programs (generated C)
   FeedCacheLocator               ▲                        │
@@ -24,21 +25,22 @@ information, Brainfuck decides.**
 
 | Layer | Location | Owns |
 | --- | --- | --- |
-| Policy source | `brainfuck/src/*.bfa` | every decision, word list, limit, state machine and reason code |
-| Canonical BF | `brainfuck/generated/*.bf` | the eight-command programs the source assembles to (generated) |
+| Policy source | `brainfuck/src/*.bf` | every decision, word list, limit, state machine and reason code, as hand-written Brainfuck |
+| ABI constants | `brainfuck/constants.txt` | opcodes, statuses, capability numbers (exported to `BfAbi.java` and `bf_abi.h`) |
+| Memory map | `brainfuck/generated/MEMORY_MAP.md` | cell tables taken from the sources' `%cell` declarations (generated) |
 | AOT C | `app/src/main/cpp/generated/bf_programs.generated.c` | optimized C compiled from the BF (generated) |
 | Runtime | `app/src/main/cpp/bf_engine.c`, `bf_runtime.h` | request routing, `CAP_CALL` sub-programs, input refill, tapes |
 | JNI glue | `app/src/main/cpp/bf_jni.c` | `NativeCore` natives and host callbacks |
 | Bridge | `app/src/main/java/.../bridge/` | `Policy` (typed requests), `NativeCore`, `Host` (capabilities), `HandleTable`, `Reflector`, `TextEncoder`, `SharedFacts` |
-| Mechanisms | `MainHook`, `hook/`, `discovery/`, `ui/`, `core/` | hook registration, DexKit, Handler scheduling, View changes, logging |
-| Toolchain | `tools/bftool/` | assembler, regex→DFA, optimizer, C emitter, reference interpreter, generator |
+| Mechanisms | `ModuleMain`, `hook/`, `discovery/`, `ui/`, `core/` | hook registration, hot reload, DexKit, Handler scheduling, View changes, logging |
+| Toolchain | `tools/bftool/` | source checker (`lint.py`), optimizer and C emitter (`ir.py`), reference interpreter, generator |
 
 ## Programs
 
 | Id | Program | Role | Persistent state |
 | --- | --- | --- | --- |
 | 0 | `core` | lifecycle, init/retry state machine, install order, discovery classification, names, limits, statistics, rendered-label decisions | 64 cells (flags, attempt counter, discovery counters, stats totals) |
-| 1 | `text` | 14 text matchers compiled from regexes (unit types, structured values, field names, labels, …) | none |
+| 1 | `text` | 14 text matchers as hand-built byte machines (tries, substring automata; unit types, structured values, field names, labels, …) | none |
 | 2 | `detect` | `ReflectiveAdDetector` walk, class facts | none |
 | 3 | `sanitize` | `ListSanitizer`, feed-boundary before/after flow | none |
 | 4 | `nested` | `NestedCollectionSanitizer` | none |
@@ -52,7 +54,7 @@ limits and the runtime's 24 levels.
 
 ```text
 FeedModelHooks.beforeHookedMethod
-  └ Policy.boundaryBefore(XposedCallFrame)          one JNI call down
+  └ Policy.boundaryBefore(ChainCallFrame)           one JNI call down
       └ sanitize: OP_BOUNDARY_BEFORE
           ├ CAP_ARG i            (host: argument, declared-type facts)
           ├ CAP_CALL sanitize OP_SANITIZE_LIST
@@ -96,23 +98,25 @@ candidates) never installs a broad destructive hook.
 ## Build pipeline
 
 ```text
-brainfuck/src/*.bfa ──bfa assembler──► brainfuck/generated/*.bf
-        (macros, regex→DFA, scoping)          │
-                                   parse → IR → optimize (runs, clear/transfer/
-                                   multiply loops, run-once loops, value and
-                                   copy propagation, equality → switch)
-                                              ▼
-                              app/src/main/cpp/generated/bf_programs.generated.c
-                                              ▼
-                     NDK clang -O2 (+ LTO in release) ──► libthreadsbf.so
+brainfuck/src/*.bf ──lint (comments, @cell checkpoints, ~N runs, tape bounds)
+        │
+        parse → IR → optimize (runs, clear/transfer/multiply loops, run-once
+        loops, value and copy propagation, equality tests → C switch)
+        ▼
+app/src/main/cpp/generated/bf_programs.generated.c
+        ▼
+NDK clang -O2 (+ LTO in release) ──► libthreadsbf.so
 ```
 
-`python tools/bftool/gen.py --check` fails when any generated file is stale;
-CI runs it. The reference interpreter (`tools/bftool/ref.py`) is test-only.
+There is no assembler: the `.bf` files are the source and are edited by
+hand. The checker never rewrites them. `python tools/bftool/gen.py --check`
+fails when any generated file is stale; CI runs it. The reference
+interpreter (`tools/bftool/ref.py`) is test-only.
 
 ## Security boundary
 
 No root/detector evasion, concealment, anti-analysis or attestation work.
-Xposed metadata (`xposed_init`, `xposedmodule`, `xposedscope`, …) is unchanged.
+Xposed metadata is the libxposed API 102 set in `META-INF/xposed/`
+(`java_init.list`, `module.prop`, `scope.list`), kept unobfuscated.
 Native symbols use hidden visibility except the JNI entry points; release
 builds use LTO and the stripping AGP applies.

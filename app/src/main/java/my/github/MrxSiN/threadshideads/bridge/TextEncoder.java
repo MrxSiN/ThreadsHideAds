@@ -8,7 +8,7 @@ import java.util.Locale;
  * can end with a 0 byte).
  *
  * This is a mechanism only. Trimming, whitespace handling and every word list
- * live in brainfuck/src/vocabulary.bfa.
+ * live in brainfuck/src/text.bf.
  */
 public final class TextEncoder {
 

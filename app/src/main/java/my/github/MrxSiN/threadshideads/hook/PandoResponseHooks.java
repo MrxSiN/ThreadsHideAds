@@ -6,13 +6,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XposedBridge;
-
 import my.github.MrxSiN.threadshideads.bridge.Policy;
-import my.github.MrxSiN.threadshideads.core.Diagnostics;
-import my.github.MrxSiN.threadshideads.core.ModelProbes;
 import my.github.MrxSiN.threadshideads.core.ModuleLog;
+import my.github.MrxSiN.threadshideads.core.ModuleRuntime;
 import my.github.MrxSiN.threadshideads.core.ModuleStats;
 
 /**
@@ -53,7 +49,6 @@ public final class PandoResponseHooks {
             ModuleLog.log("Unable to read Pando accessors: " + throwable);
             declared = new Method[0];
         }
-        ModelProbes.traceDeclaredMethods(treeClass, declared);
         int installed = 0;
         for (Method method : declared) {
             if (!policy.pandoAccessor(method)) {
@@ -72,46 +67,41 @@ public final class PandoResponseHooks {
     }
 
     private static boolean hookListAccessor(final Policy policy, final Method method) {
-        if (!HOOKED_METHODS.add(method.toGenericString() + "#pando")) {
+        String id = method.toGenericString() + "#pando";
+        if (!HOOKED_METHODS.add(id)) {
             return false;
         }
         final Class<?> returnType = method.getReturnType();
-        XposedBridge.hookMethod(method, new XC_MethodHook() {
-            @Override
-            protected void afterHookedMethod(MethodHookParam param) {
-                if (param.hasThrowable()) {
-                    return;
-                }
-                try {
-                    Object result = param.getResult();
-                    long start = HotPathStats.ENABLED ? System.nanoTime() : 0;
-                    Policy.PandoFilter filter = policy.pandoFilter(result, returnType);
-                    if (HotPathStats.ENABLED) {
-                        HotPathStats.PANDO.record(System.nanoTime() - start);
-                    }
-                    switch (filter.action) {
-                        case Policy.PandoFilter.REPLACED:
-                            param.setResult(filter.result);
-                            ModuleStats.recordModelRemoval(filter.removed, "Pando response list " + method.getName());
-                            break;
-                        case Policy.PandoFilter.REPLACE_FAILED:
-                            ModuleStats.recordReplacementFailure();
-                            break;
-                        case Policy.PandoFilter.BLOCKED:
-                            if (result instanceof List<?>) {
-                                Diagnostics.traceEmptyingBlocked((List<?>) result);
-                            }
-                            break;
-                        default:
-                            break;
-                    }
-                } catch (Throwable throwable) {
-                    ModuleLog.log("Pando response filtering failed in " + method.getName() + ": " + throwable);
-                }
+        ModuleRuntime.hook(method, id, chain -> {
+            Object result = chain.proceed();
+            try {
+                return filter(policy, method, returnType, result);
+            } catch (Throwable throwable) {
+                ModuleLog.log("Pando response filtering failed in " + method.getName() + ": " + throwable);
+                return result;
             }
         });
         ModuleLog.log("Installed Pando response filter: " + method);
         return true;
+    }
+
+    /** The accessor's result after the core's verdict: filtered or as returned. */
+    private static Object filter(Policy policy, Method method, Class<?> returnType, Object result) {
+        long start = HotPathStats.ENABLED ? System.nanoTime() : 0;
+        Policy.PandoFilter filter = policy.pandoFilter(result, returnType);
+        if (HotPathStats.ENABLED) {
+            HotPathStats.PANDO.record(System.nanoTime() - start);
+        }
+        switch (filter.action) {
+            case Policy.PandoFilter.REPLACED:
+                ModuleStats.recordModelRemoval(filter.removed, "Pando response list " + method.getName());
+                return filter.result;
+            case Policy.PandoFilter.REPLACE_FAILED:
+                ModuleStats.recordReplacementFailure();
+                return result;
+            default:
+                return result;
+        }
     }
 
     private static Class<?> resolve(ClassLoader classLoader, String name) {

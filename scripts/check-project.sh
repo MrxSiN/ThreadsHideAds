@@ -4,35 +4,56 @@ ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 SRC="$ROOT/app/src/main/java/my/github/MrxSiN/threadshideads"
 BF="$ROOT/brainfuck/src"
 CPP="$ROOT/app/src/main/cpp"
+XPOSED_META="$ROOT/app/src/main/resources/META-INF/xposed"
+MANIFEST="$ROOT/app/src/main/AndroidManifest.xml"
+
+# "! cmd" is exempt from set -e, so negative checks must fail explicitly.
+refute() {
+    if "$@"; then
+        echo "check-project: unexpected match: $*" >&2
+        exit 1
+    fi
+}
 
 # Entry point: attach-gated startup, scope decided by the core.
-grep -q 'policy.loadPackage' "$SRC/MainHook.java"
-grep -q 'Application.attach observed' "$SRC/MainHook.java"
-grep -q 'ModelHookInstaller.request' "$SRC/MainHook.java"
-grep -q 'com.instagram.barcelona' "$ROOT/app/src/main/res/values/arrays.xml"
-grep -q 'regex THREADS_PACKAGE = "com.instagram.barcelona"' "$BF/vocabulary.bfa"
+grep -q 'extends XposedModule' "$SRC/ModuleMain.java"
+grep -q 'policy.loadPackage' "$SRC/ModuleMain.java"
+grep -q 'Application.attach observed' "$SRC/ModuleMain.java"
+grep -q 'ModelHookInstaller.request' "$SRC/ModuleMain.java"
+
+# Hot reload: the old generation retires its core, the new one takes over.
+grep -q 'onHotReloading' "$SRC/ModuleMain.java"
+grep -q 'onHotReloaded' "$SRC/ModuleMain.java"
+grep -q 'Core.shutdown' "$SRC/ModuleMain.java"
+grep -q 'nativeDestroy' "$SRC/bridge/NativeCore.java"
+grep -q 'setId(id)' "$SRC/core/ModuleRuntime.java"
+grep -q 'THREADS PACKAGE (12): exactly com dot instagram dot barcelona' "$BF/text.bf"
 
 # Startup: DexKit opening, retry decisions and install order from the core.
 grep -q 'DexKitBridge.create' "$SRC/hook/ModelHookInstaller.java"
 grep -q 'policy.initRequest' "$SRC/hook/ModelHookInstaller.java"
 grep -q 'policy.installStep' "$SRC/hook/ModelHookInstaller.java"
-grep -q 'case 0 { outc32 250 }' "$BF/core.bfa"
-grep -q 'case 1 { outc32 1000 }' "$BF/core.bfa"
-grep -q 'default { outc32 3000 }' "$BF/core.bfa"
+grep -q 'RETRY after 250 or 1000 or 3000 ms' "$BF/core.bf"
 grep -q 'PandoResponseHooks.install' "$SRC/hook/ModelHookInstaller.java"
 
 # Model hooks: boundary flow, neutralized injector, disabled ad predicates.
 grep -q 'policy.boundaryBefore' "$SRC/hook/FeedModelHooks.java"
 grep -q 'policy.boundaryAfter' "$SRC/hook/FeedModelHooks.java"
-grep -q 'returnConstant(false)' "$SRC/hook/FeedModelHooks.java"
+grep -q 'chain -> Boolean.FALSE' "$SRC/hook/FeedModelHooks.java"
 grep -q 'policy.pandoFilter' "$SRC/hook/PandoResponseHooks.java"
 
-# Policy lives in Brainfuck: unit types, emptying rule, bounded walks.
-grep -q '"intent_aware_ad_pivot"' "$BF/vocabulary.bfa"
-grep -q 'ifz allow_emptying { set blocked 1 }' "$BF/sanitize.bfa"
-grep -q 'const DETECT_MAX_BUDGET = 1200' "$BF/limits.bfa"
-grep -q 'const NESTED_MAX_DEPTH = 4' "$BF/limits.bfa"
-grep -q 'const PANDO_MAX_LIST = 256' "$BF/limits.bfa"
+# Policy lives in hand-written Brainfuck: one .bf per program, no assembler.
+for prog in core text detect sanitize nested pando; do
+    grep -q "\"src/$prog.bf\"" "$ROOT/brainfuck/programs.json"
+    grep -q '^# Hand written Brainfuck' "$BF/$prog.bf"
+done
+refute sh -c 'ls "$1"/*.bfa >/dev/null 2>&1' sh "$BF"
+refute test -f "$ROOT/tools/bftool/asm.py"
+grep -q 'quote is_sponsored quote colon true' "$BF/text.bf"
+grep -q 'allow replacement; allow emptying' "$BF/sanitize.bf"
+grep -q 'Limits: depth 8; budget 1200 inspections per traversal' "$BF/detect.bf"
+grep -q 'Limits: depth 4; budget 192 visits per traversal' "$BF/nested.bf"
+grep -q 'at most 256 entries' "$BF/pando.bf"
 
 # The host holds no ad vocabulary: these words appear only in brainfuck/src.
 if grep -rqiE '"(ad4ad|is_sponsored|sponsorisé|quickpromotion)"' "$SRC"; then
@@ -51,17 +72,25 @@ fi
 # Rendered-label fallback: restore only by the label that hid a card.
 grep -q 'wasHiddenBy' "$SRC/ui/FeedItemHider.java"
 
-# Tracing stays off in a release build.
-grep -q 'ENABLED = false' "$SRC/core/Diagnostics.java"
+# Modern Xposed API (libxposed 102) metadata; the legacy entry is gone.
+grep -q '^my.github.MrxSiN.threadshideads.ModuleMain$' "$XPOSED_META/java_init.list"
+grep -q '^com.instagram.barcelona$' "$XPOSED_META/scope.list"
+grep -q '^minApiVersion=102$' "$XPOSED_META/module.prop"
+grep -q '^targetApiVersion=102$' "$XPOSED_META/module.prop"
+grep -q '^autoHotReload=true$' "$XPOSED_META/module.prop"
+grep -q 'compileOnly("io.github.libxposed:api:102.0.0")' "$ROOT/app/build.gradle.kts"
+grep -q 'merges += "META-INF/xposed/\*"' "$ROOT/app/build.gradle.kts"
+refute test -f "$ROOT/app/src/main/assets/xposed_init"
+refute grep -q 'xposedmodule\|xposedminversion\|xposedscope' "$MANIFEST"
+refute grep -rq 'de.robv.android.xposed' "$ROOT/app/src/main/java"
 
-# Xposed metadata required by LSPosed and LSPatch.
-grep -q 'my.github.MrxSiN.threadshideads.MainHook' "$ROOT/app/src/main/assets/xposed_init"
-grep -q 'xposedmodule' "$ROOT/app/src/main/AndroidManifest.xml"
-grep -q 'xposedscope' "$ROOT/app/src/main/AndroidManifest.xml"
+# Adaptive vector icon with a themed (monochrome) layer.
+grep -q '<monochrome' "$ROOT/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml"
+refute test -d "$ROOT/app/src/main/res/mipmap-xxxhdpi"
 
 # Release metadata and signing configuration.
-grep -q 'val appVersion = "1.3.0"' "$ROOT/app/build.gradle.kts"
-grep -q 'versionCode = 7' "$ROOT/app/build.gradle.kts"
+grep -q 'val appVersion = "2.0.0"' "$ROOT/app/build.gradle.kts"
+grep -q 'versionCode = 8' "$ROOT/app/build.gradle.kts"
 grep -q 'applicationId = "io.github.mrxsin.threadshideads"' "$ROOT/app/build.gradle.kts"
 grep -q 'envKeystorePath' "$ROOT/app/build.gradle.kts"
 grep -q 'envKeyPassword' "$ROOT/app/build.gradle.kts"

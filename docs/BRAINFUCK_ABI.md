@@ -1,6 +1,6 @@
 # Brainfuck ABI, version 1.0
 
-This document is normative. `brainfuck/src/constants.bfa` is the single source
+This document is normative. `brainfuck/constants.txt` is the single source
 of every number below; `tools/bftool/gen.py` exports it to
 `bridge/BfAbi.java` and `cpp/generated/bf_abi.h`. Values are append-only.
 
@@ -103,8 +103,8 @@ The runtime routes 0x01–0x2F to `core`; the rest by table (`bf_route`).
 
 `0x34`, `0x36`, `0x37` and `0x39` are normally reached through `CAP_CALL`.
 
-Reason and action codes are named constants at the top of `core.bfa` and
-mirrored in `bridge/Policy.java`.
+Reason and action codes are listed in the comment above each case of
+`core.bf` and mirrored in `bridge/Policy.java`.
 
 ## 5. Capabilities (Brainfuck → host)
 
@@ -165,23 +165,23 @@ method signature, 6 `Class.method`, 7 TextView text, 8 content description,
 
 Text is Java modified UTF-8 (U+0000 as C0 80) ending in a 0 byte, streamed in
 16 KB chunks. Everything except case mapping — trimming, whitespace classes,
-separators, every word — is in `brainfuck/src/vocabulary.bfa`. A matcher stops
-reading when its DFA reaches a sink; the unread rest is discarded.
+separators, every word — is in `brainfuck/src/text.bf`. A matcher stops
+reading when its machine reaches a sink; the unread rest is discarded.
 
 ## 7. Limits
 
 | Limit | Value | Source |
 | --- | --- | --- |
-| detector depth / budget / entries | 8 / 1200 / 32 | `limits.bfa` |
-| nested depth / budget / entries | 4 / 192 / 48 | `limits.bfa` |
-| field class depth | 6 | `limits.bfa` (host applies it) |
-| inspected text length | 262 144 | `limits.bfa` |
-| Pando JSON / item JSON / list size | 524 288 / 65 536 / 256 | `limits.bfa` |
-| primary boundaries accepted | 1..8 | `core.bfa` |
-| retry delays | 250, 1000, 3000 ms | `core.bfa` |
-| ancestor depth / list-container walk / layout retries | 14 / 9 / 4 | `core.bfa` |
-| label scan / rescan / children per group | 320 / 160 / 64 | `core.bfa` |
-| runtime levels / input / output per level | 24 / 16 KB / 8 KB | `constants.bfa` |
+| detector depth / budget / entries | 8 / 1200 / 32 | `detect.bf` |
+| nested depth / budget / entries | 4 / 192 / 48 | `nested.bf` |
+| field class depth | 6 | `core.bf` OP_LIMITS (host applies it) |
+| inspected text length | 262 144 | `detect.bf` |
+| Pando JSON / item JSON / list size | 524 288 / 65 536 / 256 | `pando.bf` |
+| primary boundaries accepted | 1..8 | `core.bf` |
+| retry delays | 250, 1000, 3000 ms | `core.bf` |
+| ancestor depth / list-container walk / layout retries | 14 / 9 / 4 | `core.bf` |
+| label scan / rescan / children per group | 320 / 160 / 64 | `core.bf` |
+| runtime levels / input / output per level | 24 / 16 KB / 8 KB | `constants.txt` |
 | handles per engine | 16 384 | `HandleTable` |
 | nested requests per thread | 2 | `Policy` |
 
@@ -195,29 +195,31 @@ States: pre-attach (loaded, guard installed) → initializing (attempt started)
 A second trigger while an attempt runs is ignored. `OP_RESET` returns to the
 initial state.
 
-## 9. BFA language
+## 9. Sources
 
-`.bfa` is a small structured assembler over genuine Brainfuck. Every construct
-lowers to balanced BF with static addresses; nothing calls back into the host
-except explicit capability frames.
+Every program is a hand-written `.bf` file in `brainfuck/src/`; there is no
+assembler or macro layer. `tools/bftool/lint.py` checks a source and never
+changes it:
 
-| Construct | Meaning |
-| --- | --- |
-| `include "f.bfa"` | textual include, once per file |
-| `const N = expr` | integer constant (`+ - * / % << >> \| &`, `len("s")`, `sizeof(x)`) |
-| `persist a, b[4]` | persistent cells (core only) |
-| `var a, b[4]` | scratch cells; block-scoped, zeroed on scope exit |
-| `macro m(p…) { … }` | inline expansion; parameters bind cells, constants or strings |
-| `set x N`, `add x N`, `sub x N`, `clear x…` | constant arithmetic (multi-byte `set`) |
-| `inc x`, `dec x`, `addv x, y`, `subv x, y` | multi-byte arithmetic with carry |
-| `copy a -> b`, `move a -> b, c` | copy; destructive transfer |
-| `in x…`, `out x…`, `outc N`, `outc16 N`, `outc32 N`, `outs "s"` | I/O |
-| `if x {…} else {…}`, `ifz`, `ifeq x N`, `ifne x N` | branches (multi-byte aware) |
-| `while x {…}`, `repeat N {…}` | loops |
-| `switch x { case N, M {…} default {…} }` | exclusive multi-way branch |
-| `gt/lt/ge/le/eq/ne x, y -> f` | unsigned comparisons (y a cell or constant) |
-| `unpack x -> b0, b1…`, `pack b0… -> x` | bit fields |
-| `charset S = …`, `regex R = …` | byte-level regular expressions (strings, `u+XXXX` ranges, `\| * + ?`, `spaced()`, `word()`) |
-| `match R1[, R2] -> f` | streams input through minimal DFAs in parallel, stops at sinks |
-| `cap OP, args…`, `call PROG, OP, args…` | capability / call frames with computed lengths |
-| `static_assert expr` | assembly-time check |
+- `#` starts a comment that runs to the end of the line. A comment may not
+  contain any of the eight command characters, so prose can never become code;
+- outside comments a line holds only commands, whitespace and checkpoints;
+- `%cell NAME ADDRESS [SIZE]` in a comment names tape cells; the memory map is
+  built from these declarations;
+- `@NAME`, `@NAME:K` (byte K of NAME) or `@ADDRESS` asserts where the data
+  pointer is at that point;
+- `~N` asserts that the run of one command just before it (spaces allowed
+  inside the run) is exactly N long;
+- every loop leaves the pointer where it found it, so each checkpoint is
+  verified statically and the pointer never leaves the tape.
+
+Shapes the sources use throughout, which the optimizer recognizes:
+
+- **equality test**: copy the subject into `f` through a temporary, subtract
+  the case value, set `e`; `f[ e=0 … f=0 ]` runs the else body and
+  `e[ … e=0 ]` the case body. Runs of these become C `switch` statements;
+- **run-once `if`**: a loop whose body ends by clearing its condition cell;
+- **multi-byte numbers** are little endian: sums carry one unit at a time,
+  comparisons go from the high byte down;
+- **frames** are written byte by byte from a single emitter cell that
+  returns to zero after each frame.

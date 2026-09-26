@@ -2,7 +2,7 @@ package my.github.MrxSiN.threadshideads.bridge;
 
 /**
  * The hooked call a feed-boundary request works on: its arguments, declared
- * types and result. The Xposed hook adapts MethodHookParam to this.
+ * types and result. The hook adapts the Xposed interceptor chain to this.
  */
 public interface CallFrame {
 

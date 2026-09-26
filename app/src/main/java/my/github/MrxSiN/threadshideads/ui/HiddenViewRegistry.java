@@ -47,6 +47,36 @@ public final class HiddenViewRegistry {
         }
     }
 
+    /**
+     * The registry in framework types only, for the generation that replaces
+     * this one on a hot reload: view to {visibility, height, marker ref}.
+     */
+    public static Map<View, Object[]> export() {
+        Map<View, Object[]> out = new WeakHashMap<>();
+        synchronized (HIDDEN_VIEWS) {
+            for (Map.Entry<View, SavedViewState> entry : HIDDEN_VIEWS.entrySet()) {
+                SavedViewState state = entry.getValue();
+                out.put(entry.getKey(), new Object[]{state.originalVisibility, state.originalHeight, state.markerView});
+            }
+        }
+        return out;
+    }
+
+    /** Takes over the collapses a previous generation made (see {@link #export}). */
+    @SuppressWarnings("unchecked")
+    public static void adopt(Object exported) {
+        if (!(exported instanceof Map)) {
+            return;
+        }
+        synchronized (HIDDEN_VIEWS) {
+            for (Map.Entry<?, ?> entry : ((Map<?, ?>) exported).entrySet()) {
+                Object[] state = (Object[]) entry.getValue();
+                HIDDEN_VIEWS.put((View) entry.getKey(), new SavedViewState(
+                        (Integer) state[0], (Integer) state[1], (WeakReference<View>) state[2]));
+            }
+        }
+    }
+
     public static boolean hasHiddenAncestor(View child) {
         View current = child;
 
@@ -79,9 +109,13 @@ public final class HiddenViewRegistry {
                 int originalHeight,
                 View markerView
         ) {
+            this(originalVisibility, originalHeight, new WeakReference<>(markerView));
+        }
+
+        SavedViewState(int originalVisibility, int originalHeight, WeakReference<View> markerView) {
             this.originalVisibility = originalVisibility;
             this.originalHeight = originalHeight;
-            this.markerView = new WeakReference<>(markerView);
+            this.markerView = markerView;
         }
 
         public boolean wasHiddenBy(View view) {

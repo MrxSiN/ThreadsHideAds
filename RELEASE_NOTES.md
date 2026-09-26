@@ -1,30 +1,32 @@
-# Threads Hide Ads v1.3.0
+# Threads Hide Ads v2.0.0
 
-## Brainfuck policy core
+## Modern Xposed API, hot reload and a hand-written Brainfuck core
 
-This release rewrites the module's decision-making without changing what it removes. Every policy decision — scope, initialization retries, hook install order, discovery candidate rules, advertisement classification, list and nested-collection sanitization, recursion limits, Pando filtering, the rendered-label fallback and statistics rate limits — now lives in Brainfuck-family source that is compiled ahead of time into native code. Java only performs the operations the core asks for.
+This release changes how the module is loaded and how its policy is written, without changing what it removes.
 
 ### Changed
 
-- Adds `libthreadsbf.so` (arm64-v8a, armeabi-v7a, x86, x86_64), generated from `brainfuck/src/*.bfa`. No interpreter ships in the APK.
-- Removes the Java detection and sanitization classes; their 1.2.1 behavior is the oracle for the new parity tests.
-- Hooks that re-enter the module from app code run on a separate engine, at most two levels deep, and otherwise leave content untouched. This replaces a global lock that could deadlock initialization.
+- Uses the modern Xposed API (libxposed 102). The module is described by `META-INF/xposed/` (`java_init.list`, `module.prop`, `scope.list`) instead of `xposed_init` and manifest metadata. Requires Android 8.0 or newer and a framework that implements API 102 (Vector, current LSPosed).
+- Supports hot reload: an update is applied to a running Threads process. The old module generation stops its native core and hands its hidden feed cards to the new one.
+- New adaptive vector launcher icon with a themed (monochrome) layer.
+- All six policy programs in `libthreadsbf.so` are now hand-written Brainfuck (`brainfuck/src/*.bf`). The previous macro assembler is removed. Each program was tested side by side with the one it replaces: identical responses and identical host traffic over thousands of randomized requests.
+- The native library is smaller (arm64: 647 KB, was 729 KB); host benchmarks are unchanged within noise.
 
 ### Verified
 
-- Parity with 1.2.1 on the JVM (text matchers, detector, list and nested sanitizers, boundary flow, core decisions) and on an arm64 device (detector and sanitizer).
-- On a Pixel 8 Pro with Threads 448.0.0.54.85 under LSPosed: initialization completed on every cold start, 10–12 advertisements removed per session as with 1.2.1, no `Ad` or `Sponsored` label in any `uiautomator` dump, no crash-buffer entries.
-- Time spent in hooks while scrolling is about 2.8 % of one core (1.2.1: about 2.3 %).
+- Parity with 1.2.1 on the JVM (text matchers, detector, list and nested sanitizers, boundary flow, core decisions).
+- libxposed 102 loading and hot reload on a Pixel 8 Pro, Android 17, Vector 2.2.
+- The hand-written core on the same device with Threads 448.0.0.54.85: initialization complete on the first attempt (38 model hooks, 28 Pando hooks), 12 advertisements removed over a cold launch and 35 scroll passes, no `Ad` or `Sponsored` label in `uiautomator` dumps, empty crash buffer.
 
-LSPatch modes, 32-bit and x86 devices, and older Android versions were not re-run for this release.
+LSPatch modes, 32-bit and x86 devices were not re-run for this release.
 
 ### Version metadata
 
-- Version name: `1.3.0`
-- Android version code: `7`
-- Recommended Git tag: `v1.3.0`
-- APK filename: `ThreadsHideAds-v1.3.0.apk`
+- Version name: `2.0.0`
+- Android version code: `8`
+- Recommended Git tag: `v2.0.0`
+- APK filename: `ThreadsHideAds-v2.0.0.apk`
 
 ### Updating
 
-Install the v1.3.0 APK over v1.2.1, keep Threads as the module’s only LSPosed scope, then force-stop and reopen Threads once. Confirm the LSPosed log reports `Application.attach observed` followed by `Hook initialization complete`.
+Install the v2.0.0 APK over v1.3.0, keep Threads as the module's only scope, then force-stop and reopen Threads once. Confirm the framework log reports `Application.attach observed` followed by `Hook initialization complete`. Later updates can be hot-reloaded.

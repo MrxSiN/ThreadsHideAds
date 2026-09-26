@@ -87,6 +87,18 @@ Java_my_github_MrxSiN_threadshideads_bridge_NativeCore_nativeCreate(JNIEnv *env,
     return (jlong) (intptr_t) core;
 }
 
+/* Frees an engine and drops its global reference to the Java host, so a
+ * retired module generation (hot reload) is not kept reachable from here. */
+JNIEXPORT void JNICALL
+Java_my_github_MrxSiN_threadshideads_bridge_NativeCore_nativeDestroy(JNIEnv *env, jclass clazz, jlong handle)
+{
+    jni_core *core = (jni_core *) (intptr_t) handle;
+    if (core != NULL) {
+        (*env)->DeleteGlobalRef(env, core->host);
+        free(core);
+    }
+}
+
 JNIEXPORT jobject JNICALL
 Java_my_github_MrxSiN_threadshideads_bridge_NativeCore_nativeBuffer(JNIEnv *env, jclass clazz, jlong handle,
                                                                    jint level, jboolean input)

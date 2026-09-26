@@ -2,4 +2,5 @@
 brainfuck/generated/** text eol=lf
 app/src/main/cpp/generated/** text eol=lf
 app/src/main/java/my/github/MrxSiN/threadshideads/bridge/BfAbi.java text eol=lf
-brainfuck/src/*.bfa text eol=lf
+brainfuck/src/*.bf text eol=lf
+brainfuck/constants.txt text eol=lf

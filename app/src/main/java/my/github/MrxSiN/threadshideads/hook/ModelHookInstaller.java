@@ -10,8 +10,6 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import de.robv.android.xposed.XposedBridge;
-
 import my.github.MrxSiN.threadshideads.bridge.Policy;
 import my.github.MrxSiN.threadshideads.core.Core;
 import my.github.MrxSiN.threadshideads.core.ModuleLog;
@@ -81,8 +79,7 @@ public final class ModelHookInstaller {
                 ModuleLog.log("Initialization attempt installed no model hooks");
             }
         } catch (Throwable throwable) {
-            ModuleLog.log("Hook initialization attempt failed: " + throwable);
-            XposedBridge.log(throwable);
+            ModuleLog.log("Hook initialization attempt failed: " + throwable, throwable);
         }
         Policy.Init finished = policy.initFinish(success, retryIndex);
         if (finished.action == Policy.INIT_COMPLETE) {

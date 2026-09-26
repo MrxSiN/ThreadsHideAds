@@ -221,7 +221,8 @@ def _match_copy(ops, i, known):
 
 
 def _match_ifeq(ops, i, known):
-    """The assembler's equality test on a copy (see asm.if_eq):
+    """The equality test on a copy that the hand-written sources use for case
+    switches (docs/BRAINFUCK_ABI.md, "Sources"):
     f := s; [f += n]; e += 1; if f {e = 0; OTHER; f = 0}; if e {THEN; e = 0}
     with f and e zero beforehand  =>  if (s == -n) THEN else OTHER."""
     copy = _match_copy(ops, i, known)

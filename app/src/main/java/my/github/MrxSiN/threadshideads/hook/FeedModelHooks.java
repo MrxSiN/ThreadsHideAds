@@ -6,14 +6,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XC_MethodReplacement;
-import de.robv.android.xposed.XposedBridge;
-
 import my.github.MrxSiN.threadshideads.bridge.BfAbi;
 import my.github.MrxSiN.threadshideads.bridge.Policy;
-import my.github.MrxSiN.threadshideads.core.Diagnostics;
 import my.github.MrxSiN.threadshideads.core.ModuleLog;
+import my.github.MrxSiN.threadshideads.core.ModuleRuntime;
 import my.github.MrxSiN.threadshideads.core.ModuleStats;
 
 /**
@@ -42,82 +38,63 @@ public final class FeedModelHooks {
     }
 
     public boolean hookListBoundary(final Method method) {
-        if (!HOOKED_METHODS.add(method.toGenericString() + "#list")) {
+        String id = method.toGenericString() + "#list";
+        if (!HOOKED_METHODS.add(id)) {
             return false;
         }
         final Class<?>[] parameterTypes = method.getParameterTypes();
         final Class<?> returnType = method.getReturnType();
 
-        XposedBridge.hookMethod(method, new XC_MethodHook() {
-            @Override
-            protected void beforeHookedMethod(MethodHookParam param) {
-                long start = HotPathStats.ENABLED ? System.nanoTime() : 0;
-                List<Policy.Report> reports =
-                        policy.boundaryBefore(new XposedCallFrame(param, parameterTypes, returnType));
-                if (HotPathStats.ENABLED) {
-                    HotPathStats.BOUNDARY.record(System.nanoTime() - start);
-                }
-                log(method, reports);
-                if (Diagnostics.ENABLED) {
-                    traceUnfiltered(method, param.args, reports);
-                }
+        ModuleRuntime.hook(method, id, chain -> {
+            Object[] args = chain.getArgs().toArray();
+            ChainCallFrame frame = new ChainCallFrame(args, parameterTypes, returnType);
+            before(method, frame);
+            try {
+                frame.setResult(chain.proceed(args));
+            } catch (Throwable throwable) {
+                log(method, policy.boundaryAfter(frame, true));
+                throw throwable;
             }
-
-            @Override
-            protected void afterHookedMethod(MethodHookParam param) {
-                if (!param.hasThrowable()) {
-                    Diagnostics.traceBoundaryCall(method.getDeclaringClass().getSimpleName()
-                            + "." + method.getName(), param.args, param.getResult());
-                }
-                log(method, policy.boundaryAfter(new XposedCallFrame(param, parameterTypes, returnType),
-                        param.hasThrowable()));
-            }
+            log(method, policy.boundaryAfter(frame, false));
+            return frame.result();
         });
 
         ModuleLog.log("Installed list sanitizer: " + method);
         return true;
     }
 
+    private void before(Method method, ChainCallFrame frame) {
+        long start = HotPathStats.ENABLED ? System.nanoTime() : 0;
+        List<Policy.Report> reports = policy.boundaryBefore(frame);
+        if (HotPathStats.ENABLED) {
+            HotPathStats.BOUNDARY.record(System.nanoTime() - start);
+        }
+        log(method, reports);
+    }
+
     /** Neutralizes the client-side ad injector: it reports "nothing injected". */
     public boolean hookAdInjectionPredicate(final Method method) {
-        if (!HOOKED_METHODS.add(method.toGenericString() + "#injector")) {
+        String id = method.toGenericString() + "#injector";
+        if (!HOOKED_METHODS.add(id)) {
             return false;
         }
-        XposedBridge.hookMethod(method, new XC_MethodHook() {
-            @Override
-            protected void afterHookedMethod(MethodHookParam param) {
-                Diagnostics.traceBoundaryCall("injector " + method.getName(), param.args, param.getResult());
-                param.setResult(Boolean.FALSE);
-            }
+        ModuleRuntime.hook(method, id, chain -> {
+            chain.proceed();
+            return Boolean.FALSE;
         });
         ModuleLog.log("Neutralized ad injector: " + method);
         return true;
     }
 
     public boolean hookBooleanPredicate(Method method) {
-        if (!HOOKED_METHODS.add(method.toGenericString() + "#boolean")) {
+        String id = method.toGenericString() + "#boolean";
+        if (!HOOKED_METHODS.add(id)) {
             return false;
         }
-        XposedBridge.hookMethod(method, XC_MethodReplacement.returnConstant(false));
+        // Replaces the predicate: the original never runs (returnConstant(false)).
+        ModuleRuntime.hook(method, id, chain -> Boolean.FALSE);
         ModuleLog.log("Disabled positive ad predicate: " + method);
         return true;
-    }
-
-    /** Reports the shape of list arguments the core left untouched. */
-    private static void traceUnfiltered(Method method, Object[] args, List<Policy.Report> reports) {
-        for (int i = 0; i < args.length; i++) {
-            if (!(args[i] instanceof List<?>)) {
-                continue;
-            }
-            boolean filtered = false;
-            for (Policy.Report report : reports) {
-                filtered |= report.site == BfAbi.SITE_ARG && report.index == i;
-            }
-            if (!filtered) {
-                Diagnostics.traceUnfilteredList(method.getDeclaringClass().getSimpleName()
-                        + "." + method.getName() + " arg" + i, (List<?>) args[i]);
-            }
-        }
     }
 
     private static void log(Method method, List<Policy.Report> reports) {

@@ -4,16 +4,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XposedBridge;
+import io.github.libxposed.api.XposedInterface;
 
 import my.github.MrxSiN.threadshideads.bridge.Policy;
 import my.github.MrxSiN.threadshideads.core.ModuleLog;
+import my.github.MrxSiN.threadshideads.core.ModuleRuntime;
 
 /**
  * Rendered-label fallback: text, content-description and addView hooks. The
@@ -39,34 +40,39 @@ public final class RenderedLabelHooks {
         }
         ViewTrees.configure(policy);
 
-        XposedBridge.hookAllMethods(TextView.class, "setText", new XC_MethodHook() {
-            @Override
-            protected void afterHookedMethod(MethodHookParam param) {
-                onLabelChanged(policy, (View) param.thisObject, false);
-            }
+        hookAll(TextView.class, "setText", chain -> {
+            Object result = chain.proceed();
+            onLabelChanged(policy, (View) chain.getThisObject(), false);
+            return result;
         });
-        XposedBridge.hookAllMethods(View.class, "setContentDescription", new XC_MethodHook() {
-            @Override
-            protected void afterHookedMethod(MethodHookParam param) {
-                onLabelChanged(policy, (View) param.thisObject, true);
-            }
+        hookAll(View.class, "setContentDescription", chain -> {
+            Object result = chain.proceed();
+            onLabelChanged(policy, (View) chain.getThisObject(), true);
+            return result;
         });
-        XposedBridge.hookAllMethods(ViewGroup.class, "addView", new XC_MethodHook() {
-            @Override
-            protected void afterHookedMethod(MethodHookParam param) {
-                ViewGroup parent = (ViewGroup) param.thisObject;
-                if (!policy.uiAddView(ViewTrees.listContainerChain(policy, parent))) {
-                    return;
-                }
-                for (Object argument : param.args) {
+        hookAll(ViewGroup.class, "addView", chain -> {
+            Object result = chain.proceed();
+            ViewGroup parent = (ViewGroup) chain.getThisObject();
+            if (policy.uiAddView(ViewTrees.listContainerChain(policy, parent))) {
+                for (Object argument : chain.getArgs()) {
                     if (argument instanceof View) {
                         scheduleSubtreeScan(policy, (View) argument);
                         break;
                     }
                 }
             }
+            return result;
         });
         ModuleLog.log("Installed rendered-label and attached-view fallbacks");
+    }
+
+    /** Every overload {@code type} declares under {@code name} (hookAllMethods). */
+    private static void hookAll(Class<?> type, String name, XposedInterface.Hooker hooker) {
+        for (Method method : type.getDeclaredMethods()) {
+            if (method.getName().equals(name)) {
+                ModuleRuntime.hook(method, "ui:" + method.toGenericString(), hooker);
+            }
+        }
     }
 
     private static void onLabelChanged(Policy policy, View view, boolean description) {

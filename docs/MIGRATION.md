@@ -1,4 +1,26 @@
-# Migration: v1.2.1 Java policy → Brainfuck core (v1.3.0)
+# Migration
+
+## 2.0.0: hand-written Brainfuck, libxposed API 102
+
+| 1.3.0 | 2.0.0 |
+| --- | --- |
+| `brainfuck/src/{core,text,detect,sanitize,nested,pando}.bfa` + `lib.bfa`, `frame.bfa`, `limits.bfa`, `vocabulary.bfa` | `brainfuck/src/{core,text,detect,sanitize,nested,pando}.bf`, hand-written; limits and words live in the program that uses them |
+| `brainfuck/src/constants.bfa` | `brainfuck/constants.txt` (same `const` lines, parsed by `gen.py`) |
+| `brainfuck/generated/*.bf` (assembler output) | removed; the sources are the eight-command programs |
+| `tools/bftool/asm.py`, `regex_dfa.py`, `test_asm.py`, `test_regex_dfa.py` | removed; `tools/bftool/lint.py` checks the sources |
+| `MainHook` (legacy `IXposedHookLoadPackage`), `assets/xposed_init`, manifest metadata | `ModuleMain` (`XposedModule`), `core/ModuleRuntime`, `META-INF/xposed/*` |
+| `hook/XposedCallFrame` | `hook/ChainCallFrame` |
+| bitmap launcher icons | adaptive vector icon with a monochrome layer |
+
+The wire ABI (opcodes, frames, capability layouts, limits, reason codes) is
+unchanged, so the bridge and the host code did not change for the rewrite;
+the generated C is simply compiled from the new sources.
+
+Intentional changes in 2.0.0: minimum Android 8.0 (API 26) and an Xposed
+framework with API 102 are required; versionCode 8. There is no intended
+filtering change.
+
+## 1.3.0: v1.2.1 Java policy → Brainfuck core
 
 ## Old → new
 
@@ -18,7 +40,7 @@
 | `PandoResponseHooks` selection and filter | `core.bfa` `PANDO_ACCESSOR`, `pando.bfa` `OP_PANDO_FILTER` | `PandoResponseHooks`, `Host` copyOf |
 | `AdLabelScanner`, `FeedItemHider`, `ViewTrees`, `RenderedLabelHooks` decisions | `core.bfa` `OP_UI_*` | `ui/*` (listeners, layout params, visibility) |
 | `ModuleStats` rate limits | `core.bfa` `OP_STATS` | `ModuleStats` (log wording) |
-| `Diagnostics`, `ModelProbes` | — (investigation tooling, off in release) | `core/*` |
+| `Diagnostics`, `ModelProbes` | — (investigation tooling, off in release; removed in 2.0.0, see git history) | — |
 
 Removed from production: `detect/*` (7 classes), `model/*` (4 classes),
 `ui/AdLabelScanner`. Frozen copies live in `app/src/sharedTest/.../legacy/`

@@ -225,6 +225,16 @@ public final class ModelHookInstaller {
                 ModuleLog.log("Unable to hook ad injector " + injector + ": " + throwable);
             }
         }
+        Method permalinkAds = locator.findPermalinkAdsLoader();
+        if (permalinkAds != null) {
+            try {
+                if (hooks.hookPermalinkAdsLoader(permalinkAds)) {
+                    installed++;
+                }
+            } catch (Throwable throwable) {
+                ModuleLog.log("Unable to hook permalink ad loader " + permalinkAds + ": " + throwable);
+            }
+        }
         ModuleLog.log("Feed cache hooks installed: " + installed);
     }
 

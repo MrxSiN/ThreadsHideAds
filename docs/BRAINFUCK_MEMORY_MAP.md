@@ -27,7 +27,7 @@ The checker rejects any source whose pointer can leave its tape.
 
 1. **Persistent** (core only, cells 0..63). Survives between requests;
    cleared by `OP_RESET`. Holds label/attach flags, `ini`, `inz`, the attempt
-   counter, the primary/injector match counters and the statistics totals with
+   counter, the primary/injector/permalink-ads match counters and the statistics totals with
    their rate-limit cycle counters.
 2. **Request header**: major, minor, opcode, flags, length (2), id (2). In core
    these start at 64 (`maj`); in the other programs at 0.

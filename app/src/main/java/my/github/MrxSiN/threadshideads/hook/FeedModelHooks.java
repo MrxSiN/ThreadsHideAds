@@ -86,6 +86,22 @@ public final class FeedModelHooks {
         return true;
     }
 
+    /**
+     * Skips the permalink ad fetch: the suspend step completes at once with
+     * Unit, as it does after a failed fetch, so no ad joins the reply list.
+     */
+    public boolean hookPermalinkAdsLoader(Method method) throws ReflectiveOperationException {
+        String id = method.toGenericString() + "#permalinkAds";
+        if (!HOOKED_METHODS.add(id)) {
+            return false;
+        }
+        final Object unit = Class.forName("kotlin.Unit", false, method.getDeclaringClass().getClassLoader())
+                .getField("INSTANCE").get(null);
+        ModuleRuntime.hook(method, id, chain -> unit);
+        ModuleLog.log("Disabled permalink ad loader: " + method);
+        return true;
+    }
+
     public boolean hookBooleanPredicate(Method method) {
         String id = method.toGenericString() + "#boolean";
         if (!HOOKED_METHODS.add(id)) {

@@ -48,6 +48,8 @@ public final class BfAbi {
     public static final int OP_UI_SCAN = 21;
     public static final int OP_UI_VIEW_CLASS = 22;
     public static final int OP_UI_ADD_VIEW = 23;
+    public static final int OP_PERMALINK_ADS_METHOD = 24;
+    public static final int OP_PERMALINK_ADS_DECISION = 25;
     public static final int OP_RESET = 46;
     public static final int OP_VERSION = 47;
     public static final int OP_BOUNDARY_BEFORE = 48;

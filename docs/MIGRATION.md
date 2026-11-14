@@ -27,8 +27,10 @@ Reproduced on the toolchains' latest `main` (2026-11-14, EXECUTED on Windows 11)
   persistent 64-cell prefix (`docs/BRAINFUCK_ABI.md`). XAX OI-42 (effectful
   foreign callbacks) is the nearest open item.
 
-Upstream issues for both gaps are drafted but NOT opened yet; link them here
-once they exist. No toolchain is pinned because nothing here builds against
+Upstream issues: [MrxSiN/BBC#4](https://github.com/MrxSiN/BBC/issues/4)
+(instruction limit, native shared-library target) and
+[MrxSiN/XAX#47](https://github.com/MrxSiN/XAX/issues/47) (host I/O and
+persistent cells for `bfc_call_v1`). No toolchain is pinned because nothing here builds against
 one yet; the pin file arrives with the first build that does.
 
 ## 2.0.0: hand-written Brainfuck, libxposed API 102

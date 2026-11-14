@@ -33,7 +33,7 @@ information, Brainfuck decides.**
 | JNI glue | `app/src/main/cpp/bf_jni.c` | `NativeCore` natives and host callbacks |
 | Bridge | `app/src/main/java/.../bridge/` | `Policy` (typed requests), `NativeCore`, `Host` (capabilities), `HandleTable`, `Reflector`, `TextEncoder`, `SharedFacts` |
 | Mechanisms | `ModuleMain`, `hook/`, `discovery/`, `ui/`, `core/` | hook registration, hot reload, DexKit, Handler scheduling, View changes, logging |
-| Toolchain | `tools/bftool/` | source checker (`lint.py`), optimizer and C emitter (`ir.py`), reference interpreter, generator |
+| Toolchain | `tools/bftool/` | source checker (`lint.py`), optimizer and C emitter (`ir.py`), reference interpreter, generator; migration debt toward BBC + XAX (`docs/MIGRATION.md`) |
 
 ## Programs
 
@@ -93,7 +93,17 @@ A request that cannot complete (library missing, nesting too deep, malformed
 response, host exception, exhausted handle table) returns the default: keep
 the list, report "not an ad", install nothing new. Unknown content is organic.
 Ambiguous discovery (0 or more than 8 primary matches, several injector
-candidates) never installs a broad destructive hook.
+or permalink-ads candidates) never installs a broad destructive hook.
+
+## Permalink ads
+
+Ads between the replies of a post come from a separate fetch in
+`PermalinkAdsUseCase`, not from the feed, so the feed boundary and Pando
+layers never see them. The core names the class (name table entry 7) and
+picks its fetch step by shape (`OP_PERMALINK_ADS_METHOD`, counted in
+persistent cell `pa`; `OP_PERMALINK_ADS_DECISION` installs only for exactly
+one match). The host hook returns `Unit` without running it, which is what
+the step returns after a failed fetch. Details: `HOOK_NOTES.md`.
 
 ## Build pipeline
 

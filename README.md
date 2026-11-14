@@ -76,13 +76,14 @@ Recommendation units, such as the `NETEGO` and `SUGGESTED` families, are deliber
 place.
 
 <details open>
-<summary><b>🧱 The three layers</b></summary>
+<summary><b>🧱 The four layers</b></summary>
 <br>
 
 | Layer | Where | What it does |
 |---|---|---|
 | **Feed boundary** | the method that hands a batch of feed items to the cache, found by DexKit | Removes ad items from the list argument before the call and again after it (late insertion), then cleans lists nested inside the returned wrapper, with bounded recursion. |
 | **Pando responses** | list accessors on `com.facebook.pando.TreeJNI`, selected by shape | Filters sponsored trees out of GraphQL response lists. The names come from the native binding, not the obfuscator, so this layer needs no DexKit and stays installed when discovery fails. |
+| **Post replies** | `PermalinkAdsUseCase`, the separate fetch that places ads between the replies of a post | Its fetch step, picked by shape, completes at once with no ads, so no request is sent. Threads enables these ads per account, which is why only some accounts showed them. |
 | **Rendered label** | framework `TextView` updates | If a localized "Sponsored" label still reaches the screen, collapses its card. The card is restored only when that same label view is rebound to an organic item. |
 
 Lists are sanitized in place when they are mutable. A replacement list is used only where the
@@ -107,6 +108,7 @@ adding a row.
 
 | Device | Android | Framework | Threads | Module | Result | Tester | Date |
 |---|---|---|---|---|---|---|---|
+| Pixel 8 Pro | 17 | Vector 2.2 (API 102) | 455.0.0.55.72 | main (unreleased, debug build) | 34 model + 28 Pando hooks; ads gone from the feed and from post replies on both accounts | @MrxSiN | 2026-11 |
 | Pixel 8 Pro | 17 | Vector 2.2 (API 102) | 448.0.0.54.85 | 2.0.0 | 38 model + 28 Pando hooks, 12 ads removed in 35 scrolls, no labels | @MrxSiN | 2026-09 |
 | Pixel 8 Pro | 16 | LSPosed | 448.0.0.54.85 | 1.3.0 | 10–12 ads removed per session | @MrxSiN | 2026-09 |
 | — | — | LSPatch (embedded and local) | — | 1.x | reported working in [issue #1](https://github.com/MrxSiN/ThreadsHideAds/issues/1) | @qradov | 2026-8 |
@@ -263,7 +265,9 @@ python -m unittest discover -s tests/compiler   # optimizer, AOT and text parity
 ```
 
 The generated files are committed; the Gradle build checks them with `checkBrainfuck` and never
-edits them. `scripts/check-project.sh` runs the static project checks.
+edits them. `scripts/check-project.sh` runs the static project checks. Contribution rules, including
+where new logic may live and the checks to run before a pull request, are in [`AGENTS.md`](AGENTS.md);
+work that is not yet Brainfuck + XAX is tracked in [`docs/MIGRATION.md`](docs/MIGRATION.md).
 
 You need JDK 17+, Android SDK 36 with NDK 28.2.13676358 and CMake 3.22.1, Python 3.10+, and for the
 JVM tests a host C compiler (MSVC Build Tools on Windows, gcc or clang elsewhere).

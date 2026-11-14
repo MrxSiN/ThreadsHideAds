@@ -66,6 +66,26 @@ public final class FeedCacheLocator {
         return found;
     }
 
+    /** The permalink ad fetch step, when exactly one method has its shape. */
+    public Method findPermalinkAdsLoader() {
+        Class<?> useCase = resolve(policy.constString(Policy.TABLE_NAMES, Policy.NAME_PERMALINK_ADS));
+        if (useCase == null) {
+            return null;
+        }
+        Method found = null;
+        for (Method method : declaredMethods(useCase)) {
+            if (policy.permalinkAdsMethod(method) && found == null) {
+                found = method;
+            }
+        }
+        int decision = policy.permalinkAdsDecision();
+        if (decision != Policy.DECISION_INSTALL) {
+            ModuleLog.log("Permalink ads loader not installed; decision " + decision);
+            return null;
+        }
+        return found;
+    }
+
     private static Method[] declaredMethods(Class<?> type) {
         try {
             return type.getDeclaredMethods();

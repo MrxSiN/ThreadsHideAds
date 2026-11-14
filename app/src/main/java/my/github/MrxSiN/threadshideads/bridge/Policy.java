@@ -73,6 +73,7 @@ public final class Policy {
     public static final int NAME_DEXKIT_LIBRARY = 4;
     public static final int NAME_COPY_FACTORY = 5;
     public static final int NAME_SPOOL_HANDLER = 6;
+    public static final int NAME_PERMALINK_ADS = 7;
 
     /** Runs the core program, whose persistent cells are shared state. */
     private final NativeCore coreEngine;
@@ -634,6 +635,31 @@ public final class Policy {
 
     public int injectorDecision() {
         return simpleByte(BfAbi.OP_INJECTOR_DECISION, DECISION_NONE);
+    }
+
+    /** Permalink ads: the use case's fetch step (static, returns Object, takes the owner). */
+    public boolean permalinkAdsMethod(Method method) {
+        final NativeCore core = core(true);
+        if (core == null) {
+            return false;
+        }
+        try {
+            boolean takesOwner = false;
+            for (Class<?> parameter : method.getParameterTypes()) {
+                takesOwner |= parameter == method.getDeclaringClass();
+            }
+            ByteBuffer out = core.begin(BfAbi.OP_PERMALINK_ADS_METHOD);
+            out.put(bool(Modifier.isStatic(method.getModifiers())));
+            out.put(bool(method.getReturnType() == Object.class));
+            out.put(bool(takesOwner));
+            return core.send() == BfAbi.ST_OK && core.payload().get(0) != 0;
+        } finally {
+            release(core);
+        }
+    }
+
+    public int permalinkAdsDecision() {
+        return simpleByte(BfAbi.OP_PERMALINK_ADS_DECISION, DECISION_NONE);
     }
 
     public boolean pandoAccessor(Method method) {

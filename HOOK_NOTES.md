@@ -310,3 +310,33 @@ investigation.
   initialization here, so stateless requests now run on per-thread pooled
   engines and only the persistent core state is serialized
   (`docs/MIGRATION.md`, intentional changes).
+
+## Threads 455.0.0.55.72: permalink ads
+
+Ads between the replies of a post are not feed items. `PermalinkScreen` gets
+them from `com.instagram.barcelona.permalink.adsusecase.PermalinkAdsUseCase`,
+which calls `com.instagram.barcelona.sponsored.permalink.ThreadsPermalinkAdFetcher`
+(`text_feed/threads_permalink_ads/`) and pushes the result into its own state
+flow, so neither the feed cache boundaries nor the Pando accessors see them.
+Placement is experiment gated (`PermalinkAdsMode`, `PlacementRules`), which is
+why one account showed them and another did not.
+
+The fetch step is the use case's only static method that returns `Object` and
+takes the use case itself: the Kotlin suspend body
+`A00(X.1Ls, PermalinkAdsUseCase, Continuation)`. Every path through it returns
+`Unit`, including the failure path, so `FeedModelHooks.hookPermalinkAdsLoader`
+returns `Unit` without running it: no request, no ad. The core installs it only
+when exactly one method has that shape (OP 0x18/0x19).
+
+Evidence (2026-11-14, Threads 455.0.0.55.72, Pixel 8 Pro):
+
+- EXECUTED on device: before the change, a second account showed an `Ad` row
+  between the replies of a post while the feed was clean; the log had no hook
+  errors and no Pando removal. After installing the debug build the log reads
+  `Disabled permalink ad loader: ...PermalinkAdsUseCase.A00(...)`, the same
+  posts show no ad, and the crash buffer has no Threads entry.
+- EXECUTED: `CoreParityTest.permalinkAdsLoaderExactlyOne` (shape, exactly-one
+  decision, ambiguity, reset), all JVM and compiler tests, `gen --check`,
+  `check-project.sh`, `lint` on `core.bf`.
+- NOT RUN: a release-signed build on device (the installed copy is debug-signed).
+

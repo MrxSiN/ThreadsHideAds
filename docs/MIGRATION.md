@@ -1,5 +1,36 @@
 # Migration
 
+## Ecosystem rules v1 (2026-11-14): toolchain migration debt
+
+`AGENTS.md` adopts MrxSiN's shared ecosystem rules: new production logic is
+XAX or Brainfuck + XAX where the toolchains reach the target, BBC owns the
+Brainfuck frontend and XAX the compiler and backends. This repository does not
+meet that yet. What is debt and why it stays for now:
+
+| Debt | Where | Status |
+| --- | --- | --- |
+| Brainfuck to C compiler (optimizer, AOT, generator) | `tools/bftool/*.py` | BLOCKED upstream, see below |
+| Native runtime: capability frames, input refill, persistent cells | `app/src/main/cpp/*.c` | BLOCKED upstream, see below |
+| Host mechanisms: libxposed, reflection, DexKit, JNI, views | `app/src/main/java` | open; XAX's `android-arm64` target builds libxposed modules (R3), not started here |
+| Test harnesses | `app/src/test`, `app/src/sharedTest`, `tests/` | open |
+
+Reproduced on the toolchains' latest `main` (2026-11-14, EXECUTED on Windows 11):
+
+- BBC `856b2d6`: `bbc.exe check` rejects all six programs with
+  `BBC: resource limit exceeded` (exit 2). They have 69,343 to 296,307
+  commands; BBC's limit is 65,536 instructions before folding. BBC has no native
+  shared-library target.
+- XAX `affbb53`: the BBC shared-library host `bfc_call_v1`
+  (`compiler/integration/bfx/SHARED.md`) is one-shot. It reads all input up
+  front, returns output at the end and zeroes the tape on every call. The core
+  needs mid-run host requests (capability frames), input refill and a
+  persistent 64-cell prefix (`docs/BRAINFUCK_ABI.md`). XAX OI-42 (effectful
+  foreign callbacks) is the nearest open item.
+
+Upstream issues for both gaps are drafted but NOT opened yet; link them here
+once they exist. No toolchain is pinned because nothing here builds against
+one yet; the pin file arrives with the first build that does.
+
 ## 2.0.0: hand-written Brainfuck, libxposed API 102
 
 | 1.3.0 | 2.0.0 |

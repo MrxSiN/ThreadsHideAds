@@ -14,6 +14,7 @@ Ads are taken out of the feed before Threads draws them, not hidden after.
 [![Downloads](https://img.shields.io/github/downloads/MrxSiN/ThreadsHideAds/total?color=3DDC84&logo=android&logoColor=fff&style=for-the-badge)](https://github.com/MrxSiN/ThreadsHideAds/releases)
 [![Android](https://img.shields.io/badge/Android-8.0%2B-3DDC84?logo=android&logoColor=fff&style=for-the-badge)](#requirements)
 [![libxposed](https://img.shields.io/badge/libxposed-API%20102-E8A33D?style=for-the-badge)](https://github.com/libxposed/api)
+[![Sponsor](https://img.shields.io/badge/Sponsor-%E2%9D%A4-EA4AAA?logo=githubsponsors&logoColor=fff&style=for-the-badge)](https://github.com/sponsors/MrxSiN)
 
 </div>
 
@@ -96,8 +97,9 @@ would become empty is left alone; the item that owns it is dropped one level up 
 
 ## Status
 
-**v2.0.0.** Moved to the modern Xposed API (libxposed 102) with hot reload, and every policy
-program rewritten by hand in plain Brainfuck. Each rewritten program was run side by side with
+**v2.1.0.** Also hides the ads Threads places between the replies of a post, which some
+accounts get and others do not. v2.0.0 moved to the modern Xposed API (libxposed 102) with hot
+reload, and every policy program was rewritten by hand in plain Brainfuck. Each rewritten program was run side by side with
 the one it replaces over thousands of randomized requests, with identical answers and identical
 traffic to the host ([`docs/PARITY.md`](docs/PARITY.md)).
 
@@ -108,7 +110,7 @@ adding a row.
 
 | Device | Android | Framework | Threads | Module | Result | Tester | Date |
 |---|---|---|---|---|---|---|---|
-| Pixel 8 Pro | 17 | Vector 2.2 (API 102) | 455.0.0.55.72 | main (unreleased, debug build) | 34 model + 28 Pando hooks; ads gone from the feed and from post replies on both accounts | @MrxSiN | 2026-11 |
+| Pixel 8 Pro | 17 | Vector 2.2 (API 102) | 455.0.0.55.72 | 2.1.0 (debug build) | 34 model + 28 Pando hooks; ads gone from the feed and from post replies on both accounts | @MrxSiN | 2026-11 |
 | Pixel 8 Pro | 17 | Vector 2.2 (API 102) | 448.0.0.54.85 | 2.0.0 | 38 model + 28 Pando hooks, 12 ads removed in 35 scrolls, no labels | @MrxSiN | 2026-09 |
 | Pixel 8 Pro | 16 | LSPosed | 448.0.0.54.85 | 1.3.0 | 10–12 ads removed per session | @MrxSiN | 2026-09 |
 | — | — | LSPatch (embedded and local) | — | 1.x | reported working in [issue #1](https://github.com/MrxSiN/ThreadsHideAds/issues/1) | @qradov | 2026-8 |
@@ -116,7 +118,7 @@ adding a row.
 ### Known limits
 
 - **LSPatch** needs a build that loads libxposed API 102 modules. The reports above are for 1.x;
-  2.0.0 has not been tried under LSPatch.
+  2.x has not been tried under LSPatch.
 - 32-bit and x86 devices ship the native library but have not been run.
 - A Threads update can move the feed boundary. When it does, the Pando and label layers keep
   working and the log says what discovery found.
@@ -166,7 +168,7 @@ The module has no root-only calls, so LSPatch can embed it into Threads:
    is signed with LSPatch's key, so it cannot be installed over the store copy.
 
 **Embedded** mode needs no manager afterwards; **local** mode keeps the module managed by LSPatch
-and works alongside Shizuku. See [Known limits](#known-limits) for 2.0.0.
+and works alongside Shizuku. See [Known limits](#known-limits) for 2.x.
 
 </details>
 
@@ -304,6 +306,10 @@ Threads-specific findings are in [`HOOK_NOTES.md`](HOOK_NOTES.md).
 | No module log lines | Check that the module is enabled, force-stop Threads once, and check the framework status. |
 | Ambiguous method warning | The Threads build has several possible targets and nothing broad was installed. Report the log lines. |
 | Broken after a Threads update | Threads may have changed its internal classes. Report the `ThreadsHideAds:` log lines with the Threads version. |
+
+## Support
+
+If the module is useful to you, you can [sponsor its development](https://github.com/sponsors/MrxSiN).
 
 ## Credits
 

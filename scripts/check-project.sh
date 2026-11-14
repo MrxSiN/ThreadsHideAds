@@ -89,8 +89,8 @@ grep -q '<monochrome' "$ROOT/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml"
 refute test -d "$ROOT/app/src/main/res/mipmap-xxxhdpi"
 
 # Release metadata and signing configuration.
-grep -q 'val appVersion = "2.0.0"' "$ROOT/app/build.gradle.kts"
-grep -q 'versionCode = 8' "$ROOT/app/build.gradle.kts"
+grep -q 'val appVersion = "2.1.0"' "$ROOT/app/build.gradle.kts"
+grep -q 'versionCode = 9' "$ROOT/app/build.gradle.kts"
 grep -q 'applicationId = "io.github.mrxsin.threadshideads"' "$ROOT/app/build.gradle.kts"
 grep -q 'envKeystorePath' "$ROOT/app/build.gradle.kts"
 grep -q 'envKeyPassword' "$ROOT/app/build.gradle.kts"

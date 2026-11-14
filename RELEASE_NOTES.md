@@ -1,32 +1,28 @@
-# Threads Hide Ads v2.0.0
+# Threads Hide Ads v2.1.0
 
-## Modern Xposed API, hot reload and a hand-written Brainfuck core
+## Ads between the replies of a post
 
-This release changes how the module is loaded and how its policy is written, without changing what it removes.
+Some accounts saw ads between the replies when opening a post, even though the feed was clean. Threads loads those ads with a separate request that it enables per account, so the feed filters never saw them. This release stops that request, so no ad is placed between the replies.
 
 ### Changed
 
-- Uses the modern Xposed API (libxposed 102). The module is described by `META-INF/xposed/` (`java_init.list`, `module.prop`, `scope.list`) instead of `xposed_init` and manifest metadata. Requires Android 8.0 or newer and a framework that implements API 102 (Vector, current LSPosed).
-- Supports hot reload: an update is applied to a running Threads process. The old module generation stops its native core and hands its hidden feed cards to the new one.
-- New adaptive vector launcher icon with a themed (monochrome) layer.
-- All six policy programs in `libthreadsbf.so` are now hand-written Brainfuck (`brainfuck/src/*.bf`). The previous macro assembler is removed. Each program was tested side by side with the one it replaces: identical responses and identical host traffic over thousands of randomized requests.
-- The native library is smaller (arm64: 647 KB, was 729 KB); host benchmarks are unchanged within noise.
+- Hides ads between the replies of a post. The fetch step is found by its shape and only hooked when exactly one method matches; if Threads changes it, nothing broad is installed and the feed filtering keeps working.
+- Contribution rules (`AGENTS.md`) and the list of work still to move to BBC + XAX (`docs/MIGRATION.md`).
+- Sponsor link in the README.
 
 ### Verified
 
-- Parity with 1.2.1 on the JVM (text matchers, detector, list and nested sanitizers, boundary flow, core decisions).
-- libxposed 102 loading and hot reload on a Pixel 8 Pro, Android 17, Vector 2.2.
-- The hand-written core on the same device with Threads 448.0.0.54.85: initialization complete on the first attempt (38 model hooks, 28 Pando hooks), 12 advertisements removed over a cold launch and 35 scroll passes, no `Ad` or `Sponsored` label in `uiautomator` dumps, empty crash buffer.
-
-LSPatch modes, 32-bit and x86 devices were not re-run for this release.
+- EXECUTED on a Pixel 8 Pro, Android 17, Vector 2.2, Threads 455.0.0.55.72 (debug build of this code): the permalink-ads hook installed on exactly one method, 34 model hooks and 28 Pando hooks; the account that showed ads in post replies no longer does; the feed stays clean; empty crash buffer.
+- EXECUTED: JVM tests (31), compiler tests (8), generated-file check, static project checks.
+- NOT RUN: this signed release APK on a device; LSPatch, 32-bit and x86 devices.
 
 ### Version metadata
 
-- Version name: `2.0.0`
-- Android version code: `8`
-- Recommended Git tag: `v2.0.0`
-- APK filename: `ThreadsHideAds-v2.0.0.apk`
+- Version name: `2.1.0`
+- Android version code: `9`
+- Git tag: `v2.1.0`
+- APK filename: `ThreadsHideAds-v2.1.0.apk`
 
 ### Updating
 
-Install the v2.0.0 APK over v1.3.0, keep Threads as the module's only scope, then force-stop and reopen Threads once. Confirm the framework log reports `Application.attach observed` followed by `Hook initialization complete`. Later updates can be hot-reloaded.
+Install over v2.0.0. With hot reload the update applies to a running Threads; otherwise force-stop and reopen Threads once, then open a post to confirm no ad appears between the replies.

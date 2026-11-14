@@ -2,11 +2,17 @@
 
 ## Unreleased
 
+## 2.1.0 — 2026-11-14
+
 - Hide ads between replies on a post (permalink). Threads fetches them
   separately (`ThreadsPermalinkAdFetcher`, `text_feed/threads_permalink_ads/`)
   and only for some accounts, which is why one account still showed them. The
   fetch step of `PermalinkAdsUseCase` now completes at once with no ads; the
   core picks it by shape (OP 0x18/0x19, name table entry 7).
+- Contribution rules in `AGENTS.md` (shared ecosystem rules plus this
+  repository's own); migration debt toward BBC + XAX in `docs/MIGRATION.md`.
+- Sponsor link in the README and `.github/FUNDING.yml`.
+- versionCode 9.
 
 ## 2.0.0 — 2026-09-26
 

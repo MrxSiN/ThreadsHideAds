@@ -88,6 +88,8 @@ The runtime routes 0x01–0x2F to `core`; the rest by table (`bf_route`).
 | 0x15 | `UI_SCAN` | root h, rescan | first labelled view h or 0 |
 | 0x16 | `UI_VIEW_CLASS` | view h | list container, decor view |
 | 0x17 | `UI_ADD_VIEW` | n, n list-container flags | scan the added view |
+| 0x18 | `PERMALINK_ADS_METHOD` | static, returns Object, takes owner | shape (counted in `pa`) |
+| 0x19 | `PERMALINK_ADS_DECISION` | — | decision (install only for exactly one) |
 | 0x2E | `RESET` | — | clears persistent cells |
 | 0x2F | `VERSION` | — | major, minor |
 | 0x30 | `BOUNDARY_BEFORE` | argc | 0; removals via `CAP_REPORT` |

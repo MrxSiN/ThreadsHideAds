@@ -260,6 +260,33 @@ public class CoreParityTest {
         assertEquals(Policy.DECISION_NONE, policy.injectorDecision());
     }
 
+    /** Shapes of PermalinkAdsUseCase: only the static suspend fetch step matches. */
+    static final class AdsUseCase {
+        static Object fetch(Object state, AdsUseCase owner, Object continuation) { return null; }
+        static void store(AdsUseCase owner, List<?> ads) { }
+        static Object other(Object state, Object continuation) { return null; }
+        Object instance(AdsUseCase owner) { return null; }
+    }
+
+    @Test
+    public void permalinkAdsLoaderExactlyOne() throws Exception {
+        Policy policy = TestCore.policy();
+        assertEquals("com.instagram.barcelona.permalink.adsusecase.PermalinkAdsUseCase",
+                policy.constString(Policy.TABLE_NAMES, Policy.NAME_PERMALINK_ADS));
+        for (Method method : AdsUseCase.class.getDeclaredMethods()) {
+            assertEquals(method.toGenericString(), method.getName().equals("fetch"), policy.permalinkAdsMethod(method));
+        }
+        assertEquals(Policy.DECISION_INSTALL, policy.permalinkAdsDecision());
+        assertEquals(Policy.DECISION_NONE, policy.permalinkAdsDecision());
+        Method fetch = AdsUseCase.class.getDeclaredMethod("fetch", Object.class, AdsUseCase.class, Object.class);
+        policy.permalinkAdsMethod(fetch);
+        policy.permalinkAdsMethod(fetch);
+        assertEquals(Policy.DECISION_AMBIGUOUS, policy.permalinkAdsDecision());
+        policy.permalinkAdsMethod(fetch);
+        policy.reset();
+        assertEquals(Policy.DECISION_NONE, policy.permalinkAdsDecision());
+    }
+
     @Test
     public void namesMatchLegacyConstants() {
         Policy policy = TestCore.policy();

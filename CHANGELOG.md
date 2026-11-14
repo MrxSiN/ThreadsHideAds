@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Hide ads between replies on a post (permalink). Threads fetches them
+  separately (`ThreadsPermalinkAdFetcher`, `text_feed/threads_permalink_ads/`)
+  and only for some accounts, which is why one account still showed them. The
+  fetch step of `PermalinkAdsUseCase` now completes at once with no ads; the
+  core picks it by shape (OP 0x18/0x19, name table entry 7).
+
 ## 2.0.0 — 2026-09-26
 
 - Moved to the modern Xposed API (libxposed 102): new entry class `ModuleMain`,

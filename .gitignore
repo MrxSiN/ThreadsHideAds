@@ -9,3 +9,4 @@ local.properties
 *.base64
 __pycache__/
 app/.cxx/
+CLAUDE.local.md

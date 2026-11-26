@@ -90,6 +90,14 @@ The runtime routes 0x01–0x2F to `core`; the rest by table (`bf_route`).
 | 0x17 | `UI_ADD_VIEW` | n, n list-container flags | scan the added view |
 | 0x18 | `PERMALINK_ADS_METHOD` | static, returns Object, takes owner | shape (counted in `pa`) |
 | 0x19 | `PERMALINK_ADS_DECISION` | — | decision (install only for exactly one) |
+| 0x1A | `ITEM_INSERT_METHOD` | abstract, returns Integer, params, p0 reference, p1 int | shape (counted in `ia`) |
+| 0x1B | `ITEM_INSERT_DECISION` | — | decision (install only for exactly one) |
+| 0x1C | `ITEM_WRITE_METHOD` | static, private, returns Object, p0 is the insert's item type | hook |
+| 0x1D | `MEDIA_GETTER_METHOD` | static, params, returns Media | shape (counted in `mg`) |
+| 0x1E | `MEDIA_GETTER_DECISION` | — | decision (install only for exactly one) |
+| 0x1F | `NATIVE_AD_METHOD` | static, params, returns boolean (host offers only Media methods calling the injected check) | shape (counted in `na`) |
+| 0x20 | `NATIVE_AD_DECISION` | — | decision (install only for exactly one) |
+| 0x21 | `ITEM_ACTION` | detector says ad, Threads' own check says ad | 1 keep the item out |
 | 0x2E | `RESET` | — | clears persistent cells |
 | 0x2F | `VERSION` | — | major, minor |
 | 0x30 | `BOUNDARY_BEFORE` | argc | 0; removals via `CAP_REPORT` |
@@ -104,6 +112,13 @@ The runtime routes 0x01–0x2F to `core`; the rest by table (`bf_route`).
 | 0x39 | `CLASS_FACTS` | h | packed facts |
 
 `0x34`, `0x36`, `0x37` and `0x39` are normally reached through `CAP_CALL`.
+
+`sanitize` asks `ITEM_VERDICT_GET` before it runs the detector on a list item
+and skips the walk for an item remembered organic. It sends `ITEM_VERDICT_PUT`
+only when the detector found nothing and still had budget left, so a walk that
+ran out of budget is never remembered. The host keeps the memo by identity in
+a 4096-slot table of weak references (`bridge/OrganicItems`). Ads are never
+remembered and are re-checked every time.
 
 Reason and action codes are listed in the comment above each case of
 `core.bf` and mirrored in `bridge/Policy.java`.
@@ -138,6 +153,8 @@ runtime itself.
 | 0x53 | `TREE_VERDICT_PUT` | h, verdict | — |
 | 0x54 | `REPORT` | site, index, count u32 | — |
 | 0x55 | `CHILDREN` | h, start u32, count u16, mode | consecutive child records |
+| 0x56 | `ITEM_VERDICT_GET` | h | 1 when the item is remembered organic |
+| 0x57 | `ITEM_VERDICT_PUT` | h | — (remember the item as organic) |
 | 0x60 | `CALL` | program, sub-op, flags (bit 0 fetch), argc, args, [h, source, transform] | callee's response |
 
 **Descriptor** (25 bytes): is CharSequence, Enum, Number, Boolean, Character,

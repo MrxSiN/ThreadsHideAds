@@ -4,6 +4,7 @@ import org.luckypray.dexkit.DexKitBridge;
 import org.luckypray.dexkit.query.FindMethod;
 import org.luckypray.dexkit.query.enums.StringMatchType;
 import org.luckypray.dexkit.query.matchers.MethodMatcher;
+import org.luckypray.dexkit.result.ClassData;
 import org.luckypray.dexkit.result.MethodData;
 import org.luckypray.dexkit.result.MethodDataList;
 
@@ -99,6 +100,50 @@ public final class FeedBoundaryFinder {
             }
         }
         return candidates;
+    }
+
+    /**
+     * Threads' own ad check on Media: a method of {@code mediaClass} calling a
+     * static one-argument boolean check that uses the hash of the injected key.
+     * The core judges each and installs only exactly one (OP_NATIVE_AD_*).
+     */
+    public Method findNativeAdCheck(String mediaClass, String injectedKey) {
+        Method found = null;
+        try {
+            ClassData media = bridge.getClassData(mediaClass);
+            if (media != null) {
+                // Scoped to Media: an unscoped invoke query builds DexKit's
+                // whole-app cross-reference index first (about 0.6 s here).
+                MethodDataList matches = bridge.findMethod(FindMethod.create()
+                        .searchInClass(Collections.singletonList(media))
+                        .matcher(MethodMatcher.create()
+                                .paramCount(0)
+                                .returnType("boolean")
+                                .addInvoke(MethodMatcher.create()
+                                        .modifiers(java.lang.reflect.Modifier.STATIC)
+                                        .returnType("boolean")
+                                        .paramCount(1)
+                                        .usingNumbers(injectedKey.hashCode()))));
+                for (MethodData data : matches) {
+                    try {
+                        Method method = data.getMethodInstance(classLoader);
+                        if (policy.nativeAdMethod(method) && found == null) {
+                            found = method;
+                        }
+                    } catch (Throwable ignored) {
+                        // Unresolvable in this class loader.
+                    }
+                }
+            }
+        } catch (Throwable throwable) {
+            ModuleLog.log("Native ad check search failed: " + throwable);
+        }
+        int decision = policy.nativeAdDecision();
+        if (decision != Policy.DECISION_INSTALL) {
+            ModuleLog.log("Threads' own ad check not used; decision " + decision);
+            return null;
+        }
+        return found;
     }
 
     private MethodDataList findByMarker(String marker) {

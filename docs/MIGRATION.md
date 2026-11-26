@@ -33,6 +33,19 @@ Upstream issues: [MrxSiN/BBC#4](https://github.com/MrxSiN/BBC/issues/4)
 persistent cells for `bfc_call_v1`). No toolchain is pinned because nothing here builds against
 one yet; the pin file arrives with the first build that does.
 
+Re-checked 2026-11-27 on the toolchains' latest `main` (BBC `c936d61`, pin XAX
+release 0043 `631bef2`; XAX `86aaa31`):
+
+- BBC#4 is closed. EXECUTED on Windows 11 with `bbc.exe` `4b73ad61…` (the build
+  from the BBC#4 fix, XAX `0f6ff99`): all six programs, including `core.bf` at
+  168,336 commands after this change, pass `check` and `emit-bfx -O1` (O1
+  instructions: core 28,703, text 104,371, detect 26,283, sanitize 9,077,
+  nested 37,061, pando 14,830). NOT RUN: a `bbc.exe` rebuilt for the 0043 pin
+  (`4521cc64…`), which needs XAX's Linux seed rebuild.
+- XAX#47 is still open, blocked on XAX#51 (no native shared-library emitter, no
+  host-owned tape, no Android ARM64 host-callback ABI). The native runtime and
+  the Python AOT stay BLOCKED upstream; nothing moved to BBC + XAX yet.
+
 ## 2.0.0: hand-written Brainfuck, libxposed API 102
 
 | 1.3.0 | 2.0.0 |
@@ -102,6 +115,7 @@ decisions that were embedded in Xposed/View code.
 | `libthreadsbf` is loaded in every Threads process before the scope check | the scope decision is policy and lives in the core | — |
 | Card-size test uses `10·w ≥ 7·screen` and `10·h ≤ 8·screen` with density as 16.16 fixed point | Brainfuck has no floats; equal to the float test for every screen size below 5000 px (checked exhaustively) | `CoreParityTest.cardSearchMatchesLegacy` |
 | Diagnostics `traceAdMatch`, `traceTreeList`, `traceOversizedTree`, `traceTreeKeys` removed | their call sites moved into Brainfuck; tracing is off in release | — |
+| Primary feed boundary accepts `(Integer/int, Integer/int, List, ...)`: three or more parameters, the first three typed as before | Threads 457 appended `(int, boolean)` to `onSponsoredContentDelivered`; the exactly-one rule still guards it | `CoreParityTest` over `X.Shapes.ELT` / `listFourth` |
 | Version 1.3.0, versionCode 7 | upgrade over 1.2.1 | `scripts/check-project.sh` |
 
 Package identity (`io.github.mrxsin.threadshideads`), the Xposed entry class,

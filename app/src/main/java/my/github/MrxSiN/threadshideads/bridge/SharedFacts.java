@@ -17,4 +17,5 @@ final class SharedFacts {
     final Map<Class<?>, byte[]> classMemo = new ConcurrentHashMap<>();
     final Map<Class<?>, byte[]> fieldMemo = new ConcurrentHashMap<>();
     final Map<Object, Boolean> treeVerdicts = Collections.synchronizedMap(new WeakHashMap<Object, Boolean>());
+    final OrganicItems organicItems = new OrganicItems();
 }

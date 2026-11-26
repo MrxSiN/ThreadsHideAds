@@ -340,3 +340,68 @@ Evidence (2026-11-14, Threads 455.0.0.55.72, Pixel 8 Pro):
   `check-project.sh`, `lint` on `core.bf`.
 - NOT RUN: a release-signed build on device (the installed copy is debug-signed).
 
+
+## Threads 457.0.0.57.74: primary boundary gained parameters
+
+The `Sponsored`-marked delivery method is now
+`X.4Kg.ELT(Integer, Integer, List, int, boolean) -> X.1Dk`
+(`onSponsoredContentDelivered`). The old shape required exactly three
+parameters, so 2.1.0 logged `Primary feed-boundary search found no structural
+match; using broad fallback` and installed 34 hooks instead of 35. The shape
+now takes three or more parameters with the same first three; it is still the
+only structural match.
+
+Evidence (2026-11-27, Threads 457.0.0.57.74, Pixel 8 Pro, debug build):
+
+- EXECUTED on device: log reads `Installed confirmed feed boundary: ...X.4Kg.ELT(...)`,
+  `Primary feed boundaries installed: 1; broad discovery skipped`,
+  `installedHooks=35, pandoHooks=28`; ads removed at `BarcelonaFeedCache.A0O`
+  while scrolling; no `Ad`/`Sponsored` label in 6 `uiautomator` dumps; no crash-buffer entry.
+- MEASURED: feed boundary 4.6–7.1 ms/call (2.1.0 before the fix: 5.4 ms/call;
+  448 recorded 1.9–3.0), Pando accessor 18–74 µs/call. Not investigated further.
+- EXECUTED: `gen --check`, `lint` on `core.bf`, `check-project.sh`,
+  `:app:testDebugUnitTest :app:assembleDebug`, compiler tests.
+- NOT RUN: release-signed build on device; permalink reply ads (loader hook
+  installed, posts not opened).
+
+## Threads 457.0.0.57.74: one-item writes and inserts (from HushThreads)
+
+HushThreads (GPL-3.0, v0.0.19) lists the For You cache paths that skip a page
+merge. On 457:
+
+- The spool classes (`BarcelonaSpoolFeedCacheHandler`, `...SpoolFeedNetworkSource`)
+  are gone; `BarcelonaFeedCacheHandler` now extends `ForYouFeedLocalDataSource`.
+  The old injector hook resolves nothing and logs nothing.
+- List writes (refresh, cold start, paging, background prefetch) are
+  `BarcelonaFeedCache` methods taking a `List`; the feed-owner rule already
+  hooks all 22 of them.
+- One-item writes `A0R`, `A0S`, `A0T`, `A0U` take the feed item `X.5eY` first and
+  answer `Object` (suspend, `Unit` when done). New: the core hooks every
+  instance, non-private `Object` method of the cache whose first parameter is
+  the insert's item type (OP 0x1C); an item kept out returns `Unit` unwritten.
+- `BarcelonaFeedCacheHandler.DKX(X.5eY, int) -> Integer` inserts one item at a
+  position. Its codes are a shared Integer pool: 0 inserted, 1 no page,
+  2 negative position, 3 past the end, and `IndexOutOfBoundsException` maps to
+  1. The sponsored controller (`X.4Kg`) retries only its own code 5. An item
+  kept out is inserted at position -1, so the insert declines on its own path.
+- Threads' own ad check is `Media.AKe()`, which returns `X.9dt.A00(...)`, the
+  static check using `"injected".hashCode()`. The item's only Media getter is
+  `X.5eY.A06()`. Both are found by shape and must be unique (OP 0x1D–0x20); the
+  check is a second signal beside the detector for one-item writes and inserts
+  only (OP 0x21). The list sanitizer does not use it.
+  It is searched on a background thread after attach, because DexKit's invoke
+  query builds a whole-app index (about 0.6 s).
+- Permalink: HushThreads empties `ThreadsPermalinkAdFetcher`'s result. Here
+  `PermalinkAdsUseCase.A00` already returns before the fetch runs, so no second
+  filter was added.
+
+Evidence (2026-11-27, Pixel 8 Pro, debug build):
+
+- EXECUTED on device: `Using Threads' own ad check: ...Media.AKe()`,
+  `Installed item insert filter: ...DKX(X.5eY,int)`, four
+  `Installed one-item write filter` lines, `installedHooks=40, pandoHooks=28`;
+  9 ads removed at `BarcelonaFeedCache.A0O` over 85 scroll passes; 75 feed rows,
+  no `Ad`/`Sponsored` label in 8 `uiautomator` dumps; no crash-buffer entry.
+- NOT RUN: a one-item write or insert carrying an ad. None happened on this
+  account in this session, so the new filters' removal path is covered only by
+  JVM tests.

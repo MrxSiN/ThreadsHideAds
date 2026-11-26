@@ -57,6 +57,14 @@ const OP_UI_VIEW_CLASS = 0x16
 const OP_UI_ADD_VIEW = 0x17
 const OP_PERMALINK_ADS_METHOD = 0x18
 const OP_PERMALINK_ADS_DECISION = 0x19
+const OP_ITEM_INSERT_METHOD = 0x1A
+const OP_ITEM_INSERT_DECISION = 0x1B
+const OP_ITEM_WRITE_METHOD = 0x1C
+const OP_MEDIA_GETTER_METHOD = 0x1D
+const OP_MEDIA_GETTER_DECISION = 0x1E
+const OP_NATIVE_AD_METHOD = 0x1F
+const OP_NATIVE_AD_DECISION = 0x20
+const OP_ITEM_ACTION = 0x21
 const OP_RESET = 0x2E
 const OP_VERSION = 0x2F
 
@@ -95,6 +103,9 @@ const CAP_TREE_VERDICT_PUT = 0x53
 const CAP_REPORT = 0x54
 # Records of consecutive children in one answer (read-only first passes).
 const CAP_CHILDREN = 0x55
+# Identity memo of list items the detector found organic (sanitize).
+const CAP_ITEM_VERDICT_GET = 0x56
+const CAP_ITEM_VERDICT_PUT = 0x57
 
 # ---- runtime call (BF -> runtime -> BF), handled natively
 const CAP_CALL = 0x60

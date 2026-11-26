@@ -96,6 +96,35 @@ public class FeedModelParityTest {
     }
 
     @Test
+    public void organicItemsAreWalkedOnceAndAdsAlways() {
+        Policy policy = TestCore.policy();
+        List<Object> items = new ArrayList<>();
+        for (int i = 0; i < 20; i++) {
+            Node payload = new Node();
+            payload.caption = "organic post " + i;
+            payload.type = UnitType.THREAD;
+            Node item = new Node();
+            item.a = payload;
+            item.type = UnitType.THREAD;
+            items.add(item);
+        }
+        Node ad = new Node();
+        ad.type = UnitType.AD;
+        items.add(ad);
+
+        long before = policy.counters()[1];
+        Policy.Sanitized first = policy.sanitizeList(new ArrayList<>(items), List.class, true, true);
+        long firstCalls = policy.counters()[1] - before;
+        before = policy.counters()[1];
+        Policy.Sanitized second = policy.sanitizeList(new ArrayList<>(items), List.class, true, true);
+        long secondCalls = policy.counters()[1] - before;
+
+        assertEquals(1, first.removed);
+        assertEquals(1, second.removed);
+        assertTrue(firstCalls + " then " + secondCalls, secondCalls * 3 < firstCalls);
+    }
+
+    @Test
     public void nestedSanitizerMatchesLegacy() {
         Policy policy = TestCore.policy();
         NestedCollectionSanitizer legacy = new NestedCollectionSanitizer(new ListSanitizer(new ReflectiveAdDetector()));

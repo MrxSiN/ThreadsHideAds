@@ -287,6 +287,92 @@ public class CoreParityTest {
         assertEquals(Policy.DECISION_NONE, policy.permalinkAdsDecision());
     }
 
+    /** Shapes of the feed cache, its handler, a feed item and Media (Threads 457). */
+    static final class Item {
+        Media A06() { return null; }
+        static Media wrap(Item item) { return null; }
+        Media withArg(int index) { return null; }
+        Object other() { return null; }
+    }
+
+    static final class Media {
+        boolean isAd() { return false; }
+        static boolean isAdStatic() { return false; }
+        boolean takesArg(Object o) { return false; }
+        Boolean boxed() { return null; }
+    }
+
+    abstract static class Handler {
+        Integer DKX(Item item, int position) { return null; }
+        abstract Integer declared(Item item, int position);
+        Integer primitiveFirst(int item, int position) { return null; }
+        Integer three(Item item, int position, int more) { return null; }
+        Boolean wrongAnswer(Item item, int position) { return null; }
+        Integer longPosition(Item item, long position) { return null; }
+    }
+
+    static final class Cache {
+        Object A0U(Item item, Object continuation) { return null; }
+        public Object A0R(Item item, Object a, Object b, String c, Object continuation) { return null; }
+        static Object staticWrite(Item item, Object continuation) { return null; }
+        private Object privateWrite(Item item, Object continuation) { return null; }
+        void voidWrite(Item item) { }
+        Object listWrite(List<?> items, Object continuation) { return null; }
+        Object noArgs() { return null; }
+    }
+
+    @Test
+    public void itemInsertWritesAndNativeCheck() throws Exception {
+        Policy policy = TestCore.policy();
+        assertEquals("com.instagram.barcelona.feed.data.cache.BarcelonaFeedCacheHandler",
+                policy.constString(Policy.TABLE_NAMES, Policy.NAME_FEED_CACHE_HANDLER));
+        assertEquals("com.instagram.barcelona.feed.data.cache.BarcelonaFeedCache",
+                policy.constString(Policy.TABLE_NAMES, Policy.NAME_FEED_CACHE));
+        assertEquals("com.instagram.feed.media.Media", policy.constString(Policy.TABLE_NAMES, Policy.NAME_MEDIA));
+        assertEquals("injected", policy.constString(Policy.TABLE_NAMES, Policy.NAME_INJECTED_KEY));
+
+        for (Method method : Handler.class.getDeclaredMethods()) {
+            assertEquals(method.toGenericString(), method.getName().equals("DKX"), policy.itemInsertMethod(method));
+        }
+        assertEquals(Policy.DECISION_INSTALL, policy.itemInsertDecision());
+        assertEquals(Policy.DECISION_NONE, policy.itemInsertDecision());
+        Method insert = Handler.class.getDeclaredMethod("DKX", Item.class, int.class);
+        policy.itemInsertMethod(insert);
+        policy.itemInsertMethod(insert);
+        assertEquals(Policy.DECISION_AMBIGUOUS, policy.itemInsertDecision());
+
+        for (Method method : Cache.class.getDeclaredMethods()) {
+            boolean expected = method.getName().equals("A0U") || method.getName().equals("A0R");
+            assertEquals(method.toGenericString(), expected, policy.itemWriteMethod(method, Item.class));
+            assertEquals(method.toGenericString(), false, policy.itemWriteMethod(method, Media.class));
+        }
+
+        for (Method method : Item.class.getDeclaredMethods()) {
+            assertEquals(method.toGenericString(), method.getName().equals("A06"),
+                    policy.mediaGetterMethod(method, Media.class));
+        }
+        assertEquals(Policy.DECISION_INSTALL, policy.mediaGetterDecision());
+        for (Method method : Media.class.getDeclaredMethods()) {
+            assertEquals(method.toGenericString(), method.getName().equals("isAd"), policy.nativeAdMethod(method));
+        }
+        assertEquals(Policy.DECISION_INSTALL, policy.nativeAdDecision());
+        assertEquals(Policy.DECISION_NONE, policy.nativeAdDecision());
+
+        // Counters are persistent and cleared by reset.
+        policy.itemInsertMethod(insert);
+        policy.mediaGetterMethod(Item.class.getDeclaredMethod("A06"), Media.class);
+        policy.nativeAdMethod(Media.class.getDeclaredMethod("isAd"));
+        policy.reset();
+        assertEquals(Policy.DECISION_NONE, policy.itemInsertDecision());
+        assertEquals(Policy.DECISION_NONE, policy.mediaGetterDecision());
+        assertEquals(Policy.DECISION_NONE, policy.nativeAdDecision());
+
+        assertEquals(false, policy.itemAction(false, false));
+        assertEquals(true, policy.itemAction(true, false));
+        assertEquals(true, policy.itemAction(false, true));
+        assertEquals(true, policy.itemAction(true, true));
+    }
+
     @Test
     public void namesMatchLegacyConstants() {
         Policy policy = TestCore.policy();

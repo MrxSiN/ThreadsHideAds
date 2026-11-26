@@ -102,6 +102,87 @@ public final class FeedModelHooks {
         return true;
     }
 
+    /**
+     * Uses Threads' own ad check as a second signal for one-item writes and
+     * inserts: the item's Media getter and Media's check, both found unique.
+     */
+    public void useNativeAdCheck(Method mediaGetter, Method check) {
+        nativeMediaGetter = mediaGetter;
+        nativeCheck = check;
+        if (mediaGetter != null && check != null) {
+            ModuleLog.log("Using Threads' own ad check: " + check);
+        }
+    }
+
+    private volatile Method nativeMediaGetter;
+    private volatile Method nativeCheck;
+
+    private boolean nativeAd(Object item) {
+        Method getter = nativeMediaGetter;
+        Method check = nativeCheck;
+        if (getter == null || check == null) {
+            return false;
+        }
+        try {
+            Object media = getter.invoke(item, (Object[]) null);
+            return media != null && Boolean.TRUE.equals(check.invoke(media, (Object[]) null));
+        } catch (Throwable ignored) {
+            return false;
+        }
+    }
+
+    private boolean keepOut(Object item) {
+        return item != null && policy.itemAction(policy.looksLikeAd(item), nativeAd(item));
+    }
+
+    /**
+     * A feed cache write of one item (add, insert after a post, replace): an
+     * item the core keeps out is not written; the suspend write completes at
+     * once with Unit, as it does when it is done.
+     */
+    public boolean hookItemWrite(Method method) throws ReflectiveOperationException {
+        String id = method.toGenericString() + "#itemWrite";
+        if (!HOOKED_METHODS.add(id)) {
+            return false;
+        }
+        final Object unit = Class.forName("kotlin.Unit", false, method.getDeclaringClass().getClassLoader())
+                .getField("INSTANCE").get(null);
+        ModuleRuntime.hook(method, id, chain -> {
+            Object item = chain.getArgs().get(0);
+            if (keepOut(item)) {
+                ModuleStats.recordModelRemoval(1, "one-item write " + method);
+                return unit;
+            }
+            return chain.proceed();
+        });
+        ModuleLog.log("Installed one-item write filter: " + method);
+        return true;
+    }
+
+    /**
+     * For You's insert of one item at a position: an item the core keeps out
+     * goes in at position -1, which the insert declines without writing
+     * (a negative position, or IndexOutOfBounds, answers a not-inserted code
+     * that the sponsored controller logs and does not retry).
+     */
+    public boolean hookItemInsert(Method method) {
+        String id = method.toGenericString() + "#itemInsert";
+        if (!HOOKED_METHODS.add(id)) {
+            return false;
+        }
+        ModuleRuntime.hook(method, id, chain -> {
+            if (!keepOut(chain.getArgs().get(0))) {
+                return chain.proceed();
+            }
+            ModuleStats.recordModelRemoval(1, "item insert " + method);
+            Object[] args = chain.getArgs().toArray();
+            args[1] = -1;
+            return chain.proceed(args);
+        });
+        ModuleLog.log("Installed item insert filter: " + method);
+        return true;
+    }
+
     public boolean hookBooleanPredicate(Method method) {
         String id = method.toGenericString() + "#boolean";
         if (!HOOKED_METHODS.add(id)) {

@@ -3,6 +3,36 @@
 All numbers from a Pixel 8 Pro (arm64, Android SDK 37), Threads
 448.0.0.54.85, unless marked "host" (Windows, MSVC build of the same C).
 
+## Threads 457.0.0.57.74 (2026-11-27)
+
+Release build with `-PhotPathStats`, signed with the debug key (the signing
+variables unset), Pixel 8 Pro. Each run is a cold launch plus 20 scroll passes.
+Before means commit `141ec3b`, after means this change. MEASURED, 3 runs each:
+
+| | Before | After |
+| --- | --- | --- |
+| `Application.attach` to initialization complete | 1 898–1 952 ms | 353–588 ms |
+| Item hook discovery on the attach thread | 947–993 ms | 10–18 ms |
+| Feed boundary (before), per call | 7.5–26.6 ms | 1.7–3.0 ms |
+| Feed boundary time per 10 s of scrolling | 0.84–2.37 s | 0.15–0.35 s |
+| Pando accessor, per call | 37–199 µs | 17–80 µs |
+
+Where the time went (profiled per hooked method, 30 s of scrolling):
+
+- The merge `BarcelonaFeedCache.A0O` and the methods it calls (`A01`, `A0F`,
+  `A0D`, `A0E`) each walked the same new feed item to the detector's
+  1200-node budget, about 12 ms per walk. 457's items carry a `Media` graph
+  large enough to use the whole budget. With the organic item memo, the nested
+  calls cost about 0.05 ms and only `A0O` walks a new item, about 13 ms.
+  Lowering that further needs a policy change to the detector budget or
+  order, which was not made.
+- Threads' own ad check was found with a DexKit `addInvoke` query. Any invoke
+  matcher makes DexKit build its whole-app cross-reference index (about
+  0.6 s), even when the query is scoped to `Media`. It now runs on a
+  background thread after the hooks are in place. The one-item filters use
+  the detector alone for that first ~0.8 s.
+- Closing DexKit takes about 0.26 s and now happens on that background thread.
+
 ## In-app A/B (release builds, same signing key, same script)
 
 Cold launch, 25 scroll passes, per-hook timing logged every 10 s by

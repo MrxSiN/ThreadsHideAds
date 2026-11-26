@@ -124,8 +124,8 @@ public final class FeedModelHooks {
             return false;
         }
         try {
-            Object media = getter.invoke(item);
-            return media != null && Boolean.TRUE.equals(check.invoke(media));
+            Object media = getter.invoke(item, (Object[]) null);
+            return media != null && Boolean.TRUE.equals(check.invoke(media, (Object[]) null));
         } catch (Throwable ignored) {
             return false;
         }
@@ -171,11 +171,12 @@ public final class FeedModelHooks {
             return false;
         }
         ModuleRuntime.hook(method, id, chain -> {
-            Object[] args = chain.getArgs().toArray();
-            if (keepOut(args[0])) {
-                ModuleStats.recordModelRemoval(1, "item insert " + method);
-                args[1] = -1;
+            if (!keepOut(chain.getArgs().get(0))) {
+                return chain.proceed();
             }
+            ModuleStats.recordModelRemoval(1, "item insert " + method);
+            Object[] args = chain.getArgs().toArray();
+            args[1] = -1;
             return chain.proceed(args);
         });
         ModuleLog.log("Installed item insert filter: " + method);

@@ -389,6 +389,8 @@ merge. On 457:
   `X.5eY.A06()`. Both are found by shape and must be unique (OP 0x1D–0x20); the
   check is a second signal beside the detector for one-item writes and inserts
   only (OP 0x21). The list sanitizer does not use it.
+  It is searched on a background thread after attach, because DexKit's invoke
+  query builds a whole-app index (about 0.6 s).
 - Permalink: HushThreads empties `ThreadsPermalinkAdFetcher`'s result. Here
   `PermalinkAdsUseCase.A00` already returns before the fetch runs, so no second
   filter was added.

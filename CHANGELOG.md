@@ -9,7 +9,12 @@
   from HushThreads' findings (GPL-3.0); the core picks each by shape
   (OP 0x1A–0x1C) and decides per item (OP 0x21).
 - Threads' own ad check on Media (the "injected" check) is a second signal for
-  those writes (OP 0x1D–0x20).
+  those writes (OP 0x1D–0x20). It is found on a background thread after attach.
+- Faster: list items the detector found organic are remembered by identity
+  (`CAP_ITEM_VERDICT_*`), so nested cache boundaries no longer walk the same
+  feed item again. On Threads 457 a feed boundary call fell from 7.5–27 ms to
+  1.7–3.0 ms. DexKit now closes off the attach thread, and attach to
+  initialization complete fell from 1.9 s to 0.35–0.59 s.
 
 ## 2.1.0 — 2026-11-14
 

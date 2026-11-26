@@ -91,6 +91,8 @@ public final class BfAbi {
     public static final int CAP_TREE_VERDICT_PUT = 83;
     public static final int CAP_REPORT = 84;
     public static final int CAP_CHILDREN = 85;
+    public static final int CAP_ITEM_VERDICT_GET = 86;
+    public static final int CAP_ITEM_VERDICT_PUT = 87;
     public static final int CAP_CALL = 96;
     public static final int MT_UNIT_TYPE = 1;
     public static final int MT_STRUCTURED_VALUE = 2;

@@ -129,6 +129,7 @@ public final class ModelHookInstaller {
         boolean ok = false;
         int aux = 0;
         int primaryInstalled = 0;
+        Runnable deferred = null;
         try {
             while (true) {
                 int[] next = policy.installStep(step, ok, aux,
@@ -174,7 +175,7 @@ public final class ModelHookInstaller {
                     case Policy.STEP_FEED_CACHE:
                         ModuleLog.log("DexKit parsed dex count: " + bridge.getDexNum());
                         finder = new FeedBoundaryFinder(policy, bridge, classLoader);
-                        installFeedCacheHooks(policy, classLoader, finder, hooks);
+                        deferred = installFeedCacheHooks(policy, classLoader, finder, hooks);
                         break;
                     case Policy.STEP_PRIMARY:
                         primaryInstalled = installPrimaryBoundaries(finder, hooks);
@@ -198,13 +199,36 @@ public final class ModelHookInstaller {
             }
         } finally {
             if (bridge != null) {
-                bridge.close();
+                finishInBackground(bridge, deferred);
             }
         }
     }
 
-    private static void installFeedCacheHooks(Policy policy, ClassLoader classLoader,
-                                              FeedBoundaryFinder finder, FeedModelHooks hooks) {
+    /**
+     * Runs discovery that no hook waits for, then closes DexKit, off the
+     * Application.attach thread: on Threads 457 the invoke query builds
+     * DexKit's cross-reference index (about 0.6 s) and closing takes 0.26 s.
+     */
+    private static void finishInBackground(final DexKitBridge bridge, final Runnable deferred) {
+        Thread thread = new Thread(() -> {
+            android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
+            try {
+                if (deferred != null) {
+                    deferred.run();
+                }
+            } catch (Throwable throwable) {
+                ModuleLog.log("Deferred discovery failed: " + throwable);
+            } finally {
+                bridge.close();
+            }
+        }, "ThreadsHideAds-discovery");
+        thread.setDaemon(true);
+        thread.start();
+    }
+
+    /** Installs the feed cache hooks; answers the discovery left for the background. */
+    private static Runnable installFeedCacheHooks(Policy policy, ClassLoader classLoader,
+                                                  FeedBoundaryFinder finder, FeedModelHooks hooks) {
         FeedCacheLocator locator = new FeedCacheLocator(policy, classLoader);
         int installed = 0;
         for (Method method : locator.findListBoundaries()) {
@@ -226,7 +250,13 @@ public final class ModelHookInstaller {
                 ModuleLog.log("Unable to hook ad injector " + injector + ": " + throwable);
             }
         }
-        installed += installItemHooks(policy, locator, finder, hooks);
+        Method insert = locator.findItemInsert();
+        Runnable deferred = null;
+        if (insert != null) {
+            Class<?> item = insert.getParameterTypes()[0];
+            installed += installItemHooks(locator, insert, item, hooks);
+            deferred = nativeAdCheckDiscovery(policy, locator, finder, item, hooks);
+        }
         Method permalinkAds = locator.findPermalinkAdsLoader();
         if (permalinkAds != null) {
             try {
@@ -238,21 +268,12 @@ public final class ModelHookInstaller {
             }
         }
         ModuleLog.log("Feed cache hooks installed: " + installed);
+        return deferred;
     }
 
     /** For You's insert of one item and the feed cache's one-item writes. */
-    private static int installItemHooks(Policy policy, FeedCacheLocator locator,
-                                        FeedBoundaryFinder finder, FeedModelHooks hooks) {
-        Method insert = locator.findItemInsert();
-        if (insert == null) {
-            return 0;
-        }
-        Class<?> item = insert.getParameterTypes()[0];
-        Class<?> media = locator.mediaClass();
-        Method getter = locator.findMediaGetter(item, media);
-        Method check = getter == null || media == null ? null : finder.findNativeAdCheck(media.getName(),
-                policy.constString(Policy.TABLE_NAMES, Policy.NAME_INJECTED_KEY));
-        hooks.useNativeAdCheck(getter, check);
+    private static int installItemHooks(FeedCacheLocator locator, Method insert, Class<?> item,
+                                        FeedModelHooks hooks) {
         int installed = 0;
         try {
             if (hooks.hookItemInsert(insert)) {
@@ -271,6 +292,18 @@ public final class ModelHookInstaller {
             }
         }
         return installed;
+    }
+
+    /** Threads' own ad check, found after attach; the item hooks use the detector alone until then. */
+    private static Runnable nativeAdCheckDiscovery(Policy policy, FeedCacheLocator locator,
+                                                   FeedBoundaryFinder finder, Class<?> item, FeedModelHooks hooks) {
+        Class<?> media = locator.mediaClass();
+        Method getter = locator.findMediaGetter(item, media);
+        if (getter == null || media == null) {
+            return null;
+        }
+        String key = policy.constString(Policy.TABLE_NAMES, Policy.NAME_INJECTED_KEY);
+        return () -> hooks.useNativeAdCheck(getter, finder.findNativeAdCheck(media.getName(), key));
     }
 
     private static int installPrimaryBoundaries(FeedBoundaryFinder finder, FeedModelHooks hooks) {

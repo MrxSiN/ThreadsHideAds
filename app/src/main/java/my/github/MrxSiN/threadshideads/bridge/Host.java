@@ -44,6 +44,7 @@ final class Host {
     private final Map<Class<?>, byte[]> classMemo;
     private final Map<Class<?>, byte[]> fieldMemo;
     private final Map<Object, Boolean> treeVerdicts;
+    private final OrganicItems organicItems;
 
     @SuppressWarnings("unchecked")
     private final Map<Object, Boolean>[] visited = new Map[]{
@@ -69,6 +70,7 @@ final class Host {
         classMemo = shared.classMemo;
         fieldMemo = shared.fieldMemo;
         treeVerdicts = shared.treeVerdicts;
+        organicItems = shared.organicItems;
     }
 
     // ------------------------------------------------------------ lifecycle
@@ -176,6 +178,13 @@ final class Host {
                     break;
                 case BfAbi.CAP_TREE_VERDICT_PUT:
                     treeVerdictPut(request.getInt(8), request.get(12));
+                    break;
+                case BfAbi.CAP_ITEM_VERDICT_GET:
+                    payload[0] = bool(organicItems.contains(object(request.getInt(8))));
+                    size = 1;
+                    break;
+                case BfAbi.CAP_ITEM_VERDICT_PUT:
+                    organicItems.add(object(request.getInt(8)));
                     break;
                 case BfAbi.CAP_REPORT:
                     reports.add(new int[]{request.get(8) & 0xFF, request.get(9) & 0xFF, request.getInt(10)});

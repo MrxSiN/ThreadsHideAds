@@ -103,6 +103,9 @@ const CAP_TREE_VERDICT_PUT = 0x53
 const CAP_REPORT = 0x54
 # Records of consecutive children in one answer (read-only first passes).
 const CAP_CHILDREN = 0x55
+# Identity memo of list items the detector found organic (sanitize).
+const CAP_ITEM_VERDICT_GET = 0x56
+const CAP_ITEM_VERDICT_PUT = 0x57
 
 # ---- runtime call (BF -> runtime -> BF), handled natively
 const CAP_CALL = 0x60

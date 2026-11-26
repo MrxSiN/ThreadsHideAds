@@ -41,7 +41,8 @@ The checker rejects any source whose pointer can leave its tape.
 5. **Core case cells**: core's switch cells (`o`, `f`/`t`/`e` per level),
    `dflt`, the emitter `w`, and the free blocks `L`, `X` (and `k*` for the card
    search) that each case uses for its own purposes.
-6. **Emitter and temps** (non-core programs): `w` writes constant frame bytes
+6. **Emitter and temps** (non-core programs; `sanitize` uses `t:20`–`t:26` for the
+   organic item memo around its detector call): `w` writes constant frame bytes
    and is zero between frames; `t` is a pool of temporaries used as branch
    flags and copy buffers, each zero whenever it is free.
 

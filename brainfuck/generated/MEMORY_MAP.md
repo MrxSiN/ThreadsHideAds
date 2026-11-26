@@ -219,7 +219,7 @@ Tape 256 cells; persistent region 0..-1; scratch high-water 163; 231216 BF comma
 
 ## sanitize (program 3)
 
-Tape 256 cells; persistent region 0..-1; scratch high-water 158; 69343 BF commands; 1882 IR ops.
+Tape 256 cells; persistent region 0..-1; scratch high-water 165; 71444 BF commands; 1959 IR ops.
 
 | Region | Name | Address | Size |
 | --- | --- | --- | --- |

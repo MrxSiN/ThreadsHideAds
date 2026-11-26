@@ -14,6 +14,8 @@ public abstract class Shapes implements ShapesApi {
     public abstract Object abstractShape(Integer a, Integer b, List<Object> c);
     public Object longShape(Integer a, Long b, List<Object> c) { return null; }
     public Object twoParams(Integer a, List<Object> c) { return null; }
+    public Object ELT(Integer a, Integer b, List<Object> c, int d, boolean e) { return null; }
+    public Object listFourth(Integer a, Integer b, int c, List<Object> d) { return null; }
     public Object collectionShape(Integer a, Integer b, Collection<Object> c) { return null; }
 
     public boolean isSponsored() { return false; }

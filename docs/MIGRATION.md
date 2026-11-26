@@ -102,6 +102,7 @@ decisions that were embedded in Xposed/View code.
 | `libthreadsbf` is loaded in every Threads process before the scope check | the scope decision is policy and lives in the core | — |
 | Card-size test uses `10·w ≥ 7·screen` and `10·h ≤ 8·screen` with density as 16.16 fixed point | Brainfuck has no floats; equal to the float test for every screen size below 5000 px (checked exhaustively) | `CoreParityTest.cardSearchMatchesLegacy` |
 | Diagnostics `traceAdMatch`, `traceTreeList`, `traceOversizedTree`, `traceTreeKeys` removed | their call sites moved into Brainfuck; tracing is off in release | — |
+| Primary feed boundary accepts `(Integer/int, Integer/int, List, ...)`: three or more parameters, the first three typed as before | Threads 457 appended `(int, boolean)` to `onSponsoredContentDelivered`; the exactly-one rule still guards it | `CoreParityTest` over `X.Shapes.ELT` / `listFourth` |
 | Version 1.3.0, versionCode 7 | upgrade over 1.2.1 | `scripts/check-project.sh` |
 
 Package identity (`io.github.mrxsin.threadshideads`), the Xposed entry class,

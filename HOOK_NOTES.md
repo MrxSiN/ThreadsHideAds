@@ -340,3 +340,26 @@ Evidence (2026-11-14, Threads 455.0.0.55.72, Pixel 8 Pro):
   `check-project.sh`, `lint` on `core.bf`.
 - NOT RUN: a release-signed build on device (the installed copy is debug-signed).
 
+
+## Threads 457.0.0.57.74: primary boundary gained parameters
+
+The `Sponsored`-marked delivery method is now
+`X.4Kg.ELT(Integer, Integer, List, int, boolean) -> X.1Dk`
+(`onSponsoredContentDelivered`). The old shape required exactly three
+parameters, so 2.1.0 logged `Primary feed-boundary search found no structural
+match; using broad fallback` and installed 34 hooks instead of 35. The shape
+now takes three or more parameters with the same first three; it is still the
+only structural match.
+
+Evidence (2026-11-27, Threads 457.0.0.57.74, Pixel 8 Pro, debug build):
+
+- EXECUTED on device: log reads `Installed confirmed feed boundary: ...X.4Kg.ELT(...)`,
+  `Primary feed boundaries installed: 1; broad discovery skipped`,
+  `installedHooks=35, pandoHooks=28`; ads removed at `BarcelonaFeedCache.A0O`
+  while scrolling; no `Ad`/`Sponsored` label in 6 `uiautomator` dumps; no crash-buffer entry.
+- MEASURED: feed boundary 4.6–7.1 ms/call (2.1.0 before the fix: 5.4 ms/call;
+  448 recorded 1.9–3.0), Pando accessor 18–74 µs/call. Not investigated further.
+- EXECUTED: `gen --check`, `lint` on `core.bf`, `check-project.sh`,
+  `:app:testDebugUnitTest :app:assembleDebug`, compiler tests.
+- NOT RUN: release-signed build on device; permalink reply ads (loader hook
+  installed, posts not opened).

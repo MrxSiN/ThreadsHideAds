@@ -65,7 +65,7 @@ public final class LegacyRules {
         return !Modifier.isStatic(modifiers)
                 && !Modifier.isAbstract(modifiers)
                 && !method.getDeclaringClass().isInterface()
-                && parameters.length == 3
+                && parameters.length >= 3
                 && isIntegerType(parameters[0])
                 && isIntegerType(parameters[1])
                 && List.class.isAssignableFrom(parameters[2])

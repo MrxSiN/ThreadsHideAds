@@ -93,7 +93,8 @@ A request that cannot complete (library missing, nesting too deep, malformed
 response, host exception, exhausted handle table) returns the default: keep
 the list, report "not an ad", install nothing new. Unknown content is organic.
 Ambiguous discovery (0 or more than 8 primary matches, several injector
-or permalink-ads candidates) never installs a broad destructive hook.
+or permalink-ads candidates, several item inserts, Media getters or native ad
+checks) never installs a broad destructive hook.
 
 ## Permalink ads
 

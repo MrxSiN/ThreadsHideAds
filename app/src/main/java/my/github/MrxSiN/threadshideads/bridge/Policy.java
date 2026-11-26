@@ -74,6 +74,10 @@ public final class Policy {
     public static final int NAME_COPY_FACTORY = 5;
     public static final int NAME_SPOOL_HANDLER = 6;
     public static final int NAME_PERMALINK_ADS = 7;
+    public static final int NAME_FEED_CACHE_HANDLER = 8;
+    public static final int NAME_FEED_CACHE = 9;
+    public static final int NAME_MEDIA = 10;
+    public static final int NAME_INJECTED_KEY = 11;
 
     /** Runs the core program, whose persistent cells are shared state. */
     private final NativeCore coreEngine;
@@ -660,6 +664,78 @@ public final class Policy {
 
     public int permalinkAdsDecision() {
         return simpleByte(BfAbi.OP_PERMALINK_ADS_DECISION, DECISION_NONE);
+    }
+
+    /** For You's insert of one item at a position (counted; OP_ITEM_INSERT_DECISION). */
+    public boolean itemInsertMethod(Method method) {
+        Class<?>[] p = method.getParameterTypes();
+        return flags(BfAbi.OP_ITEM_INSERT_METHOD,
+                Modifier.isAbstract(method.getModifiers()) ? 1 : 0,
+                method.getReturnType() == Integer.class ? 1 : 0,
+                Math.min(p.length, 255),
+                p.length > 0 && !p[0].isPrimitive() ? 1 : 0,
+                p.length > 1 && p[1] == int.class ? 1 : 0);
+    }
+
+    public int itemInsertDecision() {
+        return simpleByte(BfAbi.OP_ITEM_INSERT_DECISION, DECISION_NONE);
+    }
+
+    /** A feed cache write of one feed item, {@code itemType} being the insert's item. */
+    public boolean itemWriteMethod(Method method, Class<?> itemType) {
+        Class<?>[] p = method.getParameterTypes();
+        int modifiers = method.getModifiers();
+        return flags(BfAbi.OP_ITEM_WRITE_METHOD,
+                Modifier.isStatic(modifiers) ? 1 : 0,
+                Modifier.isPrivate(modifiers) ? 1 : 0,
+                method.getReturnType() == Object.class ? 1 : 0,
+                p.length > 0 && p[0] == itemType ? 1 : 0);
+    }
+
+    /** The feed item's getter for its post (counted; OP_MEDIA_GETTER_DECISION). */
+    public boolean mediaGetterMethod(Method method, Class<?> mediaType) {
+        return flags(BfAbi.OP_MEDIA_GETTER_METHOD,
+                Modifier.isStatic(method.getModifiers()) ? 1 : 0,
+                Math.min(method.getParameterTypes().length, 255),
+                method.getReturnType() == mediaType ? 1 : 0);
+    }
+
+    public int mediaGetterDecision() {
+        return simpleByte(BfAbi.OP_MEDIA_GETTER_DECISION, DECISION_NONE);
+    }
+
+    /** A Media method that calls the injected check (counted; OP_NATIVE_AD_DECISION). */
+    public boolean nativeAdMethod(Method method) {
+        return flags(BfAbi.OP_NATIVE_AD_METHOD,
+                Modifier.isStatic(method.getModifiers()) ? 1 : 0,
+                Math.min(method.getParameterTypes().length, 255),
+                method.getReturnType() == boolean.class ? 1 : 0);
+    }
+
+    public int nativeAdDecision() {
+        return simpleByte(BfAbi.OP_NATIVE_AD_DECISION, DECISION_NONE);
+    }
+
+    /** Whether a one-item write or insert keeps the item out. */
+    public boolean itemAction(boolean detectorAd, boolean nativeAd) {
+        return flags(BfAbi.OP_ITEM_ACTION, detectorAd ? 1 : 0, nativeAd ? 1 : 0);
+    }
+
+    /** Sends {@code values} as bytes to a core op answering one boolean byte. */
+    private boolean flags(int opcode, int... values) {
+        final NativeCore core = core(true);
+        if (core == null) {
+            return false;
+        }
+        try {
+            ByteBuffer out = core.begin(opcode);
+            for (int value : values) {
+                out.put((byte) value);
+            }
+            return core.send() == BfAbi.ST_OK && core.payload().get(0) != 0;
+        } finally {
+            release(core);
+        }
     }
 
     public boolean pandoAccessor(Method method) {

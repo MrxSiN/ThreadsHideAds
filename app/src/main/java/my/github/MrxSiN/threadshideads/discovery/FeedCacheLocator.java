@@ -86,6 +86,62 @@ public final class FeedCacheLocator {
         return found;
     }
 
+    /** For You's insert of one item at a position, on the feed cache handler. */
+    public Method findItemInsert() {
+        Class<?> handler = resolve(policy.constString(Policy.TABLE_NAMES, Policy.NAME_FEED_CACHE_HANDLER));
+        Method found = null;
+        if (handler != null) {
+            for (Method method : declaredMethods(handler)) {
+                if (policy.itemInsertMethod(method) && found == null) {
+                    found = method;
+                }
+            }
+        }
+        int decision = policy.itemInsertDecision();
+        if (decision != Policy.DECISION_INSTALL) {
+            ModuleLog.log("Item insert not installed; decision " + decision);
+            return null;
+        }
+        return found;
+    }
+
+    /** The feed cache's writes of one {@code item}. */
+    public List<Method> findItemWrites(Class<?> item) {
+        List<Method> writes = new ArrayList<>();
+        Class<?> cache = resolve(policy.constString(Policy.TABLE_NAMES, Policy.NAME_FEED_CACHE));
+        if (cache != null) {
+            for (Method method : declaredMethods(cache)) {
+                if (policy.itemWriteMethod(method, item)) {
+                    writes.add(method);
+                }
+            }
+        }
+        return writes;
+    }
+
+    /** The Media class, when it loads. */
+    public Class<?> mediaClass() {
+        return resolve(policy.constString(Policy.TABLE_NAMES, Policy.NAME_MEDIA));
+    }
+
+    /** The feed item's one getter for the post it carries. */
+    public Method findMediaGetter(Class<?> item, Class<?> media) {
+        Method found = null;
+        if (media != null) {
+            for (Method method : declaredMethods(item)) {
+                if (policy.mediaGetterMethod(method, media) && found == null) {
+                    found = method;
+                }
+            }
+        }
+        int decision = policy.mediaGetterDecision();
+        if (decision != Policy.DECISION_INSTALL) {
+            ModuleLog.log("Feed item Media getter not found; decision " + decision);
+            return null;
+        }
+        return found;
+    }
+
     private static Method[] declaredMethods(Class<?> type) {
         try {
             return type.getDeclaredMethods();

@@ -50,6 +50,14 @@ public final class BfAbi {
     public static final int OP_UI_ADD_VIEW = 23;
     public static final int OP_PERMALINK_ADS_METHOD = 24;
     public static final int OP_PERMALINK_ADS_DECISION = 25;
+    public static final int OP_ITEM_INSERT_METHOD = 26;
+    public static final int OP_ITEM_INSERT_DECISION = 27;
+    public static final int OP_ITEM_WRITE_METHOD = 28;
+    public static final int OP_MEDIA_GETTER_METHOD = 29;
+    public static final int OP_MEDIA_GETTER_DECISION = 30;
+    public static final int OP_NATIVE_AD_METHOD = 31;
+    public static final int OP_NATIVE_AD_DECISION = 32;
+    public static final int OP_ITEM_ACTION = 33;
     public static final int OP_RESET = 46;
     public static final int OP_VERSION = 47;
     public static final int OP_BOUNDARY_BEFORE = 48;

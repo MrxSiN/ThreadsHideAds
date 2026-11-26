@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Threads 457: the primary feed boundary gained `(int, boolean)`; the shape now
+  takes three or more parameters.
+- One-item feed cache writes (add, insert after a post, replace) and For You's
+  insert of one item at a position are filtered; an ad is not written. Ported
+  from HushThreads' findings (GPL-3.0); the core picks each by shape
+  (OP 0x1A–0x1C) and decides per item (OP 0x21).
+- Threads' own ad check on Media (the "injected" check) is a second signal for
+  those writes (OP 0x1D–0x20).
+
 ## 2.1.0 — 2026-11-14
 
 - Hide ads between replies on a post (permalink). Threads fetches them

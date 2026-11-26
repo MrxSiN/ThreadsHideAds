@@ -4148,6 +4148,399 @@ BF_PROGRAM(core)
                     p[99] = 0;
                     break;
                 }
+                case 8: {
+                    p[89] = 0;
+                    p[99] = 1;
+                    BF_OUT(io, p[99]);
+                    p[99] = 0;
+                    BF_OUT(io, p[99]);
+                    p[66] += 128;
+                    BF_OUT(io, p[66]);
+                    p[66] += 128;
+                    BF_OUT(io, p[99]);
+                    p[99] = 65;
+                    BF_OUT(io, p[99]);
+                    p[99] = 0;
+                    BF_OUT(io, p[99]);
+                    BF_OUT(io, p[70]);
+                    BF_OUT(io, p[71]);
+                    p[99] = 99;
+                    BF_OUT(io, p[99]);
+                    p[99] = 111;
+                    BF_OUT(io, p[99]);
+                    p[99] = 109;
+                    BF_OUT(io, p[99]);
+                    p[99] = 46;
+                    BF_OUT(io, p[99]);
+                    p[99] = 105;
+                    BF_OUT(io, p[99]);
+                    p[99] = 110;
+                    BF_OUT(io, p[99]);
+                    p[99] = 115;
+                    BF_OUT(io, p[99]);
+                    p[99] = 116;
+                    BF_OUT(io, p[99]);
+                    p[99] = 97;
+                    BF_OUT(io, p[99]);
+                    p[99] = 103;
+                    BF_OUT(io, p[99]);
+                    p[99] = 114;
+                    BF_OUT(io, p[99]);
+                    p[99] = 97;
+                    BF_OUT(io, p[99]);
+                    p[99] = 109;
+                    BF_OUT(io, p[99]);
+                    p[99] = 46;
+                    BF_OUT(io, p[99]);
+                    p[99] = 98;
+                    BF_OUT(io, p[99]);
+                    p[99] = 97;
+                    BF_OUT(io, p[99]);
+                    p[99] = 114;
+                    BF_OUT(io, p[99]);
+                    p[99] = 99;
+                    BF_OUT(io, p[99]);
+                    p[99] = 101;
+                    BF_OUT(io, p[99]);
+                    p[99] = 108;
+                    BF_OUT(io, p[99]);
+                    p[99] = 111;
+                    BF_OUT(io, p[99]);
+                    p[99] = 110;
+                    BF_OUT(io, p[99]);
+                    p[99] = 97;
+                    BF_OUT(io, p[99]);
+                    p[99] = 46;
+                    BF_OUT(io, p[99]);
+                    p[99] = 102;
+                    BF_OUT(io, p[99]);
+                    p[99] = 101;
+                    BF_OUT(io, p[99]);
+                    BF_OUT(io, p[99]);
+                    p[99] = 100;
+                    BF_OUT(io, p[99]);
+                    p[99] = 46;
+                    BF_OUT(io, p[99]);
+                    p[99] = 100;
+                    BF_OUT(io, p[99]);
+                    p[99] = 97;
+                    BF_OUT(io, p[99]);
+                    p[99] = 116;
+                    BF_OUT(io, p[99]);
+                    p[99] = 97;
+                    BF_OUT(io, p[99]);
+                    p[99] = 46;
+                    BF_OUT(io, p[99]);
+                    p[99] = 99;
+                    BF_OUT(io, p[99]);
+                    p[99] = 97;
+                    BF_OUT(io, p[99]);
+                    p[99] = 99;
+                    BF_OUT(io, p[99]);
+                    p[99] = 104;
+                    BF_OUT(io, p[99]);
+                    p[99] = 101;
+                    BF_OUT(io, p[99]);
+                    p[99] = 46;
+                    BF_OUT(io, p[99]);
+                    p[99] = 66;
+                    BF_OUT(io, p[99]);
+                    p[99] = 97;
+                    BF_OUT(io, p[99]);
+                    p[99] = 114;
+                    BF_OUT(io, p[99]);
+                    p[99] = 99;
+                    BF_OUT(io, p[99]);
+                    p[99] = 101;
+                    BF_OUT(io, p[99]);
+                    p[99] = 108;
+                    BF_OUT(io, p[99]);
+                    p[99] = 111;
+                    BF_OUT(io, p[99]);
+                    p[99] = 110;
+                    BF_OUT(io, p[99]);
+                    p[99] = 97;
+                    BF_OUT(io, p[99]);
+                    p[99] = 70;
+                    BF_OUT(io, p[99]);
+                    p[99] = 101;
+                    BF_OUT(io, p[99]);
+                    BF_OUT(io, p[99]);
+                    p[99] = 100;
+                    BF_OUT(io, p[99]);
+                    p[99] = 67;
+                    BF_OUT(io, p[99]);
+                    p[99] = 97;
+                    BF_OUT(io, p[99]);
+                    p[99] = 99;
+                    BF_OUT(io, p[99]);
+                    p[99] = 104;
+                    BF_OUT(io, p[99]);
+                    p[99] = 101;
+                    BF_OUT(io, p[99]);
+                    p[99] = 72;
+                    BF_OUT(io, p[99]);
+                    p[99] = 97;
+                    BF_OUT(io, p[99]);
+                    p[99] = 110;
+                    BF_OUT(io, p[99]);
+                    p[99] = 100;
+                    BF_OUT(io, p[99]);
+                    p[99] = 108;
+                    BF_OUT(io, p[99]);
+                    p[99] = 101;
+                    BF_OUT(io, p[99]);
+                    p[99] = 114;
+                    BF_OUT(io, p[99]);
+                    p[99] = 0;
+                    break;
+                }
+                case 9: {
+                    p[89] = 0;
+                    p[99] = 1;
+                    BF_OUT(io, p[99]);
+                    p[99] = 0;
+                    BF_OUT(io, p[99]);
+                    p[66] += 128;
+                    BF_OUT(io, p[66]);
+                    p[66] += 128;
+                    BF_OUT(io, p[99]);
+                    p[99] = 58;
+                    BF_OUT(io, p[99]);
+                    p[99] = 0;
+                    BF_OUT(io, p[99]);
+                    BF_OUT(io, p[70]);
+                    BF_OUT(io, p[71]);
+                    p[99] = 99;
+                    BF_OUT(io, p[99]);
+                    p[99] = 111;
+                    BF_OUT(io, p[99]);
+                    p[99] = 109;
+                    BF_OUT(io, p[99]);
+                    p[99] = 46;
+                    BF_OUT(io, p[99]);
+                    p[99] = 105;
+                    BF_OUT(io, p[99]);
+                    p[99] = 110;
+                    BF_OUT(io, p[99]);
+                    p[99] = 115;
+                    BF_OUT(io, p[99]);
+                    p[99] = 116;
+                    BF_OUT(io, p[99]);
+                    p[99] = 97;
+                    BF_OUT(io, p[99]);
+                    p[99] = 103;
+                    BF_OUT(io, p[99]);
+                    p[99] = 114;
+                    BF_OUT(io, p[99]);
+                    p[99] = 97;
+                    BF_OUT(io, p[99]);
+                    p[99] = 109;
+                    BF_OUT(io, p[99]);
+                    p[99] = 46;
+                    BF_OUT(io, p[99]);
+                    p[99] = 98;
+                    BF_OUT(io, p[99]);
+                    p[99] = 97;
+                    BF_OUT(io, p[99]);
+                    p[99] = 114;
+                    BF_OUT(io, p[99]);
+                    p[99] = 99;
+                    BF_OUT(io, p[99]);
+                    p[99] = 101;
+                    BF_OUT(io, p[99]);
+                    p[99] = 108;
+                    BF_OUT(io, p[99]);
+                    p[99] = 111;
+                    BF_OUT(io, p[99]);
+                    p[99] = 110;
+                    BF_OUT(io, p[99]);
+                    p[99] = 97;
+                    BF_OUT(io, p[99]);
+                    p[99] = 46;
+                    BF_OUT(io, p[99]);
+                    p[99] = 102;
+                    BF_OUT(io, p[99]);
+                    p[99] = 101;
+                    BF_OUT(io, p[99]);
+                    BF_OUT(io, p[99]);
+                    p[99] = 100;
+                    BF_OUT(io, p[99]);
+                    p[99] = 46;
+                    BF_OUT(io, p[99]);
+                    p[99] = 100;
+                    BF_OUT(io, p[99]);
+                    p[99] = 97;
+                    BF_OUT(io, p[99]);
+                    p[99] = 116;
+                    BF_OUT(io, p[99]);
+                    p[99] = 97;
+                    BF_OUT(io, p[99]);
+                    p[99] = 46;
+                    BF_OUT(io, p[99]);
+                    p[99] = 99;
+                    BF_OUT(io, p[99]);
+                    p[99] = 97;
+                    BF_OUT(io, p[99]);
+                    p[99] = 99;
+                    BF_OUT(io, p[99]);
+                    p[99] = 104;
+                    BF_OUT(io, p[99]);
+                    p[99] = 101;
+                    BF_OUT(io, p[99]);
+                    p[99] = 46;
+                    BF_OUT(io, p[99]);
+                    p[99] = 66;
+                    BF_OUT(io, p[99]);
+                    p[99] = 97;
+                    BF_OUT(io, p[99]);
+                    p[99] = 114;
+                    BF_OUT(io, p[99]);
+                    p[99] = 99;
+                    BF_OUT(io, p[99]);
+                    p[99] = 101;
+                    BF_OUT(io, p[99]);
+                    p[99] = 108;
+                    BF_OUT(io, p[99]);
+                    p[99] = 111;
+                    BF_OUT(io, p[99]);
+                    p[99] = 110;
+                    BF_OUT(io, p[99]);
+                    p[99] = 97;
+                    BF_OUT(io, p[99]);
+                    p[99] = 70;
+                    BF_OUT(io, p[99]);
+                    p[99] = 101;
+                    BF_OUT(io, p[99]);
+                    BF_OUT(io, p[99]);
+                    p[99] = 100;
+                    BF_OUT(io, p[99]);
+                    p[99] = 67;
+                    BF_OUT(io, p[99]);
+                    p[99] = 97;
+                    BF_OUT(io, p[99]);
+                    p[99] = 99;
+                    BF_OUT(io, p[99]);
+                    p[99] = 104;
+                    BF_OUT(io, p[99]);
+                    p[99] = 101;
+                    BF_OUT(io, p[99]);
+                    p[99] = 0;
+                    break;
+                }
+                case 10: {
+                    p[89] = 0;
+                    p[99] = 1;
+                    BF_OUT(io, p[99]);
+                    p[99] = 0;
+                    BF_OUT(io, p[99]);
+                    p[66] += 128;
+                    BF_OUT(io, p[66]);
+                    p[66] += 128;
+                    BF_OUT(io, p[99]);
+                    p[99] = 30;
+                    BF_OUT(io, p[99]);
+                    p[99] = 0;
+                    BF_OUT(io, p[99]);
+                    BF_OUT(io, p[70]);
+                    BF_OUT(io, p[71]);
+                    p[99] = 99;
+                    BF_OUT(io, p[99]);
+                    p[99] = 111;
+                    BF_OUT(io, p[99]);
+                    p[99] = 109;
+                    BF_OUT(io, p[99]);
+                    p[99] = 46;
+                    BF_OUT(io, p[99]);
+                    p[99] = 105;
+                    BF_OUT(io, p[99]);
+                    p[99] = 110;
+                    BF_OUT(io, p[99]);
+                    p[99] = 115;
+                    BF_OUT(io, p[99]);
+                    p[99] = 116;
+                    BF_OUT(io, p[99]);
+                    p[99] = 97;
+                    BF_OUT(io, p[99]);
+                    p[99] = 103;
+                    BF_OUT(io, p[99]);
+                    p[99] = 114;
+                    BF_OUT(io, p[99]);
+                    p[99] = 97;
+                    BF_OUT(io, p[99]);
+                    p[99] = 109;
+                    BF_OUT(io, p[99]);
+                    p[99] = 46;
+                    BF_OUT(io, p[99]);
+                    p[99] = 102;
+                    BF_OUT(io, p[99]);
+                    p[99] = 101;
+                    BF_OUT(io, p[99]);
+                    BF_OUT(io, p[99]);
+                    p[99] = 100;
+                    BF_OUT(io, p[99]);
+                    p[99] = 46;
+                    BF_OUT(io, p[99]);
+                    p[99] = 109;
+                    BF_OUT(io, p[99]);
+                    p[99] = 101;
+                    BF_OUT(io, p[99]);
+                    p[99] = 100;
+                    BF_OUT(io, p[99]);
+                    p[99] = 105;
+                    BF_OUT(io, p[99]);
+                    p[99] = 97;
+                    BF_OUT(io, p[99]);
+                    p[99] = 46;
+                    BF_OUT(io, p[99]);
+                    p[99] = 77;
+                    BF_OUT(io, p[99]);
+                    p[99] = 101;
+                    BF_OUT(io, p[99]);
+                    p[99] = 100;
+                    BF_OUT(io, p[99]);
+                    p[99] = 105;
+                    BF_OUT(io, p[99]);
+                    p[99] = 97;
+                    BF_OUT(io, p[99]);
+                    p[99] = 0;
+                    break;
+                }
+                case 11: {
+                    p[89] = 0;
+                    p[99] = 1;
+                    BF_OUT(io, p[99]);
+                    p[99] = 0;
+                    BF_OUT(io, p[99]);
+                    p[66] += 128;
+                    BF_OUT(io, p[66]);
+                    p[66] += 128;
+                    BF_OUT(io, p[99]);
+                    p[99] = 8;
+                    BF_OUT(io, p[99]);
+                    p[99] = 0;
+                    BF_OUT(io, p[99]);
+                    BF_OUT(io, p[70]);
+                    BF_OUT(io, p[71]);
+                    p[99] = 105;
+                    BF_OUT(io, p[99]);
+                    p[99] = 110;
+                    BF_OUT(io, p[99]);
+                    p[99] = 106;
+                    BF_OUT(io, p[99]);
+                    p[99] = 101;
+                    BF_OUT(io, p[99]);
+                    p[99] = 99;
+                    BF_OUT(io, p[99]);
+                    p[99] = 116;
+                    BF_OUT(io, p[99]);
+                    p[99] = 101;
+                    BF_OUT(io, p[99]);
+                    p[99] = 100;
+                    BF_OUT(io, p[99]);
+                    p[99] = 0;
+                    break;
+                }
                 }
                 p[83] = 0;
                 break;
@@ -7712,6 +8105,9 @@ BF_PROGRAM(core)
             p[28] = 0;
             p[29] = 0;
             p[30] = 0;
+            p[31] = 0;
+            p[32] = 0;
+            p[33] = 0;
             p[99] = 1;
             BF_OUT(io, p[99]);
             p[99] = 0;
@@ -7995,6 +8391,339 @@ BF_PROGRAM(core)
             BF_OUT(io, p[70]);
             BF_OUT(io, p[71]);
             BF_OUT(io, p[92]);
+            break;
+        }
+        case 26: {
+            p[98] = 0;
+            p[87] = BF_IN(io);
+            p[88] = BF_IN(io);
+            p[89] = BF_IN(io);
+            p[90] = BF_IN(io);
+            p[91] = BF_IN(io);
+            p[92] += 1;
+            if (p[87]) {
+                p[92] = 0;
+                p[87] = 0;
+            }
+            p[88] += 255;
+            if (p[88]) {
+                p[92] = 0;
+                p[88] = 0;
+            }
+            p[89] += 254;
+            if (p[89]) {
+                p[92] = 0;
+                p[89] = 0;
+            }
+            p[90] += 255;
+            if (p[90]) {
+                p[92] = 0;
+                p[90] = 0;
+            }
+            p[91] += 255;
+            if (p[91]) {
+                p[92] = 0;
+                p[91] = 0;
+            }
+            p[93] += p[92];
+            p[94] += p[92];
+            p[92] = 0;
+            p[92] = p[94];
+            p[94] = 0;
+            if (p[93]) {
+                p[74] = p[31];
+                p[94] = p[31];
+                p[31] = 0;
+                p[31] = p[74];
+                p[74] = 0;
+                p[94] += 1;
+                if (p[94]) {
+                    p[31] += 1;
+                    p[94] = 0;
+                }
+                p[93] = 0;
+            }
+            p[99] = 1;
+            BF_OUT(io, p[99]);
+            p[99] = 0;
+            BF_OUT(io, p[99]);
+            p[66] += 128;
+            BF_OUT(io, p[66]);
+            p[66] += 128;
+            BF_OUT(io, p[99]);
+            p[99] = 1;
+            BF_OUT(io, p[99]);
+            p[99] = 0;
+            BF_OUT(io, p[99]);
+            BF_OUT(io, p[70]);
+            BF_OUT(io, p[71]);
+            BF_OUT(io, p[92]);
+            break;
+        }
+        case 27: {
+            p[98] = 0;
+            p[87] += 3;
+            p[79] = p[31];
+            p[31] = 0;
+            if (p[79] == 0) {
+                p[87] = 0;
+            }
+            if (p[79] == 1) {
+                p[87] = 2;
+            }
+            p[79] = 0;
+            p[99] = 1;
+            BF_OUT(io, p[99]);
+            p[99] = 0;
+            BF_OUT(io, p[99]);
+            p[66] += 128;
+            BF_OUT(io, p[66]);
+            p[66] += 128;
+            BF_OUT(io, p[99]);
+            p[99] = 1;
+            BF_OUT(io, p[99]);
+            p[99] = 0;
+            BF_OUT(io, p[99]);
+            BF_OUT(io, p[70]);
+            BF_OUT(io, p[71]);
+            BF_OUT(io, p[87]);
+            break;
+        }
+        case 28: {
+            p[98] = 0;
+            p[87] = BF_IN(io);
+            p[88] = BF_IN(io);
+            p[89] = BF_IN(io);
+            p[90] = BF_IN(io);
+            p[91] += 1;
+            if (p[87]) {
+                p[91] = 0;
+                p[87] = 0;
+            }
+            if (p[88]) {
+                p[91] = 0;
+                p[88] = 0;
+            }
+            p[89] += 255;
+            if (p[89]) {
+                p[91] = 0;
+                p[89] = 0;
+            }
+            p[90] += 255;
+            if (p[90]) {
+                p[91] = 0;
+                p[90] = 0;
+            }
+            p[99] = 1;
+            BF_OUT(io, p[99]);
+            p[99] = 0;
+            BF_OUT(io, p[99]);
+            p[66] += 128;
+            BF_OUT(io, p[66]);
+            p[66] += 128;
+            BF_OUT(io, p[99]);
+            p[99] = 1;
+            BF_OUT(io, p[99]);
+            p[99] = 0;
+            BF_OUT(io, p[99]);
+            BF_OUT(io, p[70]);
+            BF_OUT(io, p[71]);
+            BF_OUT(io, p[91]);
+            break;
+        }
+        case 29: {
+            p[98] = 0;
+            p[87] = BF_IN(io);
+            p[88] = BF_IN(io);
+            p[89] = BF_IN(io);
+            p[90] += 1;
+            if (p[87]) {
+                p[90] = 0;
+                p[87] = 0;
+            }
+            if (p[88]) {
+                p[90] = 0;
+                p[88] = 0;
+            }
+            p[89] += 255;
+            if (p[89]) {
+                p[90] = 0;
+                p[89] = 0;
+            }
+            p[91] += p[90];
+            p[92] += p[90];
+            p[90] = 0;
+            p[90] = p[92];
+            p[92] = 0;
+            if (p[91]) {
+                p[74] = p[32];
+                p[92] = p[32];
+                p[32] = 0;
+                p[32] = p[74];
+                p[74] = 0;
+                p[92] += 1;
+                if (p[92]) {
+                    p[32] += 1;
+                    p[92] = 0;
+                }
+                p[91] = 0;
+            }
+            p[99] = 1;
+            BF_OUT(io, p[99]);
+            p[99] = 0;
+            BF_OUT(io, p[99]);
+            p[66] += 128;
+            BF_OUT(io, p[66]);
+            p[66] += 128;
+            BF_OUT(io, p[99]);
+            p[99] = 1;
+            BF_OUT(io, p[99]);
+            p[99] = 0;
+            BF_OUT(io, p[99]);
+            BF_OUT(io, p[70]);
+            BF_OUT(io, p[71]);
+            BF_OUT(io, p[90]);
+            break;
+        }
+        case 30: {
+            p[98] = 0;
+            p[87] += 3;
+            p[79] = p[32];
+            p[32] = 0;
+            if (p[79] == 0) {
+                p[87] = 0;
+            }
+            if (p[79] == 1) {
+                p[87] = 2;
+            }
+            p[79] = 0;
+            p[99] = 1;
+            BF_OUT(io, p[99]);
+            p[99] = 0;
+            BF_OUT(io, p[99]);
+            p[66] += 128;
+            BF_OUT(io, p[66]);
+            p[66] += 128;
+            BF_OUT(io, p[99]);
+            p[99] = 1;
+            BF_OUT(io, p[99]);
+            p[99] = 0;
+            BF_OUT(io, p[99]);
+            BF_OUT(io, p[70]);
+            BF_OUT(io, p[71]);
+            BF_OUT(io, p[87]);
+            break;
+        }
+        case 31: {
+            p[98] = 0;
+            p[87] = BF_IN(io);
+            p[88] = BF_IN(io);
+            p[89] = BF_IN(io);
+            p[90] += 1;
+            if (p[87]) {
+                p[90] = 0;
+                p[87] = 0;
+            }
+            if (p[88]) {
+                p[90] = 0;
+                p[88] = 0;
+            }
+            p[89] += 255;
+            if (p[89]) {
+                p[90] = 0;
+                p[89] = 0;
+            }
+            p[91] += p[90];
+            p[92] += p[90];
+            p[90] = 0;
+            p[90] = p[92];
+            p[92] = 0;
+            if (p[91]) {
+                p[74] = p[33];
+                p[92] = p[33];
+                p[33] = 0;
+                p[33] = p[74];
+                p[74] = 0;
+                p[92] += 1;
+                if (p[92]) {
+                    p[33] += 1;
+                    p[92] = 0;
+                }
+                p[91] = 0;
+            }
+            p[99] = 1;
+            BF_OUT(io, p[99]);
+            p[99] = 0;
+            BF_OUT(io, p[99]);
+            p[66] += 128;
+            BF_OUT(io, p[66]);
+            p[66] += 128;
+            BF_OUT(io, p[99]);
+            p[99] = 1;
+            BF_OUT(io, p[99]);
+            p[99] = 0;
+            BF_OUT(io, p[99]);
+            BF_OUT(io, p[70]);
+            BF_OUT(io, p[71]);
+            BF_OUT(io, p[90]);
+            break;
+        }
+        case 32: {
+            p[98] = 0;
+            p[87] += 3;
+            p[79] = p[33];
+            p[33] = 0;
+            if (p[79] == 0) {
+                p[87] = 0;
+            }
+            if (p[79] == 1) {
+                p[87] = 2;
+            }
+            p[79] = 0;
+            p[99] = 1;
+            BF_OUT(io, p[99]);
+            p[99] = 0;
+            BF_OUT(io, p[99]);
+            p[66] += 128;
+            BF_OUT(io, p[66]);
+            p[66] += 128;
+            BF_OUT(io, p[99]);
+            p[99] = 1;
+            BF_OUT(io, p[99]);
+            p[99] = 0;
+            BF_OUT(io, p[99]);
+            BF_OUT(io, p[70]);
+            BF_OUT(io, p[71]);
+            BF_OUT(io, p[87]);
+            break;
+        }
+        case 33: {
+            p[98] = 0;
+            p[87] = BF_IN(io);
+            p[88] = BF_IN(io);
+            if (p[87]) {
+                p[89] = 1;
+                p[87] = 0;
+            }
+            if (p[88]) {
+                p[89] = 1;
+                p[88] = 0;
+            }
+            p[99] = 1;
+            BF_OUT(io, p[99]);
+            p[99] = 0;
+            BF_OUT(io, p[99]);
+            p[66] += 128;
+            BF_OUT(io, p[66]);
+            p[66] += 128;
+            BF_OUT(io, p[99]);
+            p[99] = 1;
+            BF_OUT(io, p[99]);
+            p[99] = 0;
+            BF_OUT(io, p[99]);
+            BF_OUT(io, p[70]);
+            BF_OUT(io, p[71]);
+            BF_OUT(io, p[89]);
             break;
         }
         }

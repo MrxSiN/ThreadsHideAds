@@ -174,7 +174,7 @@ public final class ModelHookInstaller {
                     case Policy.STEP_FEED_CACHE:
                         ModuleLog.log("DexKit parsed dex count: " + bridge.getDexNum());
                         finder = new FeedBoundaryFinder(policy, bridge, classLoader);
-                        installFeedCacheHooks(policy, classLoader, hooks);
+                        installFeedCacheHooks(policy, classLoader, finder, hooks);
                         break;
                     case Policy.STEP_PRIMARY:
                         primaryInstalled = installPrimaryBoundaries(finder, hooks);
@@ -203,7 +203,8 @@ public final class ModelHookInstaller {
         }
     }
 
-    private static void installFeedCacheHooks(Policy policy, ClassLoader classLoader, FeedModelHooks hooks) {
+    private static void installFeedCacheHooks(Policy policy, ClassLoader classLoader,
+                                              FeedBoundaryFinder finder, FeedModelHooks hooks) {
         FeedCacheLocator locator = new FeedCacheLocator(policy, classLoader);
         int installed = 0;
         for (Method method : locator.findListBoundaries()) {
@@ -225,6 +226,7 @@ public final class ModelHookInstaller {
                 ModuleLog.log("Unable to hook ad injector " + injector + ": " + throwable);
             }
         }
+        installed += installItemHooks(policy, locator, finder, hooks);
         Method permalinkAds = locator.findPermalinkAdsLoader();
         if (permalinkAds != null) {
             try {
@@ -236,6 +238,39 @@ public final class ModelHookInstaller {
             }
         }
         ModuleLog.log("Feed cache hooks installed: " + installed);
+    }
+
+    /** For You's insert of one item and the feed cache's one-item writes. */
+    private static int installItemHooks(Policy policy, FeedCacheLocator locator,
+                                        FeedBoundaryFinder finder, FeedModelHooks hooks) {
+        Method insert = locator.findItemInsert();
+        if (insert == null) {
+            return 0;
+        }
+        Class<?> item = insert.getParameterTypes()[0];
+        Class<?> media = locator.mediaClass();
+        Method getter = locator.findMediaGetter(item, media);
+        Method check = getter == null || media == null ? null : finder.findNativeAdCheck(media.getName(),
+                policy.constString(Policy.TABLE_NAMES, Policy.NAME_INJECTED_KEY));
+        hooks.useNativeAdCheck(getter, check);
+        int installed = 0;
+        try {
+            if (hooks.hookItemInsert(insert)) {
+                installed++;
+            }
+        } catch (Throwable throwable) {
+            ModuleLog.log("Unable to hook item insert " + insert + ": " + throwable);
+        }
+        for (Method write : locator.findItemWrites(item)) {
+            try {
+                if (hooks.hookItemWrite(write)) {
+                    installed++;
+                }
+            } catch (Throwable throwable) {
+                ModuleLog.log("Unable to hook one-item write " + write + ": " + throwable);
+            }
+        }
+        return installed;
     }
 
     private static int installPrimaryBoundaries(FeedBoundaryFinder finder, FeedModelHooks hooks) {
